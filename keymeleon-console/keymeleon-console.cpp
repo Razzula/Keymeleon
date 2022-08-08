@@ -1,8 +1,9 @@
 // keymeleon-console.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <iostream>
 #include <hidapi.h>
+
+#include "keymeleon-console.h"
 
 int main()
 {
@@ -16,14 +17,6 @@ int main()
 	cur_dev = devs;
 	//cycle through all detected HIDs
 	while (cur_dev) {
-		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
-		printf("\n");
-		printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
-		printf("  Product:      %ls\n", cur_dev->product_string);
-		printf("  Release:      %hx\n", cur_dev->release_number);
-		printf("  Interface:    %d\n", cur_dev->interface_number);
-		printf("  Usage (page): 0x%hx (0x%hx)\n", cur_dev->usage, cur_dev->usage_page);
-		printf("\n");
 
 		if (cur_dev->usage == 0x92) {
 			hid_path = cur_dev->path;
@@ -46,9 +39,39 @@ int main()
 		return 1;
 	}
 
-	/*
-		...
-	*/
+	// ---
+	// prepare data packets
+	uint8_t buf[64];
+	std::copy(std::begin(data_profile), std::end(data_profile), std::begin(buf));
+
+	int profile;
+	std::cin >> profile;
+	// change data
+	if (profile == 1) {
+		//do nothing
+	}
+	else if (profile == 2) {
+		buf[1] = 0xe1;
+		buf[18] = 0x01;
+	}
+	else if (profile == 3) {
+		buf[1] = 0xe2;
+		buf[18] = 0x02;
+	}
+	else {
+		std::cout << "Invalid input.\n";
+		return 1;
+	}
+
+	res = hid_write(handle, buf, 64);
+	if (res < 0) {
+		printf("Unable to write()\n");
+		printf("Error: %ls\n", hid_error(handle));
+	}
+	else {
+		printf(":D");
+	}
+	// ---
 
 	// Close the device
 	hid_close(handle);

@@ -6,3 +6,7 @@
 \keymeleon-console\dependencies\hidapi
 ```
 Offical (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
+
+## Acknowledgments
+
+- [dokutan](https://github.com/dokutan)'s [rgb_keyboard](https://github.com/dokutan/rgb_keyboard) project, making it a lot easier to understand the data signals used to control the device
