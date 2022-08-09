@@ -12,38 +12,8 @@ int main()
 	// Initialize the hidapi library
 	hid_init();
 
-	// open file
-	std::ifstream config;
-	config.open("test.conf");
-
-	// read file
-	if (config.is_open()) { // always check whether the file is open
-		while (config.good()) {
-			std::string keycode;
-			config >> keycode;
-			std::cout << keycode + " "; //DEBUG
-
-			char value[7]; //string of hex values, i.e ff0000 (r:0xff, g:0x00, b:0x00) 
-			config >> value;
-
-			//split value into 3 seperate hex values for rgb
-			std::array<uint8_t, 3> colours;
-			for (int i = 0; i < 3; i++) {
-				char subvalue[] = { value[2*i],value[2*i + 1] }; //gets two chars from value
-
-				colours[i] = (uint8_t) strtol(subvalue, nullptr, 16); //converts strign hex to numerical
-			}
-
-			std::cout << unsigned(colours[0]) << " "; //DEBUG
-			std::cout << unsigned(colours[1]) << " ";
-			std::cout << unsigned(colours[2]) << std::endl;
-
-			//apply colours to keycode
-			setCustomLayout({ std::make_pair(keycode, colours) });
-
-		}
-	}
-	config.close();
+	//apply colours from `test.conf` to device
+	setCustomLayout(readConfigFromFile("test.conf"));
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -95,7 +65,45 @@ int writeToKeyboard(hid_device *handle, uint8_t buf[], int length) {
 	return res;
 }
 
-void setCustomLayout(std::array<std::pair<std::string, std::array<uint8_t, 3>>, 1> layout) {
+std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(std::string filename) {
+	std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout;
+
+	// open file
+	std::ifstream config;
+	config.open(filename);
+
+	// read file
+	if (config.is_open()) { // always check whether the file is open
+		while (config.good()) {
+			std::string keycode;
+			config >> keycode;
+			std::cout << keycode + " "; //DEBUG
+
+			char value[7]; //string of hex values, i.e ff0000 (r:0xff, g:0x00, b:0x00) 
+			config >> value;
+
+			//split value into 3 seperate hex values for rgb
+			std::array<uint8_t, 3> colours;
+			for (int i = 0; i < 3; i++) {
+				char subvalue[] = { value[2 * i],value[2 * i + 1] }; //gets two chars from value
+
+				colours[i] = (uint8_t)strtol(subvalue, nullptr, 16); //converts strign hex to numerical
+			}
+
+			std::cout << unsigned(colours[0]) << " "; //DEBUG
+			std::cout << unsigned(colours[1]) << " ";
+			std::cout << unsigned(colours[2]) << std::endl;
+
+			//store in vector
+			layout.push_back(std::make_pair(keycode, colours));
+		}
+	}
+	config.close();
+
+	return layout;
+}
+
+void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout) {
 	int res;
 
 	hid_device* handle = openKeyboard();
