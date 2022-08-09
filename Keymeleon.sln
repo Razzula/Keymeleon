@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Keymeleon", "Application\Keymeleon.csproj", "{CE95AB2F-B61A-4978-8154-D59578E0D281}"
+	ProjectSection(ProjectDependencies) = postProject
+		{30C15CAA-507B-44C1-8F43-DA72A3771CCE} = {30C15CAA-507B-44C1-8F43-DA72A3771CCE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kym-Library", "kym-Library\kym-Library.vcxproj", "{30C15CAA-507B-44C1-8F43-DA72A3771CCE}"
 EndProject
