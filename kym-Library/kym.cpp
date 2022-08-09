@@ -6,20 +6,10 @@
 #include "pch.h"
 #include "kym.h"
 
-int test() {
-	// Initialize the hidapi library
-	hid_init();
-
-	//apply colours from `test.conf` to device
-	setCustomLayout(readConfigFromFile("test.conf"));
-
-	// Finalize the hidapi library
-	hid_exit();
-	return 0;
-}
-
 hid_device* openKeyboard() {
 	std::string hid_path;
+
+	hid_init();
 
 	struct hid_device_info* devs, * cur_dev;
 	devs = hid_enumerate(0x0c45, 0x652f); //scan for devices matching VID and PID
@@ -63,7 +53,7 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 	return res;
 }
 
-std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(std::string filename) {
+std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(char* filename) {
 	std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout;
 
 	// open file
@@ -93,14 +83,15 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 			for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
 				char subvalue[2];
 
-				subvalue[0] = line[charOfLine += 1];
-				subvalue[1] = line[charOfLine += 1];
+				subvalue[0] = line[charOfLine+=1];
+				subvalue[1] = line[charOfLine+=1];
 
 				colour[valueOfColour] = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
 			}
 
 			//store in vector
 			layout.push_back(std::make_pair(keycode, colour));
+
 		}
 	}
 	config.close();
@@ -108,12 +99,14 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 	return layout;
 }
 
-void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout) {
+int setCustomLayout(char* configFileName, int profileToModify) {
+	auto layout = readConfigFromFile(configFileName); //get data from config file
+
 	int res;
 
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return;
+		return -1;
 	}
 
 	uint8_t buf[64];
@@ -149,6 +142,8 @@ void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>>
 	res = writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	hid_close(handle);
+	hid_exit();
+	return res;
 }
 
 int setActiveProfile(int profile) {
@@ -182,5 +177,6 @@ int setActiveProfile(int profile) {
 	res = writeToKeyboard(handle, buf, 64);
 
 	hid_close(handle);
+	hid_exit();
 	return res;
 }

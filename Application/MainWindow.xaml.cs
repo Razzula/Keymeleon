@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace Keymeleon
 {
@@ -28,8 +29,6 @@ namespace Keymeleon
         public MainWindow()
         {
             InitializeComponent();
-
-            Debug.WriteLine(NativeMethods.test());
 
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
@@ -46,19 +45,34 @@ namespace Keymeleon
             Process p = Process.GetProcessById((int)pid);
 
             //get name of application that process is owned by
+            string focusedApplication;
             try
             {
-                Debug.WriteLine(p.MainModule.FileVersionInfo.FileDescription.ToString());
+                focusedApplication = p.MainModule.FileVersionInfo.FileDescription.ToString();
             }
             catch (System.ComponentModel.Win32Exception)
             // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this) //TODO add check for this
             // if Keymeleon is not elevated, this exception will throw when trying to access an elevated program //TODO request that Keymeleon be elevated
             {
-                Debug.WriteLine(p.MainWindowTitle.ToString());
+                focusedApplication = p.MainWindowTitle.ToString();
             }
             catch (NullReferenceException)
             {
                 Debug.WriteLine("nullptr error");
+                return;
+            }
+
+            Debug.WriteLine(focusedApplication + ".conf");
+
+            if (File.Exists(focusedApplication + ".conf"))
+            {
+                int a = NativeMethods.setCustomLayout(focusedApplication + ".conf", 1);
+                Debug.WriteLine(a);
+            }
+            else if (File.Exists("default.conf"))
+            {
+                int a = NativeMethods.setCustomLayout("default.conf", 1);
+                Debug.WriteLine(a);
             }
         }
 
@@ -73,7 +87,9 @@ namespace Keymeleon
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
 
             [DllImport("kym.dll")]
-            public static extern int test();
+            public static extern int setCustomLayout(string configFileName, int profileToModify);
+            [DllImport("kym.dll")]
+            public static extern int setActiveProfile(int profile);
         }
     }
 }
