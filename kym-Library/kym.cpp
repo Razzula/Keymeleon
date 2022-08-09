@@ -69,6 +69,9 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 			std::getline(configRef, line); //read line of file
 
 			int charOfLine = 0;
+			if (line[0] == '#') { //ignore comments
+				continue;
+			}
 			//extract keycode from line
 			for (charOfLine; charOfLine < line.length(); charOfLine++) {
 				char c = line[charOfLine];
@@ -83,8 +86,15 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 			for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
 				char subvalue[2];
 
-				subvalue[0] = line[charOfLine+=1];
-				subvalue[1] = line[charOfLine+=1];
+				if (charOfLine+2 < line.length()) {
+					subvalue[0] = line[charOfLine += 1];
+					subvalue[1] = line[charOfLine += 1];
+
+				}
+				else {
+					colour = {0xff, 0x00, 0x00};
+					break;
+				}
 
 				colour[valueOfColour] = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
 			}
@@ -101,7 +111,9 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 
 int setCustomLayout(char* configFileName, int profileToModify) {
 	auto layout = readConfigFromFile(configFileName); //get data from config file
+	//return layout.size();
 
+	profileToModify -= 1;
 	int res;
 
 	hid_device* handle = openKeyboard();
@@ -126,9 +138,9 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		}
 
 		// set keycode values
-		buf[1] = keyID[0];
+		buf[1] = keyID[0] + 2*profileToModify;
 		buf[5] = keyID[1];
-		buf[6] = keyID[2];
+		buf[6] = keyID[2] + 2*profileToModify;
 		// set colour values
 		buf[8] = element.second[0];
 		buf[9] = element.second[1];

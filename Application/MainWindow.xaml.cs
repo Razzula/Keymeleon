@@ -25,14 +25,26 @@ namespace Keymeleon
         private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
         private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
 
+        private string cachedApplication;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            //cache default config on profile1 (to minimise rewrites of onboard flash)
+            if (File.Exists("default.conf"))
+            {
+                int temp = NativeMethods.setCustomLayout("default.conf", 1);
+                Debug.WriteLine(temp);
+                temp = NativeMethods.setCustomLayout("default.conf", 2);
+                Debug.WriteLine(temp);
+            }
+
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
             NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
+        
+            //TODO; minimise to system tray
         }
 
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
@@ -51,8 +63,8 @@ namespace Keymeleon
                 focusedApplication = p.MainModule.FileVersionInfo.FileDescription.ToString();
             }
             catch (System.ComponentModel.Win32Exception)
-            // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this) //TODO add check for this
-            // if Keymeleon is not elevated, this exception will throw when trying to access an elevated program //TODO request that Keymeleon be elevated
+            // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this) //TODO; add check for this
+            // if Keymeleon is not elevated, this exception will throw when trying to access an elevated program //TODO; request that Keymeleon be elevated
             {
                 focusedApplication = p.MainWindowTitle.ToString();
             }
@@ -62,17 +74,21 @@ namespace Keymeleon
                 return;
             }
 
-            Debug.WriteLine(focusedApplication + ".conf");
+            Debug.WriteLine(focusedApplication);
 
             if (File.Exists(focusedApplication + ".conf"))
             {
-                int a = NativeMethods.setCustomLayout(focusedApplication + ".conf", 1);
-                Debug.WriteLine(a);
+                if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
+                {
+                    Debug.WriteLine(NativeMethods.setCustomLayout(focusedApplication + ".conf", 2));
+                    cachedApplication = focusedApplication;
+                }
+                NativeMethods.setActiveProfile(2);
+
             }
-            else if (File.Exists("default.conf"))
+            else
             {
-                int a = NativeMethods.setCustomLayout("default.conf", 1);
-                Debug.WriteLine(a);
+                NativeMethods.setActiveProfile(1); //switch to cached profile1
             }
         }
 
