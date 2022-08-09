@@ -1,4 +1,6 @@
-# keymeleon
+# Keymeleon
+## Test Branch
+This branch contains a console version of the C++ keyboard control code that compiles as a `.exe` as opposed to the main branch's `.dll`, allowing easier testing of functions.
 
 ### Prerequisites
 [hidapi](https://github.com/libusb/hidapi) is required. Static library builds for both `x86` and `x64` are included and can be found in:

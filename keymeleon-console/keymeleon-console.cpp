@@ -4,6 +4,8 @@
 #include <hidapi.h>
 #include <fstream>
 #include <Windows.h>
+#include <strstream>
+#include <istream>
 
 #include "keymeleon-console.h"
 
@@ -53,7 +55,7 @@ hid_device* openKeyboard() {
 	return handle;
 }
 
-int writeToKeyboard(hid_device *handle, uint8_t buf[], int length) {
+int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 
 	//write buf data to device at handle
 	int res = hid_write(handle, buf, length);
@@ -70,32 +72,44 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 
 	// open file
 	std::ifstream config;
+	std::istream& configRef = config;
 	config.open(filename);
 
 	// read file
 	if (config.is_open()) { // always check whether the file is open
 		while (config.good()) {
-			std::string keycode;
-			config >> keycode;
-			std::cout << keycode + " "; //DEBUG
+			std::string line;
+			std::string keycode = "";
 
-			char value[7]; //string of hex values, i.e ff0000 (r:0xff, g:0x00, b:0x00) 
-			config >> value;
+			std::getline(configRef, line); //read line of file
 
-			//split value into 3 seperate hex values for rgb
-			std::array<uint8_t, 3> colours;
-			for (int i = 0; i < 3; i++) {
-				char subvalue[] = { value[2 * i],value[2 * i + 1] }; //gets two chars from value
-
-				colours[i] = (uint8_t)strtol(subvalue, nullptr, 16); //converts strign hex to numerical
+			int charOfLine = 0;
+			//extract keycode from line
+			for (charOfLine; charOfLine < line.length(); charOfLine++) {
+				char c = line[charOfLine];
+				if (c == '\t') {
+					break;
+				}
+				keycode += c;
 			}
+			std::cout << keycode << '\t'; //DEBUG
 
-			std::cout << unsigned(colours[0]) << " "; //DEBUG
-			std::cout << unsigned(colours[1]) << " ";
-			std::cout << unsigned(colours[2]) << std::endl;
+			//split remainder of line into 3 seperate hex values for rgb
+			std::array<uint8_t, 3> colour;
+			for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
+				char subvalue[2];
+
+				subvalue[0] = line[charOfLine += 1];
+				subvalue[1] = line[charOfLine += 1];
+
+				colour[valueOfColour] = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
+			}
+			std::cout << unsigned(colour[0]) << " "; //DEBUG
+			std::cout << unsigned(colour[1]) << " ";
+			std::cout << unsigned(colour[2]) << std::endl;
 
 			//store in vector
-			layout.push_back(std::make_pair(keycode, colours));
+			layout.push_back(std::make_pair(keycode, colour));
 		}
 	}
 	config.close();
@@ -116,17 +130,17 @@ void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>>
 
 	res = writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
-	for (auto element :layout) { //for every key config in layout
+	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
 		std::array<uint8_t, 3> keyID;
 		try {
 			keyID = map_keycodes.at(element.first);
 		}
-		catch (std::out_of_range)  {
+		catch (std::out_of_range) {
 			std::cout << "Invalid keycode: " << element.first << std::endl;
 			continue;
 		}
-		
+
 		// set keycode values
 		buf[1] = keyID[0];
 		buf[5] = keyID[1];
