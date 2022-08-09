@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <hidapi.h>
+#include <fstream>
+#include <Windows.h>
 
 #include "keymeleon-console.h"
 
@@ -10,18 +12,38 @@ int main()
 	// Initialize the hidapi library
 	hid_init();
 
-	// this small section shows that inactive profiles can be altered
-	char a;
+	// open file
+	std::ifstream config;
+	config.open("test.conf");
 
-	setActiveProfile(3);
-	std::cin >> a;
-	
-	std::array<uint8_t, 3> colours = {0xff, 0x00, 0x00};
-	std::array<std::pair<std::string, std::array<uint8_t, 3>>, 1> layout = { std::make_pair("Esc", colours) };
-	setCustomLayout(layout);
-	std::cin >> a;
+	// read file
+	if (config.is_open()) { // always check whether the file is open
+		while (config.good()) {
+			std::string keycode;
+			config >> keycode;
+			std::cout << keycode + " "; //DEBUG
 
-	setActiveProfile(1);
+			char value[7]; //string of hex values, i.e ff0000 (r:0xff, g:0x00, b:0x00) 
+			config >> value;
+
+			//split value into 3 seperate hex values for rgb
+			std::array<uint8_t, 3> colours;
+			for (int i = 0; i < 3; i++) {
+				char subvalue[] = { value[2*i],value[2*i + 1] }; //gets two chars from value
+
+				colours[i] = (uint8_t) strtol(subvalue, nullptr, 16); //converts strign hex to numerical
+			}
+
+			std::cout << unsigned(colours[0]) << " "; //DEBUG
+			std::cout << unsigned(colours[1]) << " ";
+			std::cout << unsigned(colours[2]) << std::endl;
+
+			//apply colours to keycode
+			setCustomLayout({ std::make_pair(keycode, colours) });
+
+		}
+	}
+	config.close();
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -88,7 +110,15 @@ void setCustomLayout(std::array<std::pair<std::string, std::array<uint8_t, 3>>, 
 
 	for (auto element :layout) { //for every key config in layout
 		// search keycode map for key identifier
-		auto keyID = map_keycodes.at(element.first);
+		std::array<uint8_t, 3> keyID;
+		try {
+			keyID = map_keycodes.at(element.first);
+		}
+		catch (std::out_of_range)  {
+			std::cout << "Invalid keycode: " << element.first << std::endl;
+			continue;
+		}
+		
 		// set keycode values
 		buf[1] = keyID[0];
 		buf[5] = keyID[1];
@@ -102,7 +132,8 @@ void setCustomLayout(std::array<std::pair<std::string, std::array<uint8_t, 3>>, 
 		res = writeToKeyboard(handle, buf, 64);
 	}
 
-	res = writeToKeyboard(handle, data_end, 64); //tell device this end start of data
+	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	res = writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	hid_close(handle);
 }
