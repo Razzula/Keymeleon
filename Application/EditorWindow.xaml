@@ -7,13 +7,19 @@
         mc:Ignorable="d"
         Title="EditorWindow" Height="450" Width="800">
     <Grid>
-        <TextBox x:Name="rBox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Red" TextChanged="Text_Changed" Text="255"/>
-        <TextBox x:Name="gBox" HorizontalAlignment="Left" Margin="40,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Lime" TextChanged="Text_Changed" Text="255"/>
-        <TextBox x:Name="bBox" HorizontalAlignment="Left" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Blue" TextChanged="Text_Changed" Text="255"/>
-        
-        <Button x:Name="button_Esc" Content="Esc" HorizontalAlignment="Left" Margin="85,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
-        <Button x:Name="button_F1" Content="F1" HorizontalAlignment="Left" Margin="110,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
-        <Button x:Name="button_F2" Content="F2" HorizontalAlignment="Left" Margin="135,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
+        <TextBox x:Name="rBox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Red" TextChanged="TextChanged" Text="255"/>
+        <TextBox x:Name="gBox" HorizontalAlignment="Left" Margin="40,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Lime" TextChanged="TextChanged" Text="255"/>
+        <TextBox x:Name="bBox" HorizontalAlignment="Left" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Blue" TextChanged="TextChanged" Text="255"/>
+        <Rectangle x:Name="colourDisplay" HorizontalAlignment="Left" Height="50" Margin="10,33,0,0" Stroke="Black" VerticalAlignment="Top" Width="90"/>
+
+        <TextBox x:Name="configBox" HorizontalAlignment="Left" Margin="670,10,0,0" TextWrapping="Wrap" Text="default.conf" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="readBtn" Content="Load" HorizontalAlignment="Left" Margin="689,33,0,0" VerticalAlignment="Top" Width="36" Click="LoadConfig"/>
+        <Button x:Name="writeBtn" Content="Save" HorizontalAlignment="Left" Margin="730,33,0,0" VerticalAlignment="Top" Width="36" Click="SaveConfig"/>
+
+        <Button x:Name="button_Esc" Content="Esc" HorizontalAlignment="Left" Margin="85,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+        <Button x:Name="button_F1" Content="F1" HorizontalAlignment="Left" Margin="110,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+        <Button x:Name="button_F2" Content="F2" HorizontalAlignment="Left" Margin="135,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
 
     </Grid>
 </Window>

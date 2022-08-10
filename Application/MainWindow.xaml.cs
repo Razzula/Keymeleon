@@ -24,6 +24,7 @@ namespace Keymeleon
         NativeMethods.WinEventDelegate winEventProcDelegate;
         private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
         private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
+        System.IntPtr handle;
 
         private string cachedApplication;
 
@@ -33,6 +34,8 @@ namespace Keymeleon
             [DllImport("user32.dll")]
             public static extern System.IntPtr SetWinEventHook(uint eventMin, uint eventMax, System.IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
             public delegate void WinEventDelegate(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+            [DllImport("user32.dll")]
+            public static extern bool UnhookWinEvent(System.IntPtr hWinEventHook);
 
             [DllImport("user32.dll")]
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
@@ -58,7 +61,7 @@ namespace Keymeleon
 
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
-            NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
+            handle = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
         
             //TODO; minimise to system tray
         }
@@ -110,6 +113,7 @@ namespace Keymeleon
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes
             EditorWindow editor = new EditorWindow();
             editor.Show();
         }
