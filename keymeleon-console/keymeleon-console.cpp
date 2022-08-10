@@ -16,8 +16,15 @@ int main()
 	//setKeyColour((char*)"F3", 255, 255, 255, 1);
 
 	//emulate cs app
-	setCustomLayout((char*)"default.conf", 1);
-	setCustomLayout((char*)"default.conf", 2);
+	/*setCustomLayout((char*)"default.conf", 1);
+	std::cout << std::endl;
+	setCustomLayout((char*)"default.conf", 2);*/
+
+	//stress test
+	for (int i = 0; i < 10; i++) {
+		setCustomLayout((char*)"default.conf", 1);
+		setCustomLayout((char*)"null.conf", 1);
+	}
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -69,6 +76,7 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 		printf("Error: %ls\n", hid_error(handle));
 	}
 
+	hid_read_timeout(handle, buf, 64, 500); // this appears to have solved the errors caused in commit 2421730d3cb37a873360a470f1418cd1e67dcedd (6c332890fac98778751cff7a3ae36b25e47d32a9)
 	return res;
 }
 
@@ -182,10 +190,10 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		return res;
 	}
 
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
 	uint8_t buf[64];
 	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
-
-	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
@@ -208,13 +216,19 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		buf[10] = element.second[2];
 
 		// write key config to device
-		res += writeToKeyboard(handle, buf, 64);
-
-		std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;
+		//Sleep(10);
+		int tempRes = writeToKeyboard(handle, buf, 64);
+		if (tempRes == -1) {
+			hid_close(handle);
+			hid_exit();
+			return res-1;
+		}
+		res += tempRes;
+		//std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;//DEBUG
 	}
-
-	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	//Sleep(250); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
+	//Sleep(250);
 
 	hid_close(handle);
 	hid_exit();
