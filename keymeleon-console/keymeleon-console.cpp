@@ -1,11 +1,8 @@
 // keymeleon-console.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
 #include <iostream>
-#include <hidapi.h>
 #include <fstream>
 #include <Windows.h>
-#include <strstream>
-#include <istream>
 
 #include "keymeleon-console.h"
 
@@ -14,16 +11,24 @@ int main()
 	// Initialize the hidapi library
 	hid_init();
 
-	//apply colours from `test.conf` to device
-	setCustomLayout(readConfigFromFile("test.conf"));
+	////test functions work
+	//setCustomLayout((char*)"test.conf", 1);
+	//setKeyColour((char*)"F3", 255, 255, 255, 1);
+
+	//emulate cs app
+	setCustomLayout((char*)"default.conf", 1);
+	setCustomLayout((char*)"default.conf", 2);
 
 	// Finalize the hidapi library
 	hid_exit();
 	return 0;
 }
 
+
 hid_device* openKeyboard() {
 	std::string hid_path;
+
+	hid_init();
 
 	struct hid_device_info* devs, * cur_dev;
 	devs = hid_enumerate(0x0c45, 0x652f); //scan for devices matching VID and PID
@@ -67,13 +72,12 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 	return res;
 }
 
-std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(std::string filename) {
+std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(char* filename) {
 	std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout;
 
 	// open file
-	std::ifstream config;
+	std::ifstream config(filename);
 	std::istream& configRef = config;
-	config.open(filename);
 
 	// read file
 	if (config.is_open()) { // always check whether the file is open
@@ -84,6 +88,9 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 			std::getline(configRef, line); //read line of file
 
 			int charOfLine = 0;
+			if (line[0] == '#') { //ignore comments
+				continue;
+			}
 			//extract keycode from line
 			for (charOfLine; charOfLine < line.length(); charOfLine++) {
 				char c = line[charOfLine];
@@ -92,24 +99,28 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 				}
 				keycode += c;
 			}
-			std::cout << keycode << '\t'; //DEBUG
 
 			//split remainder of line into 3 seperate hex values for rgb
 			std::array<uint8_t, 3> colour;
 			for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
 				char subvalue[2];
 
-				subvalue[0] = line[charOfLine += 1];
-				subvalue[1] = line[charOfLine += 1];
+				if (charOfLine + 2 < line.length()) {
+					subvalue[0] = line[charOfLine += 1];
+					subvalue[1] = line[charOfLine += 1];
+
+				}
+				else {
+					colour = { 0xff, 0x00, 0x00 };
+					break;
+				}
 
 				colour[valueOfColour] = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
 			}
-			std::cout << unsigned(colour[0]) << " "; //DEBUG
-			std::cout << unsigned(colour[1]) << " ";
-			std::cout << unsigned(colour[2]) << std::endl;
 
 			//store in vector
 			layout.push_back(std::make_pair(keycode, colour));
+
 		}
 	}
 	config.close();
@@ -117,18 +128,64 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(s
 	return layout;
 }
 
-void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>> layout) {
-	int res;
+int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refactor! a lot of duplicate code between this and setCustomLayout()
+	profile -= 1;
+	int res = 0;
 
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return;
+		return -1;
+	}
+
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
+	std::array<uint8_t, 3> keyID;
+	try {
+		keyID = map_keycodes.at(keycode);
+	}
+	catch (std::out_of_range) {
+		return -1;
+	}
+
+	uint8_t buf[64];
+	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
+	// set keycode values
+	buf[1] = keyID[0] + 2 * profile;
+	buf[5] = keyID[1];
+	buf[6] = keyID[2] + 2 * profile;
+	// set colour values
+	buf[8] = r;
+	buf[9] = g;
+	buf[10] = b;
+
+	// write key config to device
+	res += writeToKeyboard(handle, buf, 64);
+
+	std::cout << keycode << " " << r << " " << g << " " << b << std::endl;
+
+	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
+
+	return res;
+
+}
+
+int setCustomLayout(char* configFileName, int profileToModify) {
+	auto layout = readConfigFromFile(configFileName); //get data from config file
+	//return layout.size();
+
+	profileToModify -= 1;
+	int res = 0;
+
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return res;
 	}
 
 	uint8_t buf[64];
 	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
 
-	res = writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
@@ -142,22 +199,26 @@ void setCustomLayout(std::vector<std::pair<std::string, std::array<uint8_t, 3>>>
 		}
 
 		// set keycode values
-		buf[1] = keyID[0];
+		buf[1] = keyID[0] + 2 * profileToModify;
 		buf[5] = keyID[1];
-		buf[6] = keyID[2];
+		buf[6] = keyID[2] + 2 * profileToModify;
 		// set colour values
 		buf[8] = element.second[0];
 		buf[9] = element.second[1];
 		buf[10] = element.second[2];
 
 		// write key config to device
-		res = writeToKeyboard(handle, buf, 64);
+		res += writeToKeyboard(handle, buf, 64);
+
+		std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;
 	}
 
 	Sleep(500); //slight delay, to ensure data tranmisisons have finished
-	res = writeToKeyboard(handle, data_end, 64); //tell device this end of data
+	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	hid_close(handle);
+	hid_exit();
+	return res;
 }
 
 int setActiveProfile(int profile) {
@@ -191,5 +252,6 @@ int setActiveProfile(int profile) {
 	res = writeToKeyboard(handle, buf, 64);
 
 	hid_close(handle);
+	hid_exit();
 	return res;
 }
