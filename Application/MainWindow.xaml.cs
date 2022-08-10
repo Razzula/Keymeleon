@@ -53,10 +53,8 @@ namespace Keymeleon
             //cache default config on profile1 (to minimise rewrites of onboard flash)
             if (File.Exists("default.conf"))
             {
-                int temp = NativeMethods.setCustomLayout("default.conf", 1);
-                Debug.WriteLine(temp);
-                temp = NativeMethods.setCustomLayout("default.conf", 2);
-                Debug.WriteLine(temp);
+                Debug.WriteLine(NativeMethods.setCustomLayout("default.conf", 1));
+                Debug.WriteLine(NativeMethods.setCustomLayout("default.conf", 2));
             }
 
             //setup method to handle events (change of focus)

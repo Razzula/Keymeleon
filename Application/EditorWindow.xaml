@@ -12,14 +12,124 @@
         <TextBox x:Name="bBox" HorizontalAlignment="Left" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Blue" TextChanged="TextChanged" Text="255"/>
         <Rectangle x:Name="colourDisplay" HorizontalAlignment="Left" Height="50" Margin="10,33,0,0" Stroke="Black" VerticalAlignment="Top" Width="90"/>
 
-        <TextBox x:Name="configBox" HorizontalAlignment="Left" Margin="670,10,0,0" TextWrapping="Wrap" Text="default.conf" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="readBtn" Content="Load" HorizontalAlignment="Left" Margin="689,33,0,0" VerticalAlignment="Top" Width="36" Click="LoadConfig"/>
-        <Button x:Name="writeBtn" Content="Save" HorizontalAlignment="Left" Margin="730,33,0,0" VerticalAlignment="Top" Width="36" Click="SaveConfig"/>
+        <TextBox x:Name="configBox" Margin="0,10,10,0" TextWrapping="Wrap" Text="default.conf" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120"/>
+        <Button x:Name="readBtn" Content="Load" Margin="0,33,75,0" VerticalAlignment="Top" Click="LoadConfig" HorizontalAlignment="Right" Width="36"/>
+        <Button x:Name="writeBtn" Content="Save" Margin="0,33,34,0" VerticalAlignment="Top" Click="SaveConfig" HorizontalAlignment="Right" Width="36"/>
 
-        <Button x:Name="button_Esc" Content="Esc" HorizontalAlignment="Left" Margin="85,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
-        <Button x:Name="button_F1" Content="F1" HorizontalAlignment="Left" Margin="110,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
-        <Button x:Name="button_F2" Content="F2" HorizontalAlignment="Left" Margin="135,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+        <Grid Margin="0,88,0,0">
+            <Button x:Name="Esc"   Content="Esc" HorizontalAlignment="Left" Margin="85,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F1"    Content="F1" HorizontalAlignment="Left" Margin="135,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F2"    Content="F2" HorizontalAlignment="Left" Margin="160,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F3"    Content="F3" HorizontalAlignment="Left" Margin="185,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F4"    Content="F4" HorizontalAlignment="Left" Margin="210,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F5"    Content="F5" HorizontalAlignment="Left" Margin="250,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F6"    Content="F6" HorizontalAlignment="Left" Margin="275,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F7"    Content="F7" HorizontalAlignment="Left" Margin="300,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F8"    Content="F8" HorizontalAlignment="Left" Margin="325,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F9"    Content="F9" HorizontalAlignment="Left" Margin="360,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F10"   Content="F10" HorizontalAlignment="Left" Margin="385,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F11"   Content="F11" HorizontalAlignment="Left" Margin="410,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="F12"   Content="F12" HorizontalAlignment="Left" Margin="435,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="PrtSc" Content="Prtsc" HorizontalAlignment="Left" Margin="482,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="ScrLk" Content="Scrlk" HorizontalAlignment="Left" Margin="507,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Pause" Content="Pause" HorizontalAlignment="Left" Margin="531,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
 
+            <Button x:Name="Tilde"     Content="`" HorizontalAlignment="Left" Margin="85,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_1"        Content="1" HorizontalAlignment="Left" Margin="110,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_2"        Content="2" HorizontalAlignment="Left" Margin="135,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_3"        Content="3" HorizontalAlignment="Left" Margin="160,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_4"        Content="4" HorizontalAlignment="Left" Margin="185,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_5"        Content="5" HorizontalAlignment="Left" Margin="210,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_6"        Content="6" HorizontalAlignment="Left" Margin="235,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_7"        Content="7" HorizontalAlignment="Left" Margin="260,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_8"        Content="8" HorizontalAlignment="Left" Margin="285,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_9"        Content="9" HorizontalAlignment="Left" Margin="310,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="_0"        Content="0" HorizontalAlignment="Left" Margin="335,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Minus"     Content="-" HorizontalAlignment="Left" Margin="360,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Equals"    Content="=" HorizontalAlignment="Left" Margin="385,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Backspace" Content="Backspace" HorizontalAlignment="Left" Margin="410,148,0,0" VerticalAlignment="Top" Width="45" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Insert"    Content="Ins" HorizontalAlignment="Left" Margin="482,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Home"      Content="Home" HorizontalAlignment="Left" Margin="506,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="PgUp"      Content="Pgup" HorizontalAlignment="Left" Margin="531,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="Tab"      Content="Tab" HorizontalAlignment="Left" Margin="85,173,0,0" VerticalAlignment="Top" Width="30" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="q"        Content="Q" HorizontalAlignment="Left" Margin="120,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="w"        Content="W" HorizontalAlignment="Left" Margin="145,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="e"        Content="E" HorizontalAlignment="Left" Margin="170,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="r"        Content="R" HorizontalAlignment="Left" Margin="195,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="t"        Content="T" HorizontalAlignment="Left" Margin="220,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="y"        Content="Y" HorizontalAlignment="Left" Margin="245,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="u"        Content="U" HorizontalAlignment="Left" Margin="270,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="i"        Content="I" HorizontalAlignment="Left" Margin="295,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="o"        Content="O" HorizontalAlignment="Left" Margin="320,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="p"        Content="P" HorizontalAlignment="Left" Margin="345,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="BracketL" Content="[" HorizontalAlignment="Left" Margin="370,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="BracketR" Content="]" HorizontalAlignment="Left" Margin="395,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Enter"    Content="Enter" HorizontalAlignment="Left" Margin="420,173,0,0" VerticalAlignment="Top" Width="35" Height="45" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Delete"      Content="Del" HorizontalAlignment="Left" Margin="482,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="End"      Content="End" HorizontalAlignment="Left" Margin="506,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="PgDn"     Content="Pgdn" HorizontalAlignment="Left" Margin="531,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="CapsLock"   Content="Caps" HorizontalAlignment="Left" Margin="85,198,0,0" VerticalAlignment="Top" Width="38" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="a"          Content="A" HorizontalAlignment="Left" Margin="130,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="s"          Content="S" HorizontalAlignment="Left" Margin="155,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="d"          Content="D" HorizontalAlignment="Left" Margin="180,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="f"          Content="F" HorizontalAlignment="Left" Margin="205,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="g"          Content="G" HorizontalAlignment="Left" Margin="230,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="h"          Content="H" HorizontalAlignment="Left" Margin="255,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="j"          Content="J" HorizontalAlignment="Left" Margin="280,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="k"          Content="K" HorizontalAlignment="Left" Margin="305,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="l"          Content="L" HorizontalAlignment="Left" Margin="330,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Semicolon"  Content=";" HorizontalAlignment="Left" Margin="355,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Apostrophe" Content="'" HorizontalAlignment="Left" Margin="380,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Hash"       Content="#" HorizontalAlignment="Left" Margin="405,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="LShift"    Content="Shift" HorizontalAlignment="Left" Margin="85,223,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Backslash" Content="\" HorizontalAlignment="Left" Margin="120,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="z"         Content="Z" HorizontalAlignment="Left" Margin="145,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="x"         Content="X" HorizontalAlignment="Left" Margin="170,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="c"         Content="C" HorizontalAlignment="Left" Margin="195,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="v"         Content="V" HorizontalAlignment="Left" Margin="220,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="b"         Content="B" HorizontalAlignment="Left" Margin="245,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="n"         Content="N" HorizontalAlignment="Left" Margin="270,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="m"         Content="M" HorizontalAlignment="Left" Margin="295,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Comma"     Content="," HorizontalAlignment="Left" Margin="320,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Period"    Content="." HorizontalAlignment="Left" Margin="345,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Slash"     Content="/" HorizontalAlignment="Left" Margin="370,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="RShift"    Content="Shift" HorizontalAlignment="Left" Margin="395,223,0,0" VerticalAlignment="Top" Width="60" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="LCtrl" Content="Ctrl" HorizontalAlignment="Left" Margin="85,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Super" Content="Super" HorizontalAlignment="Left" Margin="118,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="LAlt"  Content="Alt" HorizontalAlignment="Left" Margin="151,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Space" Content="Space" HorizontalAlignment="Left" Margin="184,248,0,0" VerticalAlignment="Top" Width="139" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="RAlt"  Content="Alt Gr" HorizontalAlignment="Left" Margin="328,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Fn"    Content="Fn" HorizontalAlignment="Left" Margin="361,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Menu"  Content="Menu" HorizontalAlignment="Left" Margin="394,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="RCtrl" Content="Ctrl" HorizontalAlignment="Left" Margin="427,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="Up"    Content="Up" HorizontalAlignment="Left" Margin="506,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Left"  Content="Left" HorizontalAlignment="Left" Margin="482,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Down"  Content="Down" HorizontalAlignment="Left" Margin="506,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Right" Content="Right" HorizontalAlignment="Left" Margin="531,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+
+            <Button x:Name="Num_Lock"     Content="Num" HorizontalAlignment="Left" Margin="579,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Slash"    Content="/" HorizontalAlignment="Left" Margin="604,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Asterisk" Content="*" HorizontalAlignment="Left" Margin="629,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Minus"    Content="-" HorizontalAlignment="Left" Margin="654,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_7"        Content="7" HorizontalAlignment="Left" Margin="579,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_8"        Content="8" HorizontalAlignment="Left" Margin="604,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_9"        Content="9" HorizontalAlignment="Left" Margin="629,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Plus"     Content="+" HorizontalAlignment="Left" Margin="654,173,0,0" VerticalAlignment="Top" Width="20" Height="45" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_4"        Content="4" HorizontalAlignment="Left" Margin="579,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_5"        Content="5" HorizontalAlignment="Left" Margin="604,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_6"        Content="6" HorizontalAlignment="Left" Margin="629,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_1"        Content="1" HorizontalAlignment="Left" Margin="579,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_2"        Content="2" HorizontalAlignment="Left" Margin="604,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_3"        Content="3" HorizontalAlignment="Left" Margin="629,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Enter"    Content="Enter" HorizontalAlignment="Left" Margin="654,223,0,0" VerticalAlignment="Top" Width="20" Height="45" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_0"        Content="0" HorizontalAlignment="Left" Margin="579,248,0,0" VerticalAlignment="Top" Width="45" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+            <Button x:Name="Num_Period"   Content="." HorizontalAlignment="Left" Margin="629,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Loaded="ButtonLoaded" Click="ButtonClicked"/>
+        </Grid>
 
     </Grid>
 </Window>

@@ -35,8 +35,8 @@ namespace Keymeleon
 
         public EditorWindow()
         {
-            LoadConfig("default.conf", defaultState); //TEMP
             InitializeComponent();
+            LoadConfig("default.conf", defaultState); //TEMP
         }
 
         private void LoadConfig(string fileName, Dictionary<string, int[]> state)
@@ -72,8 +72,7 @@ namespace Keymeleon
                 }
                 //read from line
                 string[] data = line.Split('\t');
-                Debug.Write(data[0]+" ");
-                Debug.WriteLine(data[1]);
+                //Debug.Write(data[0]+" "); Debug.WriteLine(data[1]);//DEBUG
 
                 //set value in dictionary
                 int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
@@ -81,7 +80,11 @@ namespace Keymeleon
                 int b = Convert.ToInt32(data[1].Substring(4, 2), 16);
                 state.Add(data[0], new[] { r, g, b });
 
-                var test = (Button) this.FindName("button_" + data[0]);
+                var test = (Button) this.FindName(data[0]);
+                if (test == null)
+                {
+                    test = (Button)this.FindName("_"+data[0]);
+                }
 
                 if (test != null)
                 {
@@ -93,6 +96,7 @@ namespace Keymeleon
             }
 
             //display config on keyboard
+            Debug.WriteLine(fileName);//DEBUG
             Debug.WriteLine(NativeMethods.setCustomLayout(fileName, 1));
             NativeMethods.setActiveProfile(1);
         }
@@ -140,11 +144,19 @@ namespace Keymeleon
 
         private void ButtonLoaded(object sender, RoutedEventArgs e)
         {
-            var keycode = (e.Source as Button).Content.ToString();
+            var keycode = (e.Source as Button).Name.ToString();
+            if (keycode[0].Equals('_'))
+            {
+                keycode = keycode.Substring(1);
+            }
             //show colour in UI
             if (defaultState.ContainsKey(keycode))
             {
                 var values = defaultState[keycode];
+                if (values[0] == -1 || values[1] == -1 || values[2] == -1)
+                {
+                    return;
+                }
                 Color colour = Color.FromRgb(Convert.ToByte(values[0]), Convert.ToByte(values[1]), Convert.ToByte(values[2]));
                 (e.Source as Button).Foreground = new SolidColorBrush(colour);
             }
@@ -161,8 +173,11 @@ namespace Keymeleon
 
         private void ButtonClicked(object sender, RoutedEventArgs e)
         {
-            //get keycode
-            var keycode = (e.Source as Button).Content.ToString();
+            string keycode = (e.Source as Button).Name.ToString();
+            if (keycode[0].Equals('_'))
+            {
+                keycode = keycode.Substring(1);
+            }
             if (rBox.Text.Equals("")) { rBox.Text = "0"; }
             if (gBox.Text.Equals("")) { gBox.Text = "0"; } //simple validation
             if (bBox.Text.Equals("")) { bBox.Text = "0"; }
@@ -170,13 +185,13 @@ namespace Keymeleon
             int r = Int32.Parse(rBox.Text);
             int g = Int32.Parse(gBox.Text);
             int b = Int32.Parse(bBox.Text);
-            Debug.WriteLine(keycode + " "+r+" "+g+" "+b); //DEBUG
+            //Debug.WriteLine(keycode + " "+r+" "+g+" "+b);//DEBUG
 
             keyboardState[keycode] = new[] { r, g, b };
 
             //write to device
             int temp = NativeMethods.setKeyColour(keycode, r, g, b, 1);
-            Debug.WriteLine(temp);
+            Debug.WriteLine(NativeMethods.setKeyColour(keycode, r, g, b, 1));
 
             if (temp == 192) //successful
             {

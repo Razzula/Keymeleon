@@ -158,7 +158,7 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return -1;
+		return res;
 	}
 
 	uint8_t buf[64];
