@@ -1,7 +1,4 @@
 # Keymeleon
-```diff
-- The program is currently very unstable, stopping the device from responding to both this application, and the offical software. However this is non-permanent and can be fixed by a system restart -
-```
 An adaptive keyboard RGB controller that changes the keyboard's apperance depending on which software is in focus.
 
 ## Overview

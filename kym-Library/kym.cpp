@@ -50,6 +50,7 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 		printf("Error: %ls\n", hid_error(handle));
 	}
 
+	hid_read_timeout(handle, buf, 64, 500); // this appears to have solved the errors caused in commit 2421730d3cb37a873360a470f1418cd1e67dcedd
 	return res;
 }
 
@@ -142,11 +143,10 @@ int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refa
 	// write key config to device
 	res += writeToKeyboard(handle, buf, 64);
 
-	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	//Sleep(500); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	return res;
-
 }
 
 int setCustomLayout(char* configFileName, int profileToModify) {
@@ -187,11 +187,18 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		buf[10] = element.second[2];
 
 		// write key config to device
-		res += writeToKeyboard(handle, buf, 64);
+		//Sleep(10);
+		int tempRes = writeToKeyboard(handle, buf, 64);
+		if (tempRes == -1) {
+			hid_close(handle);
+			hid_exit();
+			return res - 1;
+		}
+		res += tempRes;
 	}
-
-	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	Sleep(250); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
+	//Sleep(250);
 
 	hid_close(handle);
 	hid_exit();
