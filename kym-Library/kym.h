@@ -13,6 +13,7 @@
 #define KYM_TEST_API __declspec(dllimport)
 #endif
 
+extern "C" KYM_TEST_API int setKeyColour(char* keycode, int r, int g, int b, int profile);
 extern "C" KYM_TEST_API int setCustomLayout(char* configFileName, int profileToModify);
 extern "C" KYM_TEST_API int setActiveProfile(int profile);
 

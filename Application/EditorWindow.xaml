@@ -1,0 +1,19 @@
+﻿<Window x:Class="Keymeleon.EditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Keymeleon"
+        mc:Ignorable="d"
+        Title="EditorWindow" Height="450" Width="800">
+    <Grid>
+        <TextBox x:Name="rBox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Red" TextChanged="Text_Changed" Text="255"/>
+        <TextBox x:Name="gBox" HorizontalAlignment="Left" Margin="40,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Lime" TextChanged="Text_Changed" Text="255"/>
+        <TextBox x:Name="bBox" HorizontalAlignment="Left" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Blue" TextChanged="Text_Changed" Text="255"/>
+        
+        <Button x:Name="button_Esc" Content="Esc" HorizontalAlignment="Left" Margin="85,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
+        <Button x:Name="button_F1" Content="F1" HorizontalAlignment="Left" Margin="110,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
+        <Button x:Name="button_F2" Content="F2" HorizontalAlignment="Left" Margin="135,123,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="Button_Click"/>
+
+    </Grid>
+</Window>

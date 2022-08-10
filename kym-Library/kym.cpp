@@ -109,12 +109,52 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 	return layout;
 }
 
+int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refactor! a lot of duplicate code between this and setCustomLayout()
+	profile -= 1;
+	int res = 0;
+	
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return -1;
+	} 
+	
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
+	std::array<uint8_t, 3> keyID;
+	try {
+		keyID = map_keycodes.at(keycode);
+	}
+	catch (std::out_of_range) {
+		return -1;
+	}
+
+	uint8_t buf[64];
+	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
+	// set keycode values
+	buf[1] = keyID[0] + 2 * profile;
+	buf[5] = keyID[1];
+	buf[6] = keyID[2] + 2 * profile;
+	// set colour values
+	buf[8] = r;
+	buf[9] = g;
+	buf[10] = b;
+
+	// write key config to device
+	res += writeToKeyboard(handle, buf, 64);
+
+	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
+
+	return res;
+
+}
+
 int setCustomLayout(char* configFileName, int profileToModify) {
 	auto layout = readConfigFromFile(configFileName); //get data from config file
 	//return layout.size();
 
 	profileToModify -= 1;
-	int res;
+	int res = 0;
 
 	hid_device* handle = openKeyboard();
 	if (!handle) {
@@ -124,7 +164,7 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 	uint8_t buf[64];
 	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
 
-	res = writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
@@ -147,11 +187,11 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		buf[10] = element.second[2];
 
 		// write key config to device
-		res = writeToKeyboard(handle, buf, 64);
+		res += writeToKeyboard(handle, buf, 64);
 	}
 
 	Sleep(500); //slight delay, to ensure data tranmisisons have finished
-	res = writeToKeyboard(handle, data_end, 64); //tell device this end of data
+	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	hid_close(handle);
 	hid_exit();

@@ -27,6 +27,22 @@ namespace Keymeleon
 
         private string cachedApplication;
 
+        static class NativeMethods
+        {
+
+            [DllImport("user32.dll")]
+            public static extern System.IntPtr SetWinEventHook(uint eventMin, uint eventMax, System.IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+            public delegate void WinEventDelegate(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+            [DllImport("user32.dll")]
+            public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
+
+            [DllImport("kym.dll")]
+            public static extern int setCustomLayout(string configFileName, int profileToModify);
+            [DllImport("kym.dll")]
+            public static extern int setActiveProfile(int profile);
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -92,20 +108,11 @@ namespace Keymeleon
             }
         }
 
-        static class NativeMethods
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-
-            [DllImport("user32.dll")]
-            public static extern System.IntPtr SetWinEventHook(uint eventMin, uint eventMax, System.IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
-            public delegate void WinEventDelegate(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-
-            [DllImport("user32.dll")]
-            public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
-
-            [DllImport("kym.dll")]
-            public static extern int setCustomLayout(string configFileName, int profileToModify);
-            [DllImport("kym.dll")]
-            public static extern int setActiveProfile(int profile);
+            EditorWindow editor = new EditorWindow();
+            editor.Show();
         }
+
     }
 }
