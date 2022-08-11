@@ -41,9 +41,11 @@ namespace Keymeleon
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
 
             [DllImport("kym.dll")]
-            public static extern int setCustomLayout(string configFileName, int profileToModify);
+            public static extern int SetLayoutBase(string configFileName, int profileToModify);
             [DllImport("kym.dll")]
-            public static extern int setActiveProfile(int profile);
+            public static extern int ApplyLayoutLayer(string configFileName, int profileToModify);
+            [DllImport("kym.dll")]
+            public static extern int SetActiveProfile(int profile);
         }
 
         public MainWindow()
@@ -51,10 +53,10 @@ namespace Keymeleon
             InitializeComponent();
 
             //cache default config on profile1 (to minimise rewrites of onboard flash)
-            if (File.Exists("default.conf"))
+            if (File.Exists("default.base"))
             {
-                Debug.WriteLine(NativeMethods.setCustomLayout("default.conf", 1));
-                Debug.WriteLine(NativeMethods.setCustomLayout("default.conf", 2));
+                Debug.WriteLine(NativeMethods.SetLayoutBase("default.base", 1));
+                Debug.WriteLine(NativeMethods.SetLayoutBase("default.base", 2));
             }
 
             //setup method to handle events (change of focus)
@@ -97,15 +99,15 @@ namespace Keymeleon
             {
                 if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
                 {
-                    Debug.WriteLine(NativeMethods.setCustomLayout(focusedApplication + ".conf", 2));
+                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2));
                     cachedApplication = focusedApplication;
                 }
-                NativeMethods.setActiveProfile(2);
+                NativeMethods.SetActiveProfile(2);
 
             }
             else
             {
-                NativeMethods.setActiveProfile(1); //switch to cached profile1
+                NativeMethods.SetActiveProfile(1); //switch to cached profile1
             }
         }
 

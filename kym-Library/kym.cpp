@@ -50,7 +50,7 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 		printf("Error: %ls\n", hid_error(handle));
 	}
 
-	hid_read_timeout(handle, buf, 64, 500); // this appears to have solved the errors caused in commit 2421730d3cb37a873360a470f1418cd1e67dcedd
+	hid_read_timeout(handle, buf, 64, 500); // this appears to have solved the errors caused in commit 2421730d3cb37a873360a470f1418cd1e67dcedd (6c332890fac98778751cff7a3ae36b25e47d32a9)
 	return res;
 }
 
@@ -87,13 +87,13 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 			for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
 				char subvalue[2];
 
-				if (charOfLine+2 < line.length()) {
+				if (charOfLine + 2 < line.length()) {
 					subvalue[0] = line[charOfLine += 1];
 					subvalue[1] = line[charOfLine += 1];
 
 				}
 				else {
-					colour = {0xff, 0x00, 0x00};
+					colour = { 0xff, 0x00, 0x00 };
 					break;
 				}
 
@@ -110,15 +110,15 @@ std::vector<std::pair<std::string, std::array<uint8_t, 3>>> readConfigFromFile(c
 	return layout;
 }
 
-int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refactor! a lot of duplicate code between this and setCustomLayout()
+int SetKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refactor! a lot of duplicate code between this and setCustomLayout()
 	profile -= 1;
 	int res = 0;
-	
+
 	hid_device* handle = openKeyboard();
 	if (!handle) {
 		return -1;
-	} 
-	
+	}
+
 	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	std::array<uint8_t, 3> keyID;
@@ -143,13 +143,16 @@ int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refa
 	// write key config to device
 	res += writeToKeyboard(handle, buf, 64);
 
-	//Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	//std::cout << keycode << " " << r << " " << g << " " << b << std::endl;
+
+	Sleep(500); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	return res;
+
 }
 
-int setCustomLayout(char* configFileName, int profileToModify) {
+int ApplyLayoutLayer(char* configFileName, int profileToModify) {
 	auto layout = readConfigFromFile(configFileName); //get data from config file
 	//return layout.size();
 
@@ -161,10 +164,10 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		return res;
 	}
 
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
 	uint8_t buf[64];
 	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
-
-	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
@@ -178,9 +181,9 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 		}
 
 		// set keycode values
-		buf[1] = keyID[0] + 2*profileToModify;
+		buf[1] = keyID[0] + 2 * profileToModify;
 		buf[5] = keyID[1];
-		buf[6] = keyID[2] + 2*profileToModify;
+		buf[6] = keyID[2] + 2 * profileToModify;
 		// set colour values
 		buf[8] = element.second[0];
 		buf[9] = element.second[1];
@@ -195,8 +198,9 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 			return res - 1;
 		}
 		res += tempRes;
+		//std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;//DEBUG
 	}
-	Sleep(250); //slight delay, to ensure data tranmisisons have finished
+	//Sleep(250); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 	//Sleep(250);
 
@@ -205,12 +209,12 @@ int setCustomLayout(char* configFileName, int profileToModify) {
 	return res;
 }
 
-int setActiveProfile(int profile) {
+int SetActiveProfile(int profile) {
 
 	int res;
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return 1;
+		return -1;
 	}
 
 	uint8_t buf[64];
@@ -237,5 +241,89 @@ int setActiveProfile(int profile) {
 
 	hid_close(handle);
 	hid_exit();
+	return res;
+}
+
+int SetLayoutBase(char* fileName, int profile) {
+
+	profile--;
+
+	int res = 0;
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return -1;
+	}
+
+	int rowHeaders[] = { 3, 54, 105, 156, 207, 2, 59 };
+	int rowHeaderPtr = 0;
+
+	// open file
+	std::ifstream config(fileName);
+	std::istream& configRef = config;
+
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
+	// read file
+	if (config.is_open()) { // always check whether the file is open
+
+		while (config.good()) {
+			std::string line;
+			std::string colourCode = "";
+			std::vector<uint8_t> colourCodes; //TODO remove vector and store data directly in buf
+
+			std::getline(configRef, line); //read line of file
+
+			int charOfLine = 0;
+			if (line[0] == '#') { //ignore comments
+				continue;
+			}
+
+			//extract keycode from line
+			for (charOfLine; charOfLine < line.length(); charOfLine++) {
+				char c = line[charOfLine];
+
+				if (c != ' ') {
+					colourCode += c;
+				}
+				else {
+					//split colourCode into 3 seperate hex values for rgb
+					std::array<uint8_t, 3> colour;
+					for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
+						char subvalue[2];
+						subvalue[0] = line[charOfLine += 1];
+						subvalue[1] = line[charOfLine += 1];
+
+						uint8_t colour = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
+						//store in vector
+						colourCodes.push_back(colour);
+					}
+				}
+			}
+
+			uint8_t buf[64];
+			std::copy(std::begin(data_row), std::end(data_row), std::begin(buf)); //get data signal for switch profile
+
+			buf[5] = rowHeaders[rowHeaderPtr]; //start of row
+			if (rowHeaderPtr < 5) {
+				buf[6] = profile * 2; //profile
+			}
+			else {
+				buf[6] = profile * 2 + 1; //profile overflow
+			}
+
+			//fill buf
+			for (int i = 0; i < colourCodes.size(); i++) {
+				buf[8 + i] = colourCodes[i];
+			}
+
+			res += writeToKeyboard(handle, buf, 64);
+
+			rowHeaderPtr += 1;
+		}
+	}
+	config.close();
+
+	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
+
 	return res;
 }
