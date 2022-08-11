@@ -15,16 +15,20 @@ int main()
 	//setCustomLayout((char*)"test.conf", 1);
 	//setKeyColour((char*)"F3", 255, 255, 255, 1);
 
-	//emulate cs app
+	// //emulate cs app
 	/*setCustomLayout((char*)"default.conf", 1);
 	std::cout << std::endl;
 	setCustomLayout((char*)"default.conf", 2);*/
 
-	//stress test
-	for (int i = 0; i < 10; i++) {
-		setCustomLayout((char*)"default.conf", 1);
-		setCustomLayout((char*)"null.conf", 1);
-	}
+	// //stress test
+	//for (int i = 0; i < 10; i++) {
+	//	setCustomLayout((char*)"default.conf", 1);
+	//	setCustomLayout((char*)"null.conf", 1);
+	//}
+
+	//test
+	test();
+	setActiveProfile(1);
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -268,4 +272,47 @@ int setActiveProfile(int profile) {
 	hid_close(handle);
 	hid_exit();
 	return res;
+}
+
+void test() {
+	#include "keymeleon-console.h" //EXCLUDE THIS FROM DLL
+
+	int res = 0;
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return;
+	}
+
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+
+	uint8_t buf[64];
+	std::copy(std::begin(data_test), std::end(data_test), std::begin(buf)); //get data signal for switch profile
+
+	// //testing
+	//for (int i = 3; i < 256; i+=3) {
+	//	buf[5] = i;
+	//	res += writeToKeyboard(handle, buf, 64);
+	//	//std::cin.ignore();
+	//}
+	//buf[6] = 0x01; //change to second half of profile1
+	//buf[5] = 59;
+	//res += writeToKeyboard(handle, buf, 64);
+
+	//map each row (7)
+	int test[] = {3, 54, 105, 156, 207};
+	for (int i: test) {
+		buf[5] = i;
+		res += writeToKeyboard(handle, buf, 64);
+		std::cout << i << std::endl;
+	}
+
+	buf[6] = 0x01; //change to second half of profile1
+	int test2[] = { 02, 59 };
+	for (int i : test2) {
+		buf[5] = i;
+		res += writeToKeyboard(handle, buf, 64);
+		std::cout << i << std::endl;
+	}
+
+	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
 }
