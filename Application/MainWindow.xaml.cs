@@ -99,11 +99,10 @@ namespace Keymeleon
             {
                 if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
                 {
-                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2));
+                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2)); //TODO; revert changes of previous layer
                     cachedApplication = focusedApplication;
                 }
                 NativeMethods.SetActiveProfile(2);
-
             }
             else
             {
@@ -113,7 +112,7 @@ namespace Keymeleon
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes
+            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes //TODO; undo this upon closing editor
             EditorWindow editor = new EditorWindow();
             editor.Show();
         }

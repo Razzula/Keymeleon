@@ -125,7 +125,6 @@ namespace Keymeleon
 
         private void LoadLayerConfig(string fileName, Dictionary<string, int[]> state)
         {
-            //TODO; remove current state from UI
             //undo previous layer
             foreach (var item in keyboardState)
             {
