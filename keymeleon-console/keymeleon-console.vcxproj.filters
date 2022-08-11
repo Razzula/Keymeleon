@@ -29,5 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="test.conf" />
+    <None Include="null.base" />
   </ItemGroup>
 </Project>

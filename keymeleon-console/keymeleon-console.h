@@ -7,7 +7,8 @@
 #include <hidapi.h>
 
 extern int setKeyColour(char* keycode, int r, int g, int b, int profile);
-extern int setCustomLayout(char* configFileName, int profileToModify);
+extern int setLayoutBase(char* configFileName, int profileToModify);
+extern int applyLayoutLayer(char* configFileName, int profileToModify);
 extern int setActiveProfile(int profile);
 
 extern std::map<std::string, std::array<uint8_t, 3>> map_keycodes;

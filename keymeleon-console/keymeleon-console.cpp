@@ -27,8 +27,9 @@ int main()
 	//}
 
 	//test
-	test();
 	setActiveProfile(1);
+	setLayoutBase((char*)"null.base", 1); //turn off all LEDs
+	setLayoutBase((char*)"test.base", 1);
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -182,7 +183,7 @@ int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refa
 
 }
 
-int setCustomLayout(char* configFileName, int profileToModify) {
+int applyLayoutLayer(char* configFileName, int profileToModify) {
 	auto layout = readConfigFromFile(configFileName); //get data from config file
 	//return layout.size();
 
@@ -244,7 +245,7 @@ int setActiveProfile(int profile) {
 	int res;
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return 1;
+		return -1;
 	}
 
 	uint8_t buf[64];
@@ -274,45 +275,87 @@ int setActiveProfile(int profile) {
 	return res;
 }
 
-void test() {
-	#include "keymeleon-console.h" //EXCLUDE THIS FROM DLL
+int setLayoutBase(char* fileName, int profile) {
 
+	profile--;
+	
 	int res = 0;
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return;
+		return -1;
 	}
+
+	int rowHeaders[] = { 3, 54, 105, 156, 207, 2, 59 };
+	int rowHeaderPtr = 0;
+
+	// open file
+	std::ifstream config(fileName);
+	std::istream& configRef = config;
 
 	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
-	uint8_t buf[64];
-	std::copy(std::begin(data_test), std::end(data_test), std::begin(buf)); //get data signal for switch profile
+	// read file
+	if (config.is_open()) { // always check whether the file is open
+		
+		while (config.good()) {
+			std::string line;
+			std::string colourCode = "";
+			std::vector<uint8_t> colourCodes; //TODO remove vector and store data directly in buf
 
-	// //testing
-	//for (int i = 3; i < 256; i+=3) {
-	//	buf[5] = i;
-	//	res += writeToKeyboard(handle, buf, 64);
-	//	//std::cin.ignore();
-	//}
-	//buf[6] = 0x01; //change to second half of profile1
-	//buf[5] = 59;
-	//res += writeToKeyboard(handle, buf, 64);
+			std::getline(configRef, line); //read line of file
 
-	//map each row (7)
-	int test[] = {3, 54, 105, 156, 207};
-	for (int i: test) {
-		buf[5] = i;
-		res += writeToKeyboard(handle, buf, 64);
-		std::cout << i << std::endl;
+			int charOfLine = 0;
+			if (line[0] == '#') { //ignore comments
+				continue;
+			}
+
+			//extract keycode from line
+			for (charOfLine; charOfLine < line.length(); charOfLine++) {
+				char c = line[charOfLine];
+
+				if (c != ' ') {
+					colourCode += c;
+				}
+				else {
+					//split colourCode into 3 seperate hex values for rgb
+					std::array<uint8_t, 3> colour;
+					for (int valueOfColour = 0; valueOfColour < 3; valueOfColour++) {
+						char subvalue[2];
+						subvalue[0] = line[charOfLine += 1];
+						subvalue[1] = line[charOfLine += 1];
+
+						uint8_t colour = (uint8_t)strtol(subvalue, nullptr, 16); //converts string hex to numerical
+						//store in vector
+						colourCodes.push_back(colour);
+					}
+				}
+			}
+
+			uint8_t buf[64];
+			std::copy(std::begin(data_test), std::end(data_test), std::begin(buf)); //get data signal for switch profile
+
+			buf[5] = rowHeaders[rowHeaderPtr]; //start of row
+			if (rowHeaderPtr < 5) {
+				buf[6] = profile*2; //profile
+			}
+			else {
+				buf[6] = profile*2 + 1; //profile overflow
+			}
+
+			//fill buf
+			for (int i = 0; i < colourCodes.size(); i++) {
+				buf[8 + i] = colourCodes[i];
+			}
+
+			res += writeToKeyboard(handle, buf, 64);
+			std::cout << line[0] << std::endl;
+
+			rowHeaderPtr += 1;
+		}
 	}
-
-	buf[6] = 0x01; //change to second half of profile1
-	int test2[] = { 02, 59 };
-	for (int i : test2) {
-		buf[5] = i;
-		res += writeToKeyboard(handle, buf, 64);
-		std::cout << i << std::endl;
-	}
+	config.close();
 
 	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
+
+	return res;
 }

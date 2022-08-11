@@ -150,6 +150,7 @@
     <ClInclude Include="keymeleon-console.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="null.base" />
     <None Include="test.conf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
