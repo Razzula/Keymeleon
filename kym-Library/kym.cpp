@@ -145,7 +145,7 @@ int SetKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refa
 
 	//std::cout << keycode << " " << r << " " << g << " " << b << std::endl;
 
-	Sleep(500); //slight delay, to ensure data tranmisisons have finished
+	//Sleep(500); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
 
 	return res;
@@ -190,7 +190,7 @@ int ApplyLayoutLayer(char* configFileName, int profileToModify) {
 		buf[10] = element.second[2];
 
 		// write key config to device
-		//Sleep(10);
+		////Sleep(10);
 		int tempRes = writeToKeyboard(handle, buf, 64);
 		if (tempRes == -1) {
 			hid_close(handle);
@@ -200,9 +200,9 @@ int ApplyLayoutLayer(char* configFileName, int profileToModify) {
 		res += tempRes;
 		//std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;//DEBUG
 	}
-	//Sleep(250); //slight delay, to ensure data tranmisisons have finished
+	////Sleep(250); //slight delay, to ensure data tranmisisons have finished
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
-	//Sleep(250);
+	////Sleep(250);
 
 	hid_close(handle);
 	hid_exit();

@@ -32,13 +32,14 @@ namespace Keymeleon
             public static extern int SetKeyColour(string keycode, int r, int g, int b, int profile);
         }
 
-        Dictionary<string, int[]> defaultState = new Dictionary<string, int[]>();
-        Dictionary<string, int[]> keyboardState = new Dictionary<string, int[]>();
+        ConfigManager configManager;
         Button[][] rows;
 
         public EditorWindow()
         {
             InitializeComponent();
+
+            configManager = new ConfigManager();
 
             Button[][] rows = {
                 new[] { Esc, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12 },
@@ -57,65 +58,22 @@ namespace Keymeleon
 
         private void LoadBaseConfig(string fileName)
         {
-            StreamReader streamReader;
-            try
+            var tempState = configManager.LoadBaseConfig(fileName);
+            if (tempState == null)
             {
-                streamReader = File.OpenText(fileName);
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                //TODO; add error msg
                 return;
             }
 
-            string text = streamReader.ReadToEnd();
-            streamReader.Close();
-            //split into lines
-            string[] lines = text.Split(Environment.NewLine);
-
-            int currentRow = 0;
-            foreach (string line in lines)
+            foreach (var item in tempState)
             {
-                if (line.Equals("")) //blank
+                //show colour in UI
+                Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
+                Button btn = (Button) this.FindName(item.Key);
+                if (btn == null)
                 {
-                    continue;
+                    btn = (Button)this.FindName("_" + item.Key);
                 }
-                if (line[0].Equals('#')) //comment
-                {
-                    continue;
-                }
-                //read from line
-                string[] data = line.Split(' ');
-                for (int i = 1; i < data.Length; i++)
-                {
-                    var btn = rows[currentRow][i - 1];
-                    if (btn == null) { continue; }
-
-                    //set value in dictionary
-                    var keycode = btn.Name.ToString();
-                    if (keycode[0].Equals('_'))
-                    {
-                        keycode = keycode.Substring(1);
-                    }
-                    int r = Convert.ToInt32(data[i].Substring(0, 2), 16);
-                    int g = Convert.ToInt32(data[i].Substring(2, 2), 16);
-                    int b = Convert.ToInt32(data[i].Substring(4, 2), 16);
-                    if (defaultState.ContainsKey(keycode))
-                    {
-                        defaultState[keycode] = new[] { r, g, b };
-                    }
-                    else
-                    {
-                        defaultState.Add(keycode, new[] { r, g, b });
-                    }
-
-                    //show colour in UI
-                    Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
-                    btn.Foreground = new SolidColorBrush(colour);
-
-                }
-
-                currentRow += 1;
+                btn.Foreground = new SolidColorBrush(colour);
             }
 
             //display config on keyboard
@@ -123,80 +81,49 @@ namespace Keymeleon
             Debug.WriteLine(NativeMethods.SetLayoutBase(fileName, 1));
         }
 
-        private void LoadLayerConfig(string fileName, Dictionary<string, int[]> state)
+        private void LoadLayerConfig(string fileName)
         {
-            //undo previous layer
-            foreach (var item in keyboardState)
+            var deltaState = configManager.GetStatesDelta();
+            var tempState = configManager.LoadLayerConfig(fileName);
+            if (tempState == null)
             {
-                var value = defaultState[item.Key];
+                return;
+            }
+
+            //undo previous layer
+            foreach (var item in deltaState)
+            {
                 var btn = (Button)this.FindName(item.Key);
                 if (btn == null)
                 {
                     btn = (Button)this.FindName("_" + item.Key);
                 }
                 //show colour in UI
-                Color colour = Color.FromRgb(Convert.ToByte(value[0]), Convert.ToByte(value[1]), Convert.ToByte(value[2]));
+                Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
                 btn.Foreground = new SolidColorBrush(colour);
                 //show colour on device
-                NativeMethods.SetKeyColour(item.Key, value[0], value[1], value[2], 1); //TODO; optimize
+                NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1); //TODO; optimize
             }
-            state.Clear();
 
-            StreamReader streamReader;
-            try
+            foreach (var item in tempState)
             {
-                streamReader = File.OpenText(fileName);
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                //TODO; add error msg
-                return;
-            }
-            
-            string text = streamReader.ReadToEnd();
-            streamReader.Close();
-            //split into lines
-            string[] lines = text.Split(Environment.NewLine);
-
-            //setup dictionary
-            foreach (string line in lines)
-            {
-                if (line.Equals("")) //blank
-                {
-                    continue;
-                }
-                if (line[0].Equals('#')) //comment
-                {
-                    continue;
-                }
-                //read from line
-                string[] data = line.Split('\t');
-                //Debug.Write(data[0]+" "); Debug.WriteLine(data[1]);//DEBUG
-
-                //set value in dictionary
-                int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
-                int g = Convert.ToInt32(data[1].Substring(2, 2), 16);
-                int b = Convert.ToInt32(data[1].Substring(4, 2), 16);
-                state.Add(data[0], new[] { r, g, b });
-
-                var btn = (Button) this.FindName(data[0]);
+                var btn = (Button) this.FindName(item.Key);
                 if (btn == null)
                 {
-                    btn = (Button)this.FindName("_"+data[0]);
+                    btn = (Button)this.FindName("_"+ item.Key);
                 }
 
                 if (btn != null)
                 {
                     //show colour in UI
-                    Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
+                    Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
                     btn.Foreground = new SolidColorBrush(colour);
                 }
-
             }
-
             //display config on keyboard
             Debug.WriteLine(fileName);//DEBUG
             Debug.WriteLine(NativeMethods.ApplyLayoutLayer(fileName, 1));
+
         }
 
         private void SaveConfig(object sender, RoutedEventArgs e)
@@ -204,101 +131,11 @@ namespace Keymeleon
             var fileName = configBox.Text;
             if (fileName.EndsWith(".base"))
             {
-                SaveBaseConfig();
+                configManager.SaveBaseConfig(fileName);
             }
             else if (fileName.EndsWith(".conf"))
             {
-                SaveLayerConfig();
-            }
-        }
-
-        private void SaveBaseConfig()
-        {
-            //update defaultState
-            foreach (var item in keyboardState)
-            {
-                if (defaultState.ContainsKey(item.Key))
-                {
-                    defaultState[item.Key] = item.Value;
-                }
-                else
-                {
-                    defaultState.Add(item.Key, item.Value);
-                }
-            }
-
-            string fileName = configBox.Text;
-
-            List<string> lines = new List<string>();
-
-            foreach (var row in rows)
-            {
-                string line = "";
-                foreach (var btn in row)
-                {
-                    if (btn == null) {
-                        line += " 000000";
-                        continue;
-                    };
-
-                    var keycode = btn.Name.ToString(); //TODO convert this to function
-                    if (keycode[0].Equals('_'))
-                    {
-                        keycode = keycode.Substring(1);
-                    }
-
-                    var colour = defaultState[keycode];
-                    line += " " + colour[0].ToString("x2") + colour[1].ToString("x2") + colour[2].ToString("x2");
-                }
-                if (!line.Equals(""))
-                {
-                    lines.Add(line);
-                }
-            }
-
-
-            File.WriteAllLines(configBox.Text, lines);
-        }
-
-        private void SaveLayerConfig()
-        {
-            string fileName = configBox.Text;
-
-            List<string> lines = new List<string>();
-            foreach (var item in keyboardState)
-            {
-                if (item.Value[0] == -1 || item.Value[1] == -1 || item.Value[2] == -1) //transparent
-                {
-                    //TODO; default colour
-                    continue;
-                }
-                lines.Add(item.Key + '\t' + item.Value[0].ToString("x2") + item.Value[1].ToString("x2") + item.Value[2].ToString("x2"));
-            }
-
-            File.WriteAllLines(configBox.Text, lines);
-        }
-
-        private void ButtonLoaded(object sender, RoutedEventArgs e)
-        {
-            var keycode = (e.Source as Button).Name.ToString();
-            if (keycode[0].Equals('_'))
-            {
-                keycode = keycode.Substring(1);
-            }
-            //show colour in UI
-            if (defaultState.ContainsKey(keycode))
-            {
-                var values = defaultState[keycode];
-                if (values[0] == -1 || values[1] == -1 || values[2] == -1)
-                {
-                    return;
-                }
-                Color colour = Color.FromRgb(Convert.ToByte(values[0]), Convert.ToByte(values[1]), Convert.ToByte(values[2]));
-                (e.Source as Button).Foreground = new SolidColorBrush(colour);
-            }
-            else
-            {
-                defaultState.Add(keycode, new[] { -1, -1, -1 }); //if key not in default.conf, ensure it is present in dictionary
+                configManager.SaveLayerConfig(fileName);
             }
         }
 
@@ -311,7 +148,7 @@ namespace Keymeleon
             }
             else if (fileName.EndsWith(".conf"))
             {
-                LoadLayerConfig(configBox.Text, keyboardState);
+                LoadLayerConfig(configBox.Text);
             }
         }
 
@@ -331,7 +168,10 @@ namespace Keymeleon
             int b = Int32.Parse(bBox.Text);
             //Debug.WriteLine(keycode + " "+r+" "+g+" "+b);//DEBUG
 
-            keyboardState[keycode] = new[] { r, g, b };
+            //reflect change in UI
+            Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
+            (e.Source as Button).Foreground = new SolidColorBrush(colour);
+            configManager.UpdateLayer(keycode, r, g, b);
 
             //write to device
             int temp = NativeMethods.SetKeyColour(keycode, r, g, b, 1);
@@ -339,9 +179,6 @@ namespace Keymeleon
 
             if (temp == 192) //successful
             {
-                //reflect change in UI
-                Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
-                (e.Source as Button).Foreground = new SolidColorBrush(colour);
             }
 
         }

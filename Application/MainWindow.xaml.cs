@@ -120,8 +120,12 @@ namespace Keymeleon
             {
                 if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
                 {
-                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2)); //TODO; revert changes of previous layer
+                    Debug.WriteLine(NativeMethods.SetLayoutBase("_temp.conf", 2)); //TODO; minimise re-writes
+                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2));
                     cachedApplication = focusedApplication;
+
+                    //create temp config to revert to base
+
                 }
                 NativeMethods.SetActiveProfile(2);
             }
