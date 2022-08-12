@@ -32,6 +32,7 @@ namespace Keymeleon
         private NotifyIcon nIcon = new NotifyIcon();
         ContextMenuStrip contextMenu;
 
+        ConfigManager configManager;
         private string cachedApplication;
 
         static class NativeMethods
@@ -64,6 +65,12 @@ namespace Keymeleon
                 Debug.WriteLine(NativeMethods.SetLayoutBase("default.base", 1));
                 Debug.WriteLine(NativeMethods.SetLayoutBase("default.base", 2));
             }
+
+            configManager = new ConfigManager();
+            configManager.LoadBaseConfig("default.base");
+
+            //remove any temp files
+            File.Delete("_temp.conf");
 
             //minimise to system tray
             Hide();
@@ -120,12 +127,18 @@ namespace Keymeleon
             {
                 if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
                 {
-                    Debug.WriteLine(NativeMethods.SetLayoutBase("_temp.conf", 2)); //TODO; minimise re-writes
+                    //set layout to base
+                    if (File.Exists("_temp.conf"))
+                    {
+                        Debug.WriteLine(NativeMethods.ApplyLayoutLayer("_temp.conf", 2));
+                    }
                     Debug.WriteLine(NativeMethods.ApplyLayoutLayer(focusedApplication + ".conf", 2));
                     cachedApplication = focusedApplication;
 
                     //create temp config to revert to base
-
+                    configManager.LoadLayerConfig(focusedApplication+".conf");
+                    var deltaState = configManager.GetStatesDelta();
+                    configManager.SaveInverseConfig("_temp.conf");
                 }
                 NativeMethods.SetActiveProfile(2);
             }
@@ -157,6 +170,9 @@ namespace Keymeleon
         {
             NativeMethods.UnhookWinEvent(handle); //stop responding to window changes
             nIcon.Visible = false;
+
+            //remove any temp files
+            File.Delete("_temp.conf");
 
             Close();
         }

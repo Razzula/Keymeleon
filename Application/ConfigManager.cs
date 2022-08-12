@@ -215,6 +215,24 @@ namespace Keymeleon
             File.WriteAllLines(fileName, lines);
         }
 
+        public void SaveInverseConfig(string fileName)
+        {
+            var deltaState = GetStatesDelta();
+
+            List<string> lines = new List<string>();
+            foreach (var item in deltaState)
+            {
+                if (item.Value[0] == -1 || item.Value[1] == -1 || item.Value[2] == -1) //transparent
+                {
+                    //TODO; default colour
+                    continue;
+                }
+                lines.Add(item.Key + '\t' + item.Value[0].ToString("x2") + item.Value[1].ToString("x2") + item.Value[2].ToString("x2"));
+            }
+
+            File.WriteAllLines(fileName, lines);
+        }
+
         public Dictionary<string, int[]> GetStatesDelta()
         {
             Dictionary<string, int[]> statesDelta = new Dictionary<string, int[]>();
