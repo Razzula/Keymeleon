@@ -52,7 +52,23 @@ namespace Keymeleon
             };
             this.rows = rows;
 
-            LoadBaseConfig("default.base");
+            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory+"/layouts");
+            FileInfo[] info = dirInfo.GetFiles("*.conf");
+
+            //setup list box
+            ComboBox comboBox = applicationsList;
+            comboBox.Items.Add("Default.base"); //temp
+            comboBox.SelectedItem = comboBox.Items.GetItemAt(0);
+            foreach (var file in info)
+            {
+                string fileName = System.IO.Path.GetFileName(file.FullName);
+                if (fileName[0] != '_')
+                {
+                    comboBox.Items.Add(fileName);
+                }
+            }
+
+            LoadBaseConfig("layouts/default.base");
             NativeMethods.SetActiveProfile(1);
         }
 
@@ -79,6 +95,8 @@ namespace Keymeleon
             //display config on keyboard
             Debug.WriteLine(fileName);//DEBUG
             Debug.WriteLine(NativeMethods.SetLayoutBase(fileName, 1));
+
+            readBtn.IsEnabled = false;
         }
 
         private void LoadLayerConfig(string fileName)
@@ -124,32 +142,40 @@ namespace Keymeleon
             Debug.WriteLine(fileName);//DEBUG
             Debug.WriteLine(NativeMethods.ApplyLayoutLayer(fileName, 1));
 
+            readBtn.IsEnabled = false;
         }
 
         private void SaveConfig(object sender, RoutedEventArgs e)
         {
-            var fileName = configBox.Text;
+            string fileName = applicationsList.SelectedItem.ToString();
             if (fileName.EndsWith(".base"))
             {
-                configManager.SaveBaseConfig(fileName);
+                configManager.SaveBaseConfig("layouts/"+fileName);
             }
             else if (fileName.EndsWith(".conf"))
             {
-                configManager.SaveLayerConfig(fileName);
+                configManager.SaveLayerConfig("layouts/"+fileName);
             }
         }
 
         private void LoadConfig(object sender, RoutedEventArgs e)
         {
-            var fileName = configBox.Text;
+            string fileName = applicationsList.SelectedItem.ToString();
             if (fileName.EndsWith(".base"))
             {
-                LoadBaseConfig(configBox.Text);
+                LoadBaseConfig("layouts/"+fileName);
             }
             else if (fileName.EndsWith(".conf"))
             {
-                LoadLayerConfig(configBox.Text);
+                LoadLayerConfig("layouts/"+fileName);
             }
+        }
+
+        public void CreateConfig(string fileName)
+        {
+            File.Create("layouts/"+fileName).Close();
+            applicationsList.Items.Add(fileName);
+            applicationsList.SelectedItem = fileName;
         }
 
         private void ButtonClicked(object sender, RoutedEventArgs e)
@@ -174,12 +200,7 @@ namespace Keymeleon
             configManager.UpdateLayer(keycode, r, g, b);
 
             //write to device
-            int temp = NativeMethods.SetKeyColour(keycode, r, g, b, 1);
-            Debug.WriteLine(temp);
-
-            if (temp == 192) //successful
-            {
-            }
+            Debug.WriteLine(NativeMethods.SetKeyColour(keycode, r, g, b, 1));
 
         }
 
@@ -235,6 +256,26 @@ namespace Keymeleon
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.StartFocusMonitoring();
+        }
+
+        private void OpenApplicationSelector(object sender, RoutedEventArgs e)
+        {
+            ApplicationSelector applicationSelector = new ApplicationSelector(this);
+            applicationSelector.Show(); //TODO; prevent anything from happening until selector is closed
+        }
+
+        private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
+        {
+            string fileName = applicationsList.SelectedItem.ToString();
+            if (fileName.Equals("Default.conf"))
+            {
+                return;
+            }
+            File.Delete("layouts/"+fileName);
+
+            applicationsList.SelectedIndex = 0;
+            applicationsList.Items.Remove(fileName);
+            
         }
     }
 

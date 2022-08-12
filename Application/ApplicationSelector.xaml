@@ -1,0 +1,16 @@
+﻿<Window x:Class="Keymeleon.ApplicationSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Keymeleon"
+        mc:Ignorable="d"
+        Title="ApplicationSelector" Height="150" Width="300">
+    
+    <!-- TODO; generate list of installed / open applications -->
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock>Enter Name of new Config</TextBlock>
+        <TextBox Name="inputFileName" Margin="0,10" />
+        <Button Name="btnSubmit" Content="Ok" Click="Submit"/>
+    </StackPanel>
+</Window>

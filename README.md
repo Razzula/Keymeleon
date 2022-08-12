@@ -31,7 +31,7 @@ If however it fails, or should you wish to build the project independently, the 
 - Build `kym.dll` from `\kym-Library`
 - Build `Keymeleon.exe` from `\Application`
 - Move `kym.dll` into the build location of the application
-- Move `examples\default.base` into the build location of the application
+- Move `examples\default.base` into `BUILD_LOCATION\layouts`
 
 The application will only work on Windows devices. However, the C++ Library should work on other platforms, provided the correct version of hidapi is present.
 

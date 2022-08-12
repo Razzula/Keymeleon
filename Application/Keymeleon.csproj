@@ -12,9 +12,9 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /y /d &quot;$(SolutionDir)\kym-Library\bin\$(Configuration)\x64\kym.dll&quot; &quot;$(OutDir)&quot;" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.conf&quot; &quot;$(OutDir)&quot;" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.base&quot; &quot;$(OutDir)&quot;" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.layer&quot; &quot;$(OutDir)&quot;" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.conf&quot; &quot;$(OutDir)\layouts&quot;" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.base&quot; &quot;$(OutDir)\layouts&quot;" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.layer&quot; &quot;$(OutDir)\layouts&quot;" />
     <!--<Exec Command="xcopy /y /d &quot;$(SolutionDir)\kym-Library\bin\$(Configuration)\x86\kym.dll&quot; &quot;$(OutDir)&quot;" />-->
   </Target>
 
