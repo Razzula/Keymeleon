@@ -97,9 +97,9 @@ namespace Keymeleon
                     {
                         keycode = keycode.Substring(1);
                     }
-                    int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
-                    int g = Convert.ToInt32(data[1].Substring(2, 2), 16);
-                    int b = Convert.ToInt32(data[1].Substring(4, 2), 16);
+                    int r = Convert.ToInt32(data[i].Substring(0, 2), 16);
+                    int g = Convert.ToInt32(data[i].Substring(2, 2), 16);
+                    int b = Convert.ToInt32(data[i].Substring(4, 2), 16);
                     if (defaultState.ContainsKey(keycode))
                     {
                         defaultState[keycode] = new[] { r, g, b };
@@ -392,6 +392,12 @@ namespace Keymeleon
             if (colourDisplay == null) { return; }
             Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
             colourDisplay.Fill = new SolidColorBrush(colour);
+        }
+
+        private void OnWindowClose(object sender, EventArgs e)
+        {
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.StartFocusMonitoring();
         }
     }
 

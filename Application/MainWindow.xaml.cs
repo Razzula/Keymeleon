@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Windows.Interop;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace Keymeleon
 {
@@ -25,6 +28,9 @@ namespace Keymeleon
         private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
         private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
         System.IntPtr handle;
+
+        private NotifyIcon nIcon = new NotifyIcon();
+        ContextMenuStrip contextMenu;
 
         private string cachedApplication;
 
@@ -59,11 +65,26 @@ namespace Keymeleon
                 Debug.WriteLine(NativeMethods.SetLayoutBase("default.base", 2));
             }
 
-            //setup method to handle events (change of focus)
-            winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
-            handle = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
-        
-            //TODO; minimise to system tray
+            //minimise to system tray
+            Hide();
+            nIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath); //TEMP
+            nIcon.Text = "Keymeleon";
+            nIcon.DoubleClick += new EventHandler(OpenEditor);
+
+            contextMenu = new ContextMenuStrip();
+            contextMenu.AutoClose = true;
+            nIcon.ContextMenuStrip = contextMenu;
+
+            ToolStripItem ts = new ToolStripMenuItem("Open Editor");
+            ts.Click += new EventHandler(OpenEditor);
+            contextMenu.Items.Add(ts);
+
+            ts = new ToolStripMenuItem("Exit");
+            ts.Click += new EventHandler(Exit);
+            contextMenu.Items.Add(ts);
+
+            //begin
+            StartFocusMonitoring();
         }
 
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
@@ -110,11 +131,30 @@ namespace Keymeleon
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OpenEditor(object sender, EventArgs e)
         {
-            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes //TODO; undo this upon closing editor
+            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes
             EditorWindow editor = new EditorWindow();
             editor.Show();
+
+            nIcon.Visible = false;
+        }
+
+        public void StartFocusMonitoring()
+        {
+            //setup method to handle events (change of focus)
+            winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
+            handle = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
+
+            nIcon.Visible = true;
+        }
+
+        public void Exit(object sender, EventArgs e)
+        {
+            NativeMethods.UnhookWinEvent(handle); //stop responding to window changes
+            nIcon.Visible = false;
+
+            Close();
         }
 
     }

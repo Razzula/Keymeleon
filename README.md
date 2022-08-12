@@ -38,7 +38,7 @@ The application will only work on Windows devices. However, the C++ Library shou
 ## Usage
 Run the executable to start the program. The program will automatically detect the keyboard and begin responding to window changes as described by any `.conf` files in the application's folder.
 
-To create or edit these files, open the editor, set the desired layout, and save the file as `NAME.conf`, where `NAME` is the (*case sensitive*) name of the application this layout should be used for.
+To create or edit these files, open the editor via the system tray icon, set the desired layout, and save the file as `NAME.conf`, where `NAME` is the (*case sensitive*) name of the application this layout should be used for.
 
 ## Acknowledgments
 
