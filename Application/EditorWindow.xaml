@@ -9,21 +9,84 @@
         Closed="OnWindowClose">
     <!-- TODO; dark theme -->
 
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"> <!-- TODO; seperate bases, layers. Add multi-layer support -->
-            <ComboBox x:Name="applicationsList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadConfig" RenderTransformOrigin="0.5,0.5"/>
-            <Button Content="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="OpenApplicationSelector"/>
-            <Button x:Name="readBtn" Content="Load" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
-            <Button Content="Save" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
-            <Button Content="Delete" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
-        </StackPanel>
-        <Grid>
-            <TextBox x:Name="rBox" HorizontalAlignment="Left" Margin="7,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Red" TextChanged="TextChanged" Text="255"/>
-            <TextBox x:Name="gBox" HorizontalAlignment="Left" Margin="37,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Lime" TextChanged="TextChanged" Text="255"/>
-            <TextBox x:Name="bBox" HorizontalAlignment="Left" Margin="67,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30" Foreground="Blue" TextChanged="TextChanged" Text="255"/>
-            <Rectangle x:Name="colourDisplay" HorizontalAlignment="Left" Height="50" Margin="7,7,0,0" Stroke="Black" VerticalAlignment="Top" Width="90"/>
+    <Window.Resources>
+        <!-- When a button that contains an image is disabled, reflect this through the image's opacity -->
+        <Style TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
 
-            <Grid Height="346" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,88,0,0" Width="800" Cursor="Pen">
+    <DockPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                
+            </Grid>
+            <Grid>
+                
+            </Grid>
+            
+        </StackPanel>
+
+        <!-- TODO; seperate bases, layers. Add multi-layer support -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="21">
+            <!-- BASE -->
+            <CheckBox IsChecked="True" IsEnabled="False"/>
+            <ComboBox x:Name="baseList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5"/>
+
+            <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="OpenApplicationSelector">
+                <Image Source="/Resources/New.png" IsEnabled="False"/>
+            </Button>
+            <Button ToolTip="Load" x:Name="readBtn" Click="LoadBaseConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="/Resources/Open.png"/>
+            </Button>
+            <Button ToolTip="Save" Click="SaveBaseConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="Resources/Save.png"/>
+            </Button>
+            <Button ToolTip="Delete" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="Resources/Delete.png" IsEnabled="False"/>
+            </Button>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="21">
+            <!-- LAYER -->
+            <CheckBox x:Name="layerCheck" Click="ToggleLayer"/>
+            <ComboBox x:Name="layerList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+
+            <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="OpenApplicationSelector">
+                <Image Source="/Resources/New.png"/>
+            </Button>
+            <Button ToolTip="Load" x:Name="readBtn2" Click="LoadLayerConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="/Resources/Open.png"/>
+            </Button>
+            <Button ToolTip="Save" Click="SaveLayerConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="Resources/Save.png"/>
+            </Button>
+            <Button ToolTip="Delete" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image Source="Resources/Delete.png"/>
+            </Button>
+        </StackPanel>
+
+        <Grid>
+            <TextBox x:Name="rBox" Margin="700,18,70,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Red" TextChanged="TextChanged" Text="255"/>
+            <TextBox x:Name="gBox" Margin="730,18,40,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Lime" TextChanged="TextChanged" Text="255"/>
+            <TextBox x:Name="bBox" Margin="760,18,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Blue" TextChanged="TextChanged" Text="255"/>
+            <Rectangle x:Name="colourDisplay" Margin="700,-32,10,374" Stroke="Black"/>
+
+            <Grid Height="346" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,46,0,0" Width="800" Cursor="Pen">
                 <!-- TODO; resize, recolour, improve -->
                 <Button x:Name="Esc"   Content="Esc" HorizontalAlignment="Left" Margin="85,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
                 <Button x:Name="F1"    Content="F1" HorizontalAlignment="Left" Margin="135,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>

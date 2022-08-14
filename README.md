@@ -43,3 +43,4 @@ To create or edit these files, open the editor via the system tray icon, set the
 ## Acknowledgments
 
 - [dokutan](https://github.com/dokutan)'s [rgb_keyboard](https://github.com/dokutan/rgb_keyboard) project, making it a lot easier to understand the data signals used to control the device
+- Microsoft's [Visual Studio Image Library 2022](https://www.microsoft.com/en-gb/download/details.aspx?id=35825)

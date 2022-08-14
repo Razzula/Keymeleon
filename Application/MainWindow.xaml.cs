@@ -108,13 +108,13 @@ namespace Keymeleon
             string focusedApplication;
             try
             {
-                focusedApplication = p.MainModule.FileVersionInfo.FileDescription.ToString();
+                focusedApplication = p.MainModule.FileVersionInfo.FileDescription;
             }
             catch (System.ComponentModel.Win32Exception)
             // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this) //TODO; add check for this
             // if Keymeleon is not elevated, this exception will throw when trying to access an elevated program //TODO; request that Keymeleon be elevated
             {
-                focusedApplication = p.MainWindowTitle.ToString();
+                focusedApplication = p.MainWindowTitle;
             }
             catch (NullReferenceException)
             {

@@ -18,4 +18,28 @@
     <!--<Exec Command="xcopy /y /d &quot;$(SolutionDir)\kym-Library\bin\$(Configuration)\x86\kym.dll&quot; &quot;$(OutDir)&quot;" />-->
   </Target>
 
+  <ItemGroup>
+    <None Remove="New.png" />
+    <None Remove="Resources\Add.png" />
+    <None Remove="Resources\Collapse.png" />
+    <None Remove="Resources\CollapseUp.png" />
+    <None Remove="Resources\Delete.png" />
+    <None Remove="Resources\Expand.png" />
+    <None Remove="Resources\ExpandDown.png" />
+    <None Remove="Resources\New.png" />
+    <None Remove="Resources\Open.png" />
+    <None Remove="Resources\OpenFile.png" />
+    <None Remove="Resources\Refresh.png" />
+    <None Remove="Resources\Save.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Collapse.png" />
+    <Resource Include="Resources\Delete.png" />
+    <Resource Include="Resources\Expand.png" />
+    <Resource Include="Resources\New.png" />
+    <Resource Include="Resources\Open.png" />
+    <Resource Include="Resources\Save.png" />
+  </ItemGroup>
+
 </Project>
