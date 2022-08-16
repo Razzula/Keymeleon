@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Keymeleon"
         mc:Ignorable="d"
-        Title="Keymeleon - Editor" Height="450" Width="800"
+        Title="Keymeleon - Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
         Closed="OnWindowClose">
     <!-- TODO; dark theme -->
 
@@ -18,191 +18,289 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!--<Style TargetType="Button">
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>-->
     </Window.Resources>
 
     <DockPanel>
+        <!-- Controls -->
+        <DockPanel DockPanel.Dock="Top">
 
-        <StackPanel Orientation="Horizontal">
-            <Grid>
+            <!-- File -->
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Left">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="21"/>
+                        <RowDefinition Height="21"/>
+                        <RowDefinition Height="21"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5"/>
+
+                    <CheckBox Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+
+                    <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                        <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
+                            <Image Source="/Resources/New.png"/>
+                        </Button>
+                        <Button ToolTip="Load" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                            <Image Source="/Resources/Open.png"/>
+                        </Button>
+                        <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                            <Image Source="Resources/Save.png"/>
+                        </Button>
+                        <Button ToolTip="Delete" x:Name="delBtn" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                            <Image Source="Resources/Delete.png"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <!--Colour -->
+            <Grid DockPanel.Dock="Right" Height="96">
+                <Rectangle x:Name="colourDisplay" Height="60" Width="90" Stroke="Black" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
+                <TextBox x:Name="rBox" Margin="510,65,70,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
+                <TextBox x:Name="gBox" Margin="540,65,40,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
+                <TextBox x:Name="bBox" Margin="570,65,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" HorizontalAlignment="Right" Width="30" TextAlignment="Center"/>
+
+            </Grid>
+
+        </DockPanel>
+
+        <!-- Panel -->
+        <Grid Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <!-- Keyboard -->
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="0.5*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
+                    <!-- 92 Columns -->
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                
+
+                <!-- TODO; recolour -->
+                <Button x:Name="Esc"   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Esc" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F1"    Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="4" Content="F1" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F2"    Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="4" Content="F2" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F3"    Grid.Row="0" Grid.Column="16" Grid.ColumnSpan="4" Content="F3" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F4"    Grid.Row="0" Grid.Column="20" Grid.ColumnSpan="4" Content="F4" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F5"    Grid.Row="0" Grid.Column="26" Grid.ColumnSpan="4" Content="F5" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F6"    Grid.Row="0" Grid.Column="30" Grid.ColumnSpan="4" Content="F6" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F7"    Grid.Row="0" Grid.Column="34" Grid.ColumnSpan="4" Content="F7" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F8"    Grid.Row="0" Grid.Column="38" Grid.ColumnSpan="4" Content="F8" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F9"    Grid.Row="0" Grid.Column="44" Grid.ColumnSpan="4" Content="F9" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F10"   Grid.Row="0" Grid.Column="48" Grid.ColumnSpan="4" Content="F10" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F11"   Grid.Row="0" Grid.Column="52" Grid.ColumnSpan="4" Content="F11" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="F12"   Grid.Row="0" Grid.Column="56" Grid.ColumnSpan="4" Content="F12" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="PrtSc" Grid.Row="0" Grid.Column="62" Grid.ColumnSpan="4" Content="Prtsc" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="ScrLk" Grid.Row="0" Grid.Column="66" Grid.ColumnSpan="4" Content="Scrlk" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Pause" Grid.Row="0" Grid.Column="70" Grid.ColumnSpan="4" Content="Pause" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="Tilde"     Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Content="`" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_1"        Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="4" Content="1" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_2"        Grid.Row="2" Grid.Column="8" Grid.ColumnSpan="4" Content="2" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_3"        Grid.Row="2" Grid.Column="12" Grid.ColumnSpan="4" Content="3" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_4"        Grid.Row="2" Grid.Column="16" Grid.ColumnSpan="4" Content="4" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_5"        Grid.Row="2" Grid.Column="20" Grid.ColumnSpan="4" Content="5" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_6"        Grid.Row="2" Grid.Column="24" Grid.ColumnSpan="4" Content="6" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_7"        Grid.Row="2" Grid.Column="28" Grid.ColumnSpan="4" Content="7" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_8"        Grid.Row="2" Grid.Column="32" Grid.ColumnSpan="4" Content="8" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_9"        Grid.Row="2" Grid.Column="36" Grid.ColumnSpan="4" Content="9" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="_0"        Grid.Row="2" Grid.Column="40" Grid.ColumnSpan="4" Content="0" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Minus"     Grid.Row="2" Grid.Column="44" Grid.ColumnSpan="4" Content="-" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Equals"    Grid.Row="2" Grid.Column="48" Grid.ColumnSpan="4" Content="=" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Backspace" Grid.Row="2" Grid.Column="52" Grid.ColumnSpan="8"  Content="Backspace" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Insert"    Grid.Row="2" Grid.Column="62" Grid.ColumnSpan="4" Content="Ins" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Home"      Grid.Row="2" Grid.Column="66" Grid.ColumnSpan="4" Content="Home" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="PgUp"      Grid.Row="2" Grid.Column="70" Grid.ColumnSpan="4" Content="Pgup" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="Tab"        Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" Content="Tab" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="q"          Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="4" Content="Q" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="w"          Grid.Row="3" Grid.Column="10" Grid.ColumnSpan="4" Content="W" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="e"          Grid.Row="3" Grid.Column="14" Grid.ColumnSpan="4" Content="E" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="r"          Grid.Row="3" Grid.Column="18" Grid.ColumnSpan="4" Content="R" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="t"          Grid.Row="3" Grid.Column="22" Grid.ColumnSpan="4" Content="T" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="y"          Grid.Row="3" Grid.Column="26" Grid.ColumnSpan="4" Content="Y" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="u"          Grid.Row="3" Grid.Column="30" Grid.ColumnSpan="4" Content="U" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="i"          Grid.Row="3" Grid.Column="34" Grid.ColumnSpan="4" Content="I" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="o"          Grid.Row="3" Grid.Column="38" Grid.ColumnSpan="4" Content="O" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="p"          Grid.Row="3" Grid.Column="42" Grid.ColumnSpan="4" Content="P" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="BracketL"   Grid.Row="3" Grid.Column="46" Grid.ColumnSpan="4" Content="[" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="BracketR"   Grid.Row="3" Grid.Column="50" Grid.ColumnSpan="4" Content="]" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Enter"      Grid.Row="3" Grid.Column="54" Grid.ColumnSpan="6" Grid.RowSpan="2" Content="Enter" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Delete"     Grid.Row="3" Grid.Column="62" Grid.ColumnSpan="4" Content="Del" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="End"        Grid.Row="3" Grid.Column="66" Grid.ColumnSpan="4" Content="End" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="PgDn"       Grid.Row="3" Grid.Column="70" Grid.ColumnSpan="4" Content="Pgdn" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="CapsLock"   Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" Content="Caps" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="a"          Grid.Row="4" Grid.Column="7" Grid.ColumnSpan="4" Content="A" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="s"          Grid.Row="4" Grid.Column="11" Grid.ColumnSpan="4" Content="S" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="d"          Grid.Row="4" Grid.Column="15" Grid.ColumnSpan="4" Content="D" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="f"          Grid.Row="4" Grid.Column="19" Grid.ColumnSpan="4" Content="F" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="g"          Grid.Row="4" Grid.Column="23" Grid.ColumnSpan="4" Content="G" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="h"          Grid.Row="4" Grid.Column="27" Grid.ColumnSpan="4" Content="H" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="j"          Grid.Row="4" Grid.Column="31" Grid.ColumnSpan="4" Content="J" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="k"          Grid.Row="4" Grid.Column="35" Grid.ColumnSpan="4" Content="K" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="l"          Grid.Row="4" Grid.Column="39" Grid.ColumnSpan="4" Content="L" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Semicolon"  Grid.Row="4" Grid.Column="43" Grid.ColumnSpan="4" Content=";" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Apostrophe" Grid.Row="4" Grid.Column="47" Grid.ColumnSpan="4" Content="'" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Hash"       Grid.Row="4" Grid.Column="51" Grid.ColumnSpan="4" Content="#" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="LShift"    Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Content="Shift" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Backslash" Grid.Row="5" Grid.Column="5" Grid.ColumnSpan="4" Content="\" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="z"         Grid.Row="5" Grid.Column="9" Grid.ColumnSpan="4" Content="Z" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="x"         Grid.Row="5" Grid.Column="13" Grid.ColumnSpan="4" Content="X" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="c"         Grid.Row="5" Grid.Column="17" Grid.ColumnSpan="4" Content="C" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="v"         Grid.Row="5" Grid.Column="21" Grid.ColumnSpan="4" Content="V" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="b"         Grid.Row="5" Grid.Column="25" Grid.ColumnSpan="4" Content="B" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="n"         Grid.Row="5" Grid.Column="29" Grid.ColumnSpan="4" Content="N" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="m"         Grid.Row="5" Grid.Column="33" Grid.ColumnSpan="4" Content="M" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Comma"     Grid.Row="5" Grid.Column="37" Grid.ColumnSpan="4" Content="," PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Period"    Grid.Row="5" Grid.Column="41" Grid.ColumnSpan="4" Content="." PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Slash"     Grid.Row="5" Grid.Column="45" Grid.ColumnSpan="4" Content="/" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="RShift"    Grid.Row="5" Grid.Column="49" Grid.ColumnSpan="11" Content="Shift" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="LCtrl" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Content="Ctrl" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Super" Grid.Row="6" Grid.Column="5" Grid.ColumnSpan="5" Content="W" PreviewMouseDown="ButtonClicked" FontFamily="Marlett" FontSize="16"/>
+                <Button x:Name="LAlt"  Grid.Row="6" Grid.Column="10" Grid.ColumnSpan="5" Content="Alt" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Space" Grid.Row="6" Grid.Column="15" Grid.ColumnSpan="25" Content="Space" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="RAlt"  Grid.Row="6" Grid.Column="40" Grid.ColumnSpan="5" Content="Alt Gr" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Fn"    Grid.Row="6" Grid.Column="45" Grid.ColumnSpan="5" Content="Fn" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Menu"  Grid.Row="6" Grid.Column="50" Grid.ColumnSpan="5" Content="▤" PreviewMouseDown="ButtonClicked" FontSize="16"/>
+                <Button x:Name="RCtrl" Grid.Row="6" Grid.Column="55" Grid.ColumnSpan="5" Content="Ctrl" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="Up"    Grid.Row="5" Grid.Column="66" Grid.ColumnSpan="4" Content="Up" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Left"  Grid.Row="6" Grid.Column="62" Grid.ColumnSpan="4" Content="Left" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Down"  Grid.Row="6" Grid.Column="66" Grid.ColumnSpan="4" Content="Down" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Right" Grid.Row="6" Grid.Column="70" Grid.ColumnSpan="4" Content="Right" PreviewMouseDown="ButtonClicked"/>
+
+                <Button x:Name="Num_Lock"     Grid.Row="2" Grid.Column="76" Grid.ColumnSpan="4" Content="Num" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Slash"    Grid.Row="2" Grid.Column="80" Grid.ColumnSpan="4" Content="/" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Asterisk" Grid.Row="2" Grid.Column="84" Grid.ColumnSpan="4" Content="*" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Minus"    Grid.Row="2" Grid.Column="88" Grid.ColumnSpan="4" Content="-" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_7"        Grid.Row="3" Grid.Column="76" Grid.ColumnSpan="4" Content="7" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_8"        Grid.Row="3" Grid.Column="80" Grid.ColumnSpan="4" Content="8" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_9"        Grid.Row="3" Grid.Column="84" Grid.ColumnSpan="4" Content="9" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Plus"     Grid.Row="3" Grid.Column="88" Grid.ColumnSpan="4" Grid.RowSpan="2" Content="+" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_4"        Grid.Row="4" Grid.Column="76" Grid.ColumnSpan="4" Content="4" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_5"        Grid.Row="4" Grid.Column="80" Grid.ColumnSpan="4" Content="5" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_6"        Grid.Row="4" Grid.Column="84" Grid.ColumnSpan="4" Content="6" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_1"        Grid.Row="5" Grid.Column="76" Grid.ColumnSpan="4" Content="1" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_2"        Grid.Row="5" Grid.Column="80" Grid.ColumnSpan="4" Content="2" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_3"        Grid.Row="5" Grid.Column="84" Grid.ColumnSpan="4" Content="3" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Enter"    Grid.Row="5" Grid.Column="88" Grid.ColumnSpan="4" Grid.RowSpan="2" Content="Enter" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_0"        Grid.Row="6" Grid.Column="76" Grid.ColumnSpan="8" Content="0" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Num_Period"   Grid.Row="6" Grid.Column="84" Grid.ColumnSpan="4" Content="." PreviewMouseDown="ButtonClicked"/>
             </Grid>
-            <Grid>
-                
-            </Grid>
-            
-        </StackPanel>
-
-        <!-- TODO; seperate bases, layers. Add multi-layer support -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="21">
-            <!-- BASE -->
-            <CheckBox IsChecked="True" IsEnabled="False"/>
-            <ComboBox x:Name="baseList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5"/>
-
-            <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="OpenApplicationSelector">
-                <Image Source="/Resources/New.png" IsEnabled="False"/>
-            </Button>
-            <Button ToolTip="Load" x:Name="readBtn" Click="LoadBaseConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="/Resources/Open.png"/>
-            </Button>
-            <Button ToolTip="Save" Click="SaveBaseConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="Resources/Save.png"/>
-            </Button>
-            <Button ToolTip="Delete" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="Resources/Delete.png" IsEnabled="False"/>
-            </Button>
-        </StackPanel>
-
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="21">
-            <!-- LAYER -->
-            <CheckBox x:Name="layerCheck" Click="ToggleLayer"/>
-            <ComboBox x:Name="layerList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
-
-            <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="OpenApplicationSelector">
-                <Image Source="/Resources/New.png"/>
-            </Button>
-            <Button ToolTip="Load" x:Name="readBtn2" Click="LoadLayerConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="/Resources/Open.png"/>
-            </Button>
-            <Button ToolTip="Save" Click="SaveLayerConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="Resources/Save.png"/>
-            </Button>
-            <Button ToolTip="Delete" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image Source="Resources/Delete.png"/>
-            </Button>
-        </StackPanel>
-
-        <Grid>
-            <TextBox x:Name="rBox" Margin="700,18,70,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Red" TextChanged="TextChanged" Text="255"/>
-            <TextBox x:Name="gBox" Margin="730,18,40,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Lime" TextChanged="TextChanged" Text="255"/>
-            <TextBox x:Name="bBox" Margin="760,18,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Blue" TextChanged="TextChanged" Text="255"/>
-            <Rectangle x:Name="colourDisplay" Margin="700,-32,10,374" Stroke="Black"/>
-
-            <Grid Height="346" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,46,0,0" Width="800" Cursor="Pen">
-                <!-- TODO; resize, recolour, improve -->
-                <Button x:Name="Esc"   Content="Esc" HorizontalAlignment="Left" Margin="85,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F1"    Content="F1" HorizontalAlignment="Left" Margin="135,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F2"    Content="F2" HorizontalAlignment="Left" Margin="160,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F3"    Content="F3" HorizontalAlignment="Left" Margin="185,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F4"    Content="F4" HorizontalAlignment="Left" Margin="210,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F5"    Content="F5" HorizontalAlignment="Left" Margin="250,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F6"    Content="F6" HorizontalAlignment="Left" Margin="275,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F7"    Content="F7" HorizontalAlignment="Left" Margin="300,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F8"    Content="F8" HorizontalAlignment="Left" Margin="325,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F9"    Content="F9" HorizontalAlignment="Left" Margin="360,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F10"   Content="F10" HorizontalAlignment="Left" Margin="385,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F11"   Content="F11" HorizontalAlignment="Left" Margin="410,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="F12"   Content="F12" HorizontalAlignment="Left" Margin="435,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="PrtSc" Content="Prtsc" HorizontalAlignment="Left" Margin="482,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="ScrLk" Content="Scrlk" HorizontalAlignment="Left" Margin="507,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Pause" Content="Pause" HorizontalAlignment="Left" Margin="531,117,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="Tilde"     Content="`" HorizontalAlignment="Left" Margin="85,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_1"        Content="1" HorizontalAlignment="Left" Margin="110,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_2"        Content="2" HorizontalAlignment="Left" Margin="135,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_3"        Content="3" HorizontalAlignment="Left" Margin="160,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_4"        Content="4" HorizontalAlignment="Left" Margin="185,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_5"        Content="5" HorizontalAlignment="Left" Margin="210,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_6"        Content="6" HorizontalAlignment="Left" Margin="235,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_7"        Content="7" HorizontalAlignment="Left" Margin="260,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_8"        Content="8" HorizontalAlignment="Left" Margin="285,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_9"        Content="9" HorizontalAlignment="Left" Margin="310,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="_0"        Content="0" HorizontalAlignment="Left" Margin="335,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Minus"     Content="-" HorizontalAlignment="Left" Margin="360,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Equals"    Content="=" HorizontalAlignment="Left" Margin="385,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Backspace" Content="Backspace" HorizontalAlignment="Left" Margin="410,148,0,0" VerticalAlignment="Top" Width="45" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Insert"    Content="Ins" HorizontalAlignment="Left" Margin="482,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Home"      Content="Home" HorizontalAlignment="Left" Margin="506,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="PgUp"      Content="Pgup" HorizontalAlignment="Left" Margin="531,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="Tab"      Content="Tab" HorizontalAlignment="Left" Margin="85,173,0,0" VerticalAlignment="Top" Width="30" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="q"        Content="Q" HorizontalAlignment="Left" Margin="120,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="w"        Content="W" HorizontalAlignment="Left" Margin="145,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="e"        Content="E" HorizontalAlignment="Left" Margin="170,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="r"        Content="R" HorizontalAlignment="Left" Margin="195,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="t"        Content="T" HorizontalAlignment="Left" Margin="220,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="y"        Content="Y" HorizontalAlignment="Left" Margin="245,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="u"        Content="U" HorizontalAlignment="Left" Margin="270,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="i"        Content="I" HorizontalAlignment="Left" Margin="295,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="o"        Content="O" HorizontalAlignment="Left" Margin="320,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="p"        Content="P" HorizontalAlignment="Left" Margin="345,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="BracketL" Content="[" HorizontalAlignment="Left" Margin="370,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="BracketR" Content="]" HorizontalAlignment="Left" Margin="395,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Enter"    Content="Enter" HorizontalAlignment="Left" Margin="420,173,0,0" VerticalAlignment="Top" Width="35" Height="45" Click="ButtonClicked"/>
-                <Button x:Name="Delete"      Content="Del" HorizontalAlignment="Left" Margin="482,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="End"      Content="End" HorizontalAlignment="Left" Margin="506,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="PgDn"     Content="Pgdn" HorizontalAlignment="Left" Margin="531,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="CapsLock"   Content="Caps" HorizontalAlignment="Left" Margin="85,198,0,0" VerticalAlignment="Top" Width="38" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="a"          Content="A" HorizontalAlignment="Left" Margin="130,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="s"          Content="S" HorizontalAlignment="Left" Margin="155,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="d"          Content="D" HorizontalAlignment="Left" Margin="180,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="f"          Content="F" HorizontalAlignment="Left" Margin="205,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="g"          Content="G" HorizontalAlignment="Left" Margin="230,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="h"          Content="H" HorizontalAlignment="Left" Margin="255,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="j"          Content="J" HorizontalAlignment="Left" Margin="280,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="k"          Content="K" HorizontalAlignment="Left" Margin="305,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="l"          Content="L" HorizontalAlignment="Left" Margin="330,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Semicolon"  Content=";" HorizontalAlignment="Left" Margin="355,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Apostrophe" Content="'" HorizontalAlignment="Left" Margin="380,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Hash"       Content="#" HorizontalAlignment="Left" Margin="405,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="LShift"    Content="Shift" HorizontalAlignment="Left" Margin="85,223,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Backslash" Content="\" HorizontalAlignment="Left" Margin="120,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="z"         Content="Z" HorizontalAlignment="Left" Margin="145,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="x"         Content="X" HorizontalAlignment="Left" Margin="170,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="c"         Content="C" HorizontalAlignment="Left" Margin="195,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="v"         Content="V" HorizontalAlignment="Left" Margin="220,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="b"         Content="B" HorizontalAlignment="Left" Margin="245,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="n"         Content="N" HorizontalAlignment="Left" Margin="270,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="m"         Content="M" HorizontalAlignment="Left" Margin="295,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Comma"     Content="," HorizontalAlignment="Left" Margin="320,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Period"    Content="." HorizontalAlignment="Left" Margin="345,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Slash"     Content="/" HorizontalAlignment="Left" Margin="370,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="RShift"    Content="Shift" HorizontalAlignment="Left" Margin="395,223,0,0" VerticalAlignment="Top" Width="60" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="LCtrl" Content="Ctrl" HorizontalAlignment="Left" Margin="85,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Super" Content="Super" HorizontalAlignment="Left" Margin="118,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="LAlt"  Content="Alt" HorizontalAlignment="Left" Margin="151,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Space" Content="Space" HorizontalAlignment="Left" Margin="184,248,0,0" VerticalAlignment="Top" Width="139" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="RAlt"  Content="Alt Gr" HorizontalAlignment="Left" Margin="328,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Fn"    Content="Fn" HorizontalAlignment="Left" Margin="361,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Menu"  Content="Menu" HorizontalAlignment="Left" Margin="394,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="RCtrl" Content="Ctrl" HorizontalAlignment="Left" Margin="427,248,0,0" VerticalAlignment="Top" Width="28" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="Up"    Content="Up" HorizontalAlignment="Left" Margin="506,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Left"  Content="Left" HorizontalAlignment="Left" Margin="482,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Down"  Content="Down" HorizontalAlignment="Left" Margin="506,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Right" Content="Right" HorizontalAlignment="Left" Margin="531,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-
-                <Button x:Name="Num_Lock"     Content="Num" HorizontalAlignment="Left" Margin="579,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Slash"    Content="/" HorizontalAlignment="Left" Margin="604,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Asterisk" Content="*" HorizontalAlignment="Left" Margin="629,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Minus"    Content="-" HorizontalAlignment="Left" Margin="654,148,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_7"        Content="7" HorizontalAlignment="Left" Margin="579,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_8"        Content="8" HorizontalAlignment="Left" Margin="604,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_9"        Content="9" HorizontalAlignment="Left" Margin="629,173,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Plus"     Content="+" HorizontalAlignment="Left" Margin="654,173,0,0" VerticalAlignment="Top" Width="20" Height="45" Click="ButtonClicked"/>
-                <Button x:Name="Num_4"        Content="4" HorizontalAlignment="Left" Margin="579,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_5"        Content="5" HorizontalAlignment="Left" Margin="604,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_6"        Content="6" HorizontalAlignment="Left" Margin="629,198,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_1"        Content="1" HorizontalAlignment="Left" Margin="579,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_2"        Content="2" HorizontalAlignment="Left" Margin="604,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_3"        Content="3" HorizontalAlignment="Left" Margin="629,223,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Enter"    Content="Enter" HorizontalAlignment="Left" Margin="654,223,0,0" VerticalAlignment="Top" Width="20" Height="45" Click="ButtonClicked"/>
-                <Button x:Name="Num_0"        Content="0" HorizontalAlignment="Left" Margin="579,248,0,0" VerticalAlignment="Top" Width="45" Height="20" Click="ButtonClicked"/>
-                <Button x:Name="Num_Period"   Content="." HorizontalAlignment="Left" Margin="629,248,0,0" VerticalAlignment="Top" Width="20" Height="20" Click="ButtonClicked"/>
-            </Grid>
-
         </Grid>
+
     </DockPanel>
 
 </Window>

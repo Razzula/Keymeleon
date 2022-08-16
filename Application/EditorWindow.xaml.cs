@@ -53,23 +53,30 @@ namespace Keymeleon
             this.rows = rows;
 
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory+"/layouts");
-            FileInfo[] info = dirInfo.GetFiles("*.conf");
 
             //base
-            baseList.Items.Add("Default.base");
-            baseList.SelectedItem = baseList.Items.GetItemAt(0);
-            //layers
-            ComboBox comboBox = layerList;
+            FileInfo[] info = dirInfo.GetFiles("*.base");
             foreach (var file in info)
             {
-                string fileName = System.IO.Path.GetFileName(file.FullName);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
                 if (fileName[0] != '_')
                 {
-                    comboBox.Items.Add(fileName);
+                    baseList.Items.Add(fileName);
+                }
+            }
+            baseList.SelectedItem = baseList.Items.GetItemAt(0);
+            //layers
+            info = dirInfo.GetFiles("*.conf");
+            foreach (var file in info)
+            {
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
+                if (fileName[0] != '_')
+                {
+                    layerList.Items.Add(fileName);
                 }
             }
 
-            LoadBaseConfig("layouts/default.base");
+            LoadBaseConfig("layouts/Default.base");
             NativeMethods.SetActiveProfile(1);
         }
 
@@ -91,6 +98,7 @@ namespace Keymeleon
                     btn = (Button)this.FindName("_" + item.Key);
                 }
                 btn.Foreground = new SolidColorBrush(colour);
+                btn.Opacity = 1;
             }
 
             //display config on keyboard
@@ -98,6 +106,7 @@ namespace Keymeleon
             Debug.WriteLine(NativeMethods.SetLayoutBase(fileName, 1));
 
             readBtn.IsEnabled = false;
+            saveBtn.IsEnabled = false;
         }
 
         private void LoadLayerConfig(string fileName)
@@ -157,18 +166,19 @@ namespace Keymeleon
             Debug.WriteLine(NativeMethods.ApplyLayoutLayer(fileName, 1));
 
             readBtn.IsEnabled = false;
+            saveBtn.IsEnabled = false;
         }
 
         private void SaveBaseConfig(object sender, RoutedEventArgs e)
         {
             string fileName = baseList.SelectedItem.ToString();
-            configManager.SaveBaseConfig("layouts/"+fileName);
+            configManager.SaveBaseConfig("layouts/" + fileName + ".base");
         }
 
         private void SaveLayerConfig(object sender, RoutedEventArgs e)
         {
             string fileName = layerList.SelectedItem.ToString();
-            configManager.SaveLayerConfig("layouts/" + fileName);
+            configManager.SaveLayerConfig("layouts/" + fileName + ".conf");
         }
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
@@ -176,7 +186,15 @@ namespace Keymeleon
             if (baseList.SelectedItem != null)
             {
                 string fileName = baseList.SelectedItem.ToString();
-                LoadBaseConfig("layouts/" + fileName);
+                LoadBaseConfig("layouts/" + fileName + ".base");
+
+
+                delBtn.IsEnabled = !baseList.SelectedItem.Equals("Default"); //prevent deletion of default base
+
+                if ((bool) layerCheck.IsChecked)
+                {
+                    LoadLayerConfig(sender, e);
+                }
             }
         }
 
@@ -185,49 +203,75 @@ namespace Keymeleon
             if (layerList.SelectedItem != null)
             {
                 string fileName = layerList.SelectedItem.ToString();
-                LoadLayerConfig("layouts/" + fileName);
+                LoadLayerConfig("layouts/" + fileName + ".conf");
             }
         }
 
         public void CreateConfig(string fileName)
         {
             File.Create("layouts/"+fileName).Close();
-            if (fileName.EndsWith(".base"))
+            string[] file = fileName.Split(".");
+
+            if (file[1].Equals(".base"))
             {
-                baseList.Items.Add(fileName);
-                baseList.SelectedItem = fileName;
+                baseList.Items.Add(file[0]);
+                baseList.SelectedItem = file[0];
             }
             else
             {
-                layerList.Items.Add(fileName);
-                layerList.SelectedItem = fileName;
+                layerList.Items.Add(file[0]);
+                layerList.SelectedItem = file[0];
             }
             
         }
 
-        private void ButtonClicked(object sender, RoutedEventArgs e)
+        private void ButtonClicked(object sender, MouseButtonEventArgs e)
         {
-            string keycode = (e.Source as Button).Name.ToString();
+            Button btn = (Button) e.Source;
+            string keycode = btn.Name.ToString();
             if (keycode[0].Equals('_'))
             {
                 keycode = keycode.Substring(1);
             }
+
             if (rBox.Text.Equals("")) { rBox.Text = "0"; }
             if (gBox.Text.Equals("")) { gBox.Text = "0"; } //simple validation
             if (bBox.Text.Equals("")) { bBox.Text = "0"; }
-            //get colour
-            int r = Int32.Parse(rBox.Text);
-            int g = Int32.Parse(gBox.Text);
-            int b = Int32.Parse(bBox.Text);
-            //Debug.WriteLine(keycode + " "+r+" "+g+" "+b);//DEBUG
 
+            int r; int g; int b;
+
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                //get colour
+                r = Int32.Parse(rBox.Text);
+                g = Int32.Parse(gBox.Text);
+                b = Int32.Parse(bBox.Text);
+                
+                btn.Opacity = 1;
+
+                configManager.UpdateLayer(keycode, r, g, b);
+            }
+            else if (e.ChangedButton == MouseButton.Right && (bool) layerCheck.IsChecked)
+            {
+                //get colour
+                int[] colourValues = configManager.RemoveKey(keycode);
+
+                r = colourValues[0];
+                g = colourValues[1];
+                b = colourValues[2];
+
+                btn.Opacity = 0.5;
+            }
+            else
+            {
+                return;
+            }
+
+            readBtn.IsEnabled = true;
+            saveBtn.IsEnabled = true;
             //reflect change in UI
             Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
-            (e.Source as Button).Foreground = new SolidColorBrush(colour);
-            (e.Source as Button).Opacity = 1;
-            configManager.UpdateLayer(keycode, r, g, b);
-            readBtn.IsEnabled = true;
-
+            btn.Foreground = new SolidColorBrush(colour);
             //write to device
             Debug.WriteLine(NativeMethods.SetKeyColour(keycode, r, g, b, 1));
 
@@ -287,24 +331,25 @@ namespace Keymeleon
             mainWindow.StartFocusMonitoring();
         }
 
-        private void OpenApplicationSelector(object sender, RoutedEventArgs e)
-        {
-            ApplicationSelector applicationSelector = new ApplicationSelector(this);
-            applicationSelector.Show(); //TODO; prevent anything from happening until selector is closed
-        }
-
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
         {
-            string fileName = layerList.SelectedItem.ToString();
-            if (fileName.Equals("Default.conf")) //REDUNDANT
+            string fileName;
+            if ((bool)layerCheck.IsChecked) //layer
             {
-                return;
+                fileName = layerList.SelectedItem.ToString();
+
+                layerList.SelectedIndex = 0;
+                layerList.Items.Remove(fileName);
+            }
+            else //base
+            {
+                fileName = baseList.SelectedItem.ToString();
+
+                baseList.SelectedIndex = 0;
+                baseList.Items.Remove(fileName);
             }
             File.Delete("layouts/"+fileName);
 
-            layerList.SelectedIndex = 0;
-            layerList.Items.Remove(fileName);
-            
         }
 
         private void ToggleLayer(object sender, RoutedEventArgs e)
@@ -312,14 +357,55 @@ namespace Keymeleon
             if ((bool) layerCheck.IsChecked)
             {
                 layerList.SelectedIndex = 0;
+                Controls.SetValue(Grid.RowProperty, 1);
+                delBtn.IsEnabled = true;
             }
             else
             {
                 layerList.SelectedIndex = -1;
                 LoadBaseConfig(sender, e);
+                Controls.SetValue(Grid.RowProperty, 0);
             }
             layerList.IsEnabled = (bool) layerCheck.IsChecked;
         }
-    }
 
+        private void LoadConfig(object sender, RoutedEventArgs e)
+        {
+            if ((bool) layerCheck.IsChecked) //layer
+            {
+                LoadLayerConfig(sender, e);
+            }
+            else //base
+            {
+                LoadBaseConfig(sender, e);
+            }
+        }
+
+        private void SaveConfig(object sender, RoutedEventArgs e)
+        {
+            if ((bool)layerCheck.IsChecked) //layer
+            {
+                SaveLayerConfig(sender, e);
+            }
+            else //base
+            {
+                SaveBaseConfig(sender, e);
+            }
+        }
+
+        private void NewConfig(object sender, RoutedEventArgs e)
+        {
+            if ((bool)layerCheck.IsChecked) //layer
+            {
+                ApplicationSelector applicationSelector = new ApplicationSelector(this);
+                applicationSelector.Show(); //TODO; prevent anything from happening until selector is closed
+            }
+            else //base
+            {
+                //TODO
+                //CreateConfig();
+            }
+        }
+
+    }
 }

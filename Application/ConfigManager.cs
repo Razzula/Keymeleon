@@ -18,7 +18,7 @@ namespace Keymeleon
         {
             string[][] headers = {
                 new[] { "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12" },
-                new[] { "Tilde", "_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_0", "Minus", "Equals", "Num_Lock", "Num_Slash", "Num_Asterisk" },
+                new[] { "Tilde", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Minus", "Equals", "Num_Lock", "Num_Slash", "Num_Asterisk" },
                 new[] { "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "BracketL", "BracketR", "Num_7", "Num_8", "Num_9" },
                 new[] { "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Semicolon", "Apostrophe", "Hash", "Num_4", "Num_5", "Num_6" },
                 new[] { "LShift", "z", "x", "c", "v", "b", "n", "m", "Comma", "Period", "Slash", "RShift", "Enter", "Num_1", "Num_2", "Num_3" },
@@ -51,6 +51,8 @@ namespace Keymeleon
                 //TODO; add error msg
                 return null;
             }
+
+            layerState.Clear();
 
             string text = streamReader.ReadToEnd();
             streamReader.Close();
@@ -155,6 +157,20 @@ namespace Keymeleon
             {
                 layerState.Add(keycode, new[] { r, g, b });
             }
+        }
+
+        public int[] RemoveKey(string keycode)
+        {
+            if (layerState.ContainsKey(keycode))
+            {
+                layerState.Remove(keycode);
+            }
+
+            if (baseState.ContainsKey(keycode))
+            {
+                return baseState[keycode];
+            }
+            return new[] { 0, 0, 0 };
         }
 
         public void SaveBaseConfig(string fileName)

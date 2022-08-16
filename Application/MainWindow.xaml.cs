@@ -61,14 +61,14 @@ namespace Keymeleon
             InitializeComponent();
 
             //cache default config on profile1 (to minimise rewrites of onboard flash)
-            if (File.Exists("layouts/default.base"))
+            if (File.Exists("layouts/Default.base"))
             {
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/default.base", 1));
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/default.base", 2));
+                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 1));
+                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 2));
             }
 
             configManager = new ConfigManager();
-            configManager.LoadBaseConfig("layouts/default.base");
+            configManager.LoadBaseConfig("layouts/Default.base");
 
             //remove any temp files
             File.Delete("layouts/_temp.conf");
@@ -151,11 +151,11 @@ namespace Keymeleon
 
         private void OpenEditor(object sender, EventArgs e)
         {
+            nIcon.Visible = false;
             NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
+
             EditorWindow editor = new EditorWindow();
             editor.Show();
-
-            nIcon.Visible = false;
         }
 
         public void StartFocusMonitoring()
