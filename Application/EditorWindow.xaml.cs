@@ -32,6 +32,7 @@ namespace Keymeleon
             public static extern int SetKeyColour(string keycode, int r, int g, int b, int profile);
         }
 
+
         ConfigManager configManager;
         Button[][] rows;
 
@@ -106,7 +107,9 @@ namespace Keymeleon
             Debug.WriteLine(NativeMethods.SetLayoutBase(fileName, 1));
 
             readBtn.IsEnabled = false;
+            loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh_Disabled.png"));
             saveBtn.IsEnabled = false;
+            saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save_Disabled.png"));
         }
 
         private void LoadLayerConfig(string fileName)
@@ -139,7 +142,7 @@ namespace Keymeleon
                 {
                     if (btn != null)
                     {
-                        btn.Opacity = 0.5;
+                        btn.Opacity = 0.3;
                     }
                 }
             }
@@ -166,7 +169,9 @@ namespace Keymeleon
             Debug.WriteLine(NativeMethods.ApplyLayoutLayer(fileName, 1));
 
             readBtn.IsEnabled = false;
+            loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh_Disabled.png"));
             saveBtn.IsEnabled = false;
+            saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save_Disabled.png"));
         }
 
         private void SaveBaseConfig(object sender, RoutedEventArgs e)
@@ -188,8 +193,16 @@ namespace Keymeleon
                 string fileName = baseList.SelectedItem.ToString();
                 LoadBaseConfig("layouts/" + fileName + ".base");
 
-
-                delBtn.IsEnabled = !baseList.SelectedItem.Equals("Default"); //prevent deletion of default base
+                bool enable = !baseList.SelectedItem.Equals("Default");
+                delBtn.IsEnabled = enable; //prevent deletion of default base
+                if (enable)
+                {
+                    deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
+                }
+                else
+                {
+                    deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Disabled.png"));
+                }
 
                 if ((bool) layerCheck.IsChecked)
                 {
@@ -260,7 +273,7 @@ namespace Keymeleon
                 g = colourValues[1];
                 b = colourValues[2];
 
-                btn.Opacity = 0.5;
+                btn.Opacity = 0.3;
             }
             else
             {
@@ -268,7 +281,10 @@ namespace Keymeleon
             }
 
             readBtn.IsEnabled = true;
+            loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh.png"));
             saveBtn.IsEnabled = true;
+            saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save.png"));
+
             //reflect change in UI
             Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
             btn.Foreground = new SolidColorBrush(colour);
@@ -325,10 +341,12 @@ namespace Keymeleon
             colourDisplay.Fill = new SolidColorBrush(colour);
         }
 
-        private void OnWindowClose(object sender, EventArgs e)
+        private void Exit(object sender, EventArgs e)
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.StartFocusMonitoring();
+
+            Close();
         }
 
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
@@ -336,7 +354,7 @@ namespace Keymeleon
             string fileName;
             if ((bool)layerCheck.IsChecked) //layer
             {
-                fileName = layerList.SelectedItem.ToString();
+                fileName = layerList.SelectedItem+".conf";
 
                 layerList.SelectedIndex = 0;
                 layerList.Items.Remove(fileName);
@@ -346,7 +364,7 @@ namespace Keymeleon
                 fileName = baseList.SelectedItem.ToString();
 
                 baseList.SelectedIndex = 0;
-                baseList.Items.Remove(fileName);
+                baseList.Items.Remove(fileName+".base");
             }
             File.Delete("layouts/"+fileName);
 
@@ -359,6 +377,7 @@ namespace Keymeleon
                 layerList.SelectedIndex = 0;
                 Controls.SetValue(Grid.RowProperty, 1);
                 delBtn.IsEnabled = true;
+                deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
             }
             else
             {
@@ -398,7 +417,8 @@ namespace Keymeleon
             if ((bool)layerCheck.IsChecked) //layer
             {
                 ApplicationSelector applicationSelector = new ApplicationSelector(this);
-                applicationSelector.Show(); //TODO; prevent anything from happening until selector is closed
+                applicationSelector.Owner = this;
+                applicationSelector.ShowDialog(); //TODO; prevent anything from happening until selector is closed
             }
             else //base
             {

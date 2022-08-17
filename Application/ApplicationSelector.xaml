@@ -6,17 +6,42 @@
         xmlns:local="clr-namespace:Keymeleon"
         mc:Ignorable="d"
         Title="ApplicationSelector" Height="300" MinWidth="300"
-        SizeToContent="Width">
+        SizeToContent="Width"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="#181818">
     
     <!-- TODO; generate list of installed / open applications -->
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock x:Name="textBlock">Current Applications</TextBlock>
-            <Button Click="ToggleList" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Image x:Name="expandImg" Source="Resources/Expand.png"/>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <TextBlock x:Name="textBlock" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4,0,0,0">Current Applications</TextBlock>
+            <!--<Button Click="ToggleList" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Image x:Name="expandImg" Source="Resources/Expand_Dark.png"/>
+            </Button>-->
+            <Button Click="Exit" Content="X" Width="46" Height="32" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                <Button.Style>
+                    <Style>
+                        <Setter Property="Button.Background" Value="Transparent"/>
+                        <Setter Property="Button.Foreground" Value="White"/>
+                        <Setter Property="Button.BorderBrush" Value="Transparent"/>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                <Setter Property="Button.Background" Value="#cd1a2b"/> <!--TODO; fix-->
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
-        </StackPanel>
-        <ListView x:Name="applicationList" MaxHeight="220" SelectionChanged="applicationList_SelectionChanged"></ListView>
-        <Button x:Name="btnSubmit" Content="Ok" Click="Submit" Width="80"/>
-    </StackPanel>
+        </DockPanel>
+        <ListView Grid.Row="1" x:Name="applicationList" SelectionChanged="applicationList_SelectionChanged"></ListView>
+        <Button Grid.Row="2" x:Name="btnSubmit" Content="Ok" Click="Submit" Width="80" IsEnabled="False" VerticalAlignment="Center" Height="32"/>
+        
+    </Grid>
 </Window>

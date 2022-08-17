@@ -104,40 +104,40 @@ namespace Keymeleon
         }
 
         //expand/collapse
-        private void ToggleList(object sender, RoutedEventArgs e)
-        {
-            applicationList.Items.Clear();
-            List<string> items;
-            if (isExpanded)
-            {
-                items = currentApplications;
+        //private void ToggleList(object sender, RoutedEventArgs e)
+        //{
+        //    applicationList.Items.Clear();
+        //    List<string> items;
+        //    if (isExpanded)
+        //    {
+        //        items = currentApplications;
 
-                textBlock.Text = "Current Applications";
-                expandImg.Source = new BitmapImage(new Uri(@"/Resources/Expand.png", UriKind.Relative));
-            }
-            else
-            {
-                items = allApplications;
+        //        textBlock.Text = "Current Applications";
+        //        expandImg.Source = new BitmapImage(new Uri(@"/Resources/Expand.png", UriKind.Relative));
+        //    }
+        //    else
+        //    {
+        //        items = allApplications;
 
-                textBlock.Text = "All Applications";
-                expandImg.Source = new BitmapImage(new Uri(@"/Resources/Collapse.png", UriKind.Relative));
-            }
+        //        textBlock.Text = "All Applications";
+        //        expandImg.Source = new BitmapImage(new Uri(@"/Resources/Collapse.png", UriKind.Relative));
+        //    }
 
-            foreach (string item in items)
-            {
-                ListViewItem temp = new ListViewItem();
-                temp.Content = item;
-                if (existingConfigs.Contains(item))
-                {
-                    temp.IsEnabled = false;
-                }
-                applicationList.Items.Add(temp);
-            }
-            isExpanded = !isExpanded;
+        //    foreach (string item in items)
+        //    {
+        //        ListViewItem temp = new ListViewItem();
+        //        temp.Content = item;
+        //        if (existingConfigs.Contains(item))
+        //        {
+        //            temp.IsEnabled = false;
+        //        }
+        //        applicationList.Items.Add(temp);
+        //    }
+        //    isExpanded = !isExpanded;
 
-            btnSubmit.IsEnabled = false;
-            this.SizeToContent = SizeToContent.Width; //TODO; fix
-        }
+        //    btnSubmit.IsEnabled = false;
+        //    this.SizeToContent = SizeToContent.Width; //TODO; fix
+        //}
 
         private void Submit(object sender, RoutedEventArgs e)
         {
@@ -164,6 +164,11 @@ namespace Keymeleon
         private void applicationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             btnSubmit.IsEnabled = true;
+        }
+
+        public void Exit(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -8,6 +8,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <StartupObject>Keymeleon.App</StartupObject>
+    <ApplicationIcon>Resources\keymeleon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -23,23 +25,40 @@
     <None Remove="Resources\Add.png" />
     <None Remove="Resources\Collapse.png" />
     <None Remove="Resources\CollapseUp.png" />
+    <None Remove="Resources\Collapse_Dark.png" />
     <None Remove="Resources\Delete.png" />
+    <None Remove="Resources\Delete_Dark.png" />
+    <None Remove="Resources\Delete_Disabled.png" />
     <None Remove="Resources\Expand.png" />
     <None Remove="Resources\ExpandDown.png" />
+    <None Remove="Resources\Expand_Dark.png" />
+    <None Remove="Resources\keymeleon.png" />
     <None Remove="Resources\New.png" />
     <None Remove="Resources\Open.png" />
     <None Remove="Resources\OpenFile.png" />
     <None Remove="Resources\Refresh.png" />
+    <None Remove="Resources\Refresh_Disabled.png" />
     <None Remove="Resources\Save.png" />
+    <None Remove="Resources\Save_Disabled.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\keymeleon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\Collapse.png" />
+    <Resource Include="Resources\Collapse_Dark.png" />
     <Resource Include="Resources\Delete.png" />
+    <Resource Include="Resources\Delete_Dark.png" />
+    <Resource Include="Resources\Delete_Disabled.png" />
     <Resource Include="Resources\Expand.png" />
+    <Resource Include="Resources\Expand_Dark.png" />
     <Resource Include="Resources\New.png" />
-    <Resource Include="Resources\Open.png" />
+    <Resource Include="Resources\Refresh.png" />
+    <Resource Include="Resources\Refresh_Disabled.png" />
     <Resource Include="Resources\Save.png" />
+    <Resource Include="Resources\Save_Disabled.png" />
   </ItemGroup>
 
 </Project>

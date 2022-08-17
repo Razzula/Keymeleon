@@ -3,28 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
         xmlns:local="clr-namespace:Keymeleon"
         mc:Ignorable="d"
-        Title="Keymeleon - Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
-        Closed="OnWindowClose">
-    <!-- TODO; dark theme -->
+        Title="Keymeleon Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
+        Closed="Exit"
+        WindowStyle="None">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <!-- When a button that contains an image is disabled, reflect this through the image's opacity -->
         <Style TargetType="Image">
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.3" />
+                    <Setter Property="Opacity" Value="0.35" />
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <!--<Style TargetType="Button">
-            <Setter Property="FontWeight" Value="Normal" />
-        </Style>-->
     </Window.Resources>
-
+    
     <DockPanel>
+        <!-- Custom Titlebar -->
+        <Grid DockPanel.Dock="Top" Height="32" Background="#181818">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Image Source="/Resources/keymeleon.ico" Grid.Column="0" Margin="4" />
+            <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="12" Text="Keymeleon Editor" Foreground="White"/>
+            <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/> <!-- TODO; fix -->
+        </Grid>
+        
         <!-- Controls -->
         <DockPanel DockPanel.Dock="Top">
 
@@ -32,9 +47,9 @@
             <StackPanel Orientation="Vertical" DockPanel.Dock="Left">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="21"/>
-                        <RowDefinition Height="21"/>
-                        <RowDefinition Height="21"/>
+                        <RowDefinition Height="22"/>
+                        <RowDefinition Height="22"/>
+                        <RowDefinition Height="22"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -42,23 +57,23 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
 
-                    <CheckBox Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+                    <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
 
                     <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
                         <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
                             <Image Source="/Resources/New.png"/>
                         </Button>
-                        <Button ToolTip="Load" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image Source="/Resources/Open.png"/>
+                        <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                            <Image x:Name="loadIcon" Source="/Resources/Refresh.png"/>
                         </Button>
                         <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image Source="Resources/Save.png"/>
+                            <Image x:Name="saveIcon" Source="Resources/Save.png"/>
                         </Button>
                         <Button ToolTip="Delete" x:Name="delBtn" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image Source="Resources/Delete.png"/>
+                            <Image x:Name="deleteIcon" Source="Resources/Delete_Dark.png"/>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -66,7 +81,7 @@
 
             <!--Colour -->
             <Grid DockPanel.Dock="Right" Height="96">
-                <Rectangle x:Name="colourDisplay" Height="60" Width="90" Stroke="Black" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
+                <Rectangle x:Name="colourDisplay" Height="60" Width="90" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
                 <TextBox x:Name="rBox" Margin="510,65,70,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
                 <TextBox x:Name="gBox" Margin="540,65,40,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
                 <TextBox x:Name="bBox" Margin="570,65,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" HorizontalAlignment="Right" Width="30" TextAlignment="Center"/>
@@ -185,6 +200,20 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Margin" Value="2,2,2,2"/>
+                        <Setter Property="Background" Value="#353535"/>
+                        <Setter Property="Foreground" Value="{StaticResource Element.Glyph}"/>
+                        
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Element.MouseOver.Background}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+
                 <!-- TODO; recolour -->
                 <Button x:Name="Esc"   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Esc" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="F1"    Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="4" Content="F1" PreviewMouseDown="ButtonClicked"/>
@@ -251,7 +280,7 @@
                 <Button x:Name="l"          Grid.Row="4" Grid.Column="39" Grid.ColumnSpan="4" Content="L" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="Semicolon"  Grid.Row="4" Grid.Column="43" Grid.ColumnSpan="4" Content=";" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="Apostrophe" Grid.Row="4" Grid.Column="47" Grid.ColumnSpan="4" Content="'" PreviewMouseDown="ButtonClicked"/>
-                <Button x:Name="Hash"       Grid.Row="4" Grid.Column="51" Grid.ColumnSpan="4" Content="#" PreviewMouseDown="ButtonClicked"/>
+                <Button x:Name="Hash"       Grid.Row="4" Grid.Column="51" Grid.ColumnSpan="3" Content="#" PreviewMouseDown="ButtonClicked"/>
 
                 <Button x:Name="LShift"    Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Content="Shift" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="Backslash" Grid.Row="5" Grid.Column="5" Grid.ColumnSpan="4" Content="\" PreviewMouseDown="ButtonClicked"/>

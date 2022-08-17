@@ -85,11 +85,15 @@ namespace Keymeleon
 
             ToolStripItem ts = new ToolStripMenuItem("Open Editor");
             ts.Click += new EventHandler(OpenEditor);
+            ts.BackColor = ColorTranslator.FromHtml("#292929");
             contextMenu.Items.Add(ts);
 
             ts = new ToolStripMenuItem("Exit");
             ts.Click += new EventHandler(Exit);
+            ts.BackColor = ColorTranslator.FromHtml("#292929");
             contextMenu.Items.Add(ts);
+
+            contextMenu.ForeColor = System.Drawing.Color.White;
 
             //begin
             StartFocusMonitoring();
@@ -160,6 +164,12 @@ namespace Keymeleon
 
         public void StartFocusMonitoring()
         {
+            if (File.Exists("layouts/Default.base"))
+            {
+                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 1));
+                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 2));
+            }
+
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
             hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
