@@ -20,6 +20,7 @@ using System.Windows.Interop;
 using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.Win32;
+using System.Threading;
 
 namespace Keymeleon
 {
@@ -30,11 +31,27 @@ namespace Keymeleon
         private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
         private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
 
+        System.IntPtr hWinHook;
+        private delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
+        HookProc winHookProc;
+
         private NotifyIcon nIcon = new NotifyIcon();
         ContextMenuStrip contextMenu;
 
         ConfigManager configManager;
+        private string focusedApplication;
         private string cachedApplication;
+
+        Dictionary<string, uint> keycodes = new Dictionary<string, uint>()
+        {
+            { "LShift", 0xA0 },
+            { "RShift", 0xA1 },
+            { "LCtrl", 0xA2 },
+            { "RCtrl", 0xA3 },
+            { "LAlt", 0xA4 }
+        };
+        List<int> registeredHotkeys = new List<int>();
+        bool hotkeyActive = false;
 
         static class NativeMethods
         {
@@ -46,6 +63,15 @@ namespace Keymeleon
             public static extern bool UnhookWinEvent(System.IntPtr hWinEventHook);
 
             [DllImport("user32.dll")]
+            public static extern IntPtr SetWindowsHookExA(int idHook, HookProc lpfn, IntPtr hmod, uint dwThreadId);
+            [DllImport("user32.dll")]
+            public static extern int CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+            [DllImport("user32.dll")]
+            public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+
+
+            [DllImport("user32.dll")]
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
 
             [DllImport("kym.dll")]
@@ -54,24 +80,23 @@ namespace Keymeleon
             public static extern int ApplyLayoutLayer(string configFileName, int profileToModify);
             [DllImport("kym.dll")]
             public static extern int SetActiveProfile(int profile);
+
         }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            //cache default config on profile1 (to minimise rewrites of onboard flash)
-            if (File.Exists("layouts/Default.base"))
-            {
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 1));
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 2));
-            }
-
             configManager = new ConfigManager();
             configManager.LoadBaseConfig("layouts/Default.base");
 
             //remove any temp files
-            File.Delete("layouts/_temp.conf");
+            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
+            var info = dirInfo.GetFiles("_*.conf");
+            foreach (var file in info)
+            {
+                File.Delete(file.FullName);
+            }
 
             //minimise to system tray
             Hide();
@@ -95,6 +120,8 @@ namespace Keymeleon
 
             contextMenu.ForeColor = System.Drawing.Color.White;
 
+            winHookProc = new HookProc(WinHookProc);
+
             //begin
             StartFocusMonitoring();
         }
@@ -109,7 +136,6 @@ namespace Keymeleon
             Process p = Process.GetProcessById((int)pid);
 
             //get name of application that process is owned by
-            string focusedApplication;
             try
             {
                 focusedApplication = p.MainModule.FileVersionInfo.FileDescription;
@@ -128,22 +154,35 @@ namespace Keymeleon
 
             Debug.WriteLine(focusedApplication);
 
-            if (File.Exists("layouts/"+focusedApplication+".conf"))
+            registeredHotkeys.Clear();
+
+            if (File.Exists("layouts/"+focusedApplication+".conf")) //is there a layer to apply
             {
+                //register hotkeys
+                var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
+                var info = dirInfo.GetFiles(focusedApplication+"_*.conf");
+                foreach (var file in info)
+                {
+                    string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
+                    string keyname = fileName.Substring(fileName.IndexOf('_') + 1);
+                    registeredHotkeys.Add((int) keycodes[keyname]); //TODO; catch
+                }
+
+                //apply layer to keyboard
                 if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
                 {
                     //set layout to base
-                    if (File.Exists("layouts/_temp.conf"))
+                    if (File.Exists("layouts/_1.conf"))
                     {
-                        Debug.WriteLine(NativeMethods.ApplyLayoutLayer("layouts/_temp.conf", 2));
+                        Debug.WriteLine(NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2));
                     }
                     Debug.WriteLine(NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2));
                     cachedApplication = focusedApplication;
 
                     //create temp config to revert to base
-                    configManager.LoadLayerConfig("layouts/"+focusedApplication+".conf");
-                    var deltaState = configManager.GetStatesDelta();
-                    configManager.SaveInverseConfig("layouts/_temp.conf");
+                    configManager.LoadLayerConfig("layouts/"+focusedApplication+".conf", 1);
+                    var deltaState = configManager.GetStatesDelta(0, 1);
+                    configManager.SaveInverseConfig("layouts/_1.conf", 0, 1);
                 }
                 NativeMethods.SetActiveProfile(2);
             }
@@ -157,6 +196,7 @@ namespace Keymeleon
         {
             nIcon.Visible = false;
             NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
+            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
 
             EditorWindow editor = new EditorWindow();
             editor.Show();
@@ -174,20 +214,66 @@ namespace Keymeleon
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
             hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
 
+            //setup method to handle key events
+            var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
+            hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
+
             nIcon.Visible = true;
         }
 
         public void Exit(object sender, EventArgs e)
         {
-            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
             nIcon.Visible = false;
+            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
+            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
 
             //remove any temp files
-            File.Delete("layouts/_temp.conf");
+            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
+            var info = dirInfo.GetFiles("_*.conf");
+            foreach (var file in info)
+            {
+                File.Delete(file.FullName);
+            }
 
             Close();
         }
 
+        int WinHookProc(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            int keycode = Marshal.ReadInt32(lParam);
+
+            if (registeredHotkeys.Contains(keycode)) //check if registered
+            {
+                int msg = wParam.ToInt32();
+                switch (msg)
+                {
+                    case 256:
+                        if (!hotkeyActive)
+                        {
+                            string key = keycodes.FirstOrDefault(x => x.Value == keycode).Key;
+                            string fileName = "layouts/" + cachedApplication + "_" + key + ".conf";
+                            configManager.LoadLayerConfig(fileName, 2);
+                            configManager.SaveInverseConfig("layouts/_2.conf", 1, 2);
+                            NativeMethods.ApplyLayoutLayer(fileName, 2);
+
+                            //Debug.WriteLine("Down");
+                            hotkeyActive = true;
+                        }
+                        break;
+                    case 257:
+                        if (hotkeyActive)
+                        {
+                            NativeMethods.ApplyLayoutLayer("layouts/_2.conf", 2); //TEMP
+
+                            //Debug.WriteLine("Up");
+                            hotkeyActive = false;
+                        }
+                        break;
+                }
+            }
+            //TODO; make above async
+            return NativeMethods.CallNextHookEx(hWinHook, nCode, wParam, lParam);
+        }
     }
 
     //TODO; if screen goes on standby, set keyboard to black

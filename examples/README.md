@@ -6,7 +6,11 @@ Each config file corresponds to an application, and the layer is applied when sa
 ### Naming
  The name of the config determines which window it will be used for. For example, `Google Chrome.conf` will be used when (you guessed it) Google Chrome is focused.
 
-`default.base` is special, in that it will be used for any applications that don't have their own configs.
+ `Google Chrome_LCtrl.conf` would be used when the Left Control key is pressed with Chrome open.
+
+ Files starting with `_`, such as `_1.conf` are temporary files which hold the information required to easily 'remove' the current layer.
+
+`Default.base` is special, in that it will be used for any applications that don't have their own configs.
 
 ### Formatting
 

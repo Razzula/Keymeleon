@@ -12,6 +12,7 @@ namespace Keymeleon
     {
         Dictionary<string, int[]> baseState = new Dictionary<string, int[]>();
         Dictionary<string, int[]> layerState = new Dictionary<string, int[]>();
+        Dictionary<string, int[]> topLayerState = new Dictionary<string, int[]>();
         string[][] headers;
 
         public ConfigManager()
@@ -102,9 +103,10 @@ namespace Keymeleon
             return baseState;
         }
 
-        public Dictionary<string, int[]> LoadLayerConfig(string fileName)
+        public Dictionary<string, int[]> LoadLayerConfig(string fileName, int layer)
         {
-            layerState.Clear();
+            Dictionary<string, int[]> tempState = GetLayer(layer);
+            tempState.Clear();
 
             StreamReader streamReader;
             try
@@ -141,31 +143,39 @@ namespace Keymeleon
                 int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
                 int g = Convert.ToInt32(data[1].Substring(2, 2), 16);
                 int b = Convert.ToInt32(data[1].Substring(4, 2), 16);
-                layerState.Add(data[0], new[] { r, g, b });
+                tempState.Add(data[0], new[] { r, g, b });
             }
 
-            return layerState;
+            return tempState;
         }
 
-        public void UpdateLayer(string keycode, int r, int g, int b)
+        public void UpdateLayer(int layer, string keycode, int r, int g, int b)
         {
-            if (layerState.ContainsKey(keycode))
+            Dictionary<string, int[]> tempState = GetLayer(layer);
+
+            if (tempState.ContainsKey(keycode))
             {
-                layerState[keycode] = new[] { r, g, b };
+                tempState[keycode] = new[] { r, g, b };
             }
             else
             {
-                layerState.Add(keycode, new[] { r, g, b });
+                tempState.Add(keycode, new[] { r, g, b });
             }
         }
 
-        public int[] RemoveKey(string keycode)
+        public int[] RemoveKey(string keycode, int layer)
         {
-            if (layerState.ContainsKey(keycode))
+            var tempState = GetLayer(layer);
+
+            if (tempState.ContainsKey(keycode))
             {
                 layerState.Remove(keycode);
             }
 
+            if (layer == 2 && layerState.ContainsKey(keycode))
+            {
+                return layerState[keycode];
+            }
             if (baseState.ContainsKey(keycode))
             {
                 return baseState[keycode];
@@ -214,11 +224,12 @@ namespace Keymeleon
             File.WriteAllLines(fileName, lines);
         }
 
-        public void SaveLayerConfig(string fileName)
+        public void SaveLayerConfig(string fileName, int layer)
         {
+            Dictionary<string, int[]> tempState = GetLayer(layer);
 
             List<string> lines = new List<string>();
-            foreach (var item in layerState)
+            foreach (var item in tempState)
             {
                 if (item.Value[0] == -1 || item.Value[1] == -1 || item.Value[2] == -1) //transparent
                 {
@@ -231,9 +242,9 @@ namespace Keymeleon
             File.WriteAllLines(fileName, lines);
         }
 
-        public void SaveInverseConfig(string fileName)
+        public void SaveInverseConfig(string fileName, int bottomLayer, int topLayer)
         {
-            var deltaState = GetStatesDelta();
+            var deltaState = GetStatesDelta(bottomLayer, topLayer);
 
             List<string> lines = new List<string>();
             foreach (var item in deltaState)
@@ -249,19 +260,53 @@ namespace Keymeleon
             File.WriteAllLines(fileName, lines);
         }
 
-        public Dictionary<string, int[]> GetStatesDelta()
+        public Dictionary<string, int[]> GetStatesDelta(int bottomLayer, int topLayer) //returns a set of keys and their values to revert from the top layer to the bottom
         {
             Dictionary<string, int[]> statesDelta = new Dictionary<string, int[]>();
 
-            foreach (var item in layerState)
+            Dictionary<string, int[]> topState = GetLayer(topLayer);
+            Dictionary<string, int[]> bottomState = GetLayer(bottomLayer);
+
+            foreach (var item in topState)
             {
-                if (baseState.ContainsKey(item.Key))
+                if (bottomState.ContainsKey(item.Key))
+                {
+                    statesDelta.Add(item.Key, bottomState[item.Key]);
+                }
+                else if (baseState.ContainsKey(item.Key))
                 {
                     statesDelta.Add(item.Key, baseState[item.Key]);
                 }
             }
 
+            if (topLayer - bottomLayer == 2) //if reverting multiple layers simultaneously
+            {
+                var tempStates = GetStatesDelta(0, 1);
+                foreach (var item in tempStates)
+                {
+                    if (!statesDelta.ContainsKey(item.Key))
+                    {
+                        statesDelta.Add(item.Key, item.Value);
+                    }
+                }
+            }
+
             return statesDelta;
+        }
+
+        private Dictionary<string, int[]> GetLayer(int layer)
+        {
+            switch (layer)
+            {
+                case 0:
+                    return baseState;
+                case 1:
+                    return layerState;
+                case 2:
+                    return topLayerState;
+                default:
+                    return null;
+            }
         }
     }
 }

@@ -11,8 +11,7 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Background="#181818">
-    
-    <!-- TODO; generate list of installed / open applications -->
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>

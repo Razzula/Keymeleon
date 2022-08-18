@@ -7,8 +7,9 @@
         xmlns:local="clr-namespace:Keymeleon"
         mc:Ignorable="d"
         Title="Keymeleon Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
-        Closed="Exit"
-        WindowStyle="None">
+        Closing="OnExit"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
@@ -37,7 +38,7 @@
             </Grid.ColumnDefinitions>
             <Image Source="/Resources/keymeleon.ico" Grid.Column="0" Margin="4" />
             <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="12" Text="Keymeleon Editor" Foreground="White"/>
-            <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/> <!-- TODO; fix -->
+            <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/>
         </Grid>
         
         <!-- Controls -->
@@ -214,7 +215,6 @@
                     </Style>
                 </Grid.Resources>
 
-                <!-- TODO; recolour -->
                 <Button x:Name="Esc"   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Esc" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="F1"    Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="4" Content="F1" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="F2"    Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="4" Content="F2" PreviewMouseDown="ButtonClicked"/>

@@ -1,9 +1,9 @@
 <p align="center">
-	<img width="256" height="256" src="https://github.com/Razzula/keymeleon/blob/main/Keymeleon.png">
+	<img width="256" height="256" src="https://github.com/Razzula/keymeleon/Keymeleon.png">
 </p>
 <h1 align="center">Keymeleon</h1>
 
-An adaptive keyboard RGB controller that changes the keyboard's appearance to display user-defined layouts depending on which software is in focus. 
+An adaptive keyboard RGB controller that changes the keyboard's appearance to display user-defined layouts depending on both which software is in focus and user keypresses. 
 
 **This software is not official software and therefore is not supported by the manufacturer nor the hardware in any way. As the software interacts directly with the hardware using reverse engineered protocols, there is a risk of damage. Though the software has been used and tested, these methods may not have been extensive. No warranty is provided, especially for hardware damages, for using this software**
 

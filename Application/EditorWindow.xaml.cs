@@ -114,8 +114,8 @@ namespace Keymeleon
 
         private void LoadLayerConfig(string fileName)
         {
-            var deltaState = configManager.GetStatesDelta();
-            var tempState = configManager.LoadLayerConfig(fileName);
+            var deltaState = configManager.GetStatesDelta(0, 1);
+            var tempState = configManager.LoadLayerConfig(fileName, 1);
             if (tempState == null)
             {
                 return;
@@ -183,7 +183,7 @@ namespace Keymeleon
         private void SaveLayerConfig(object sender, RoutedEventArgs e)
         {
             string fileName = layerList.SelectedItem.ToString();
-            configManager.SaveLayerConfig("layouts/" + fileName + ".conf");
+            configManager.SaveLayerConfig("layouts/" + fileName + ".conf", 1);
         }
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
@@ -262,12 +262,12 @@ namespace Keymeleon
                 
                 btn.Opacity = 1;
 
-                configManager.UpdateLayer(keycode, r, g, b);
+                configManager.UpdateLayer(1, keycode, r, g, b);
             }
             else if (e.ChangedButton == MouseButton.Right && (bool) layerCheck.IsChecked)
             {
                 //get colour
-                int[] colourValues = configManager.RemoveKey(keycode);
+                int[] colourValues = configManager.RemoveKey(keycode, 1);
 
                 r = colourValues[0];
                 g = colourValues[1];
@@ -343,10 +343,13 @@ namespace Keymeleon
 
         private void Exit(object sender, EventArgs e)
         {
+            Close();
+        }
+
+        private void OnExit(object sender, EventArgs e)
+        {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.StartFocusMonitoring();
-
-            Close();
         }
 
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
@@ -418,7 +421,7 @@ namespace Keymeleon
             {
                 ApplicationSelector applicationSelector = new ApplicationSelector(this);
                 applicationSelector.Owner = this;
-                applicationSelector.ShowDialog(); //TODO; prevent anything from happening until selector is closed
+                applicationSelector.ShowDialog(); //showDialog to prevent anything from happening until selector is closed
             }
             else //base
             {
