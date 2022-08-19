@@ -41,7 +41,12 @@ namespace Keymeleon
             FileInfo[] info = dirInfo.GetFiles("*.conf");
             foreach (FileInfo file in info)
             {
-                existingConfigs.Add(System.IO.Path.GetFileNameWithoutExtension(file.FullName));
+                var config = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
+                existingConfigs.Add(config);
+                if (!config.Contains('_')) //ignore temps/hotkeys
+                {
+                    templateList.Items.Add(config);
+                }
             }
 
             //fill list with open applications
@@ -147,7 +152,14 @@ namespace Keymeleon
             {
                 if (!File.Exists(fileName))
                 {
-                    editor.CreateConfig(item.Content+".conf");
+                    if (templateList.SelectedIndex == 0)
+                    {
+                        editor.CreateConfig(item.Content + ".conf");
+                    }
+                    else
+                    {
+                        editor.CreateConfig(item.Content + ".conf", templateList.SelectedItem + ".conf");
+                    }
                     Close();
                 }
                 else

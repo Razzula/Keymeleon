@@ -114,7 +114,7 @@ namespace Keymeleon
 
         private void LoadLayerConfig(string fileName, int layer)
         {
-            var deltaState = configManager.GetStatesDelta(layer-1, layer); //TODO maybe can optimise?
+            var deltaState = configManager.GetStatesDelta(layer-1, layer);
             var tempState = configManager.LoadLayerConfig(fileName, layer);
 
             //undo previous layer
@@ -129,7 +129,7 @@ namespace Keymeleon
                 Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
                 btn.Foreground = new SolidColorBrush(colour);
                 //show colour on device
-                NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1); //TODO; optimize
+                NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1);
             }
 
             foreach (var row in rows)
@@ -244,9 +244,17 @@ namespace Keymeleon
             LoadLayerConfig("layouts/" + fileName + ".conf", 2);
         }
 
-        public void CreateConfig(string fileName)
+        public void CreateConfig(string fileName, string template=null)
         {
-            File.Create("layouts/"+fileName).Close();
+            if (template == null)
+            {
+                File.Create("layouts/"+fileName).Close();
+            }
+            else
+            {
+                File.Copy("layouts/"+template, "layouts/" + fileName);
+            }
+
             string[] file = fileName.Split(".");
 
             if (file[1].Equals(".base"))

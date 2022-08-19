@@ -69,8 +69,6 @@ namespace Keymeleon
             [DllImport("user32.dll")]
             public static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
-
-
             [DllImport("user32.dll")]
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
 
@@ -165,7 +163,11 @@ namespace Keymeleon
                 {
                     string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
                     string keyname = fileName.Substring(fileName.IndexOf('_') + 1);
-                    registeredHotkeys.Add((int) keycodes[keyname]); //TODO; catch
+                    try
+                    {
+                        registeredHotkeys.Add((int)keycodes[keyname]);
+                    }
+                    catch (KeyNotFoundException) { }
                 }
 
                 //apply layer to keyboard
