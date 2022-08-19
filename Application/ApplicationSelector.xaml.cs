@@ -27,11 +27,11 @@ namespace Keymeleon
     {
         EditorWindow editor;
 
-        List<string> existingConfigs = new List<string>();
-        List<string> currentApplications = new List<string>();
-        List<string> allApplications = new List<string>();
+        List<string> existingConfigs = new();
+        List<string> currentApplications = new();
+        List<string> allApplications = new();
 
-        bool isExpanded = false;
+        //bool isExpanded = false;
 
         public ApplicationSelector(EditorWindow owner)
         {
@@ -74,7 +74,7 @@ namespace Keymeleon
                 currentApplications.Add(applicationName);
 
                 //create item
-                ListViewItem item = new ListViewItem();
+                ListViewItem item = new();
                 item.Content = applicationName;
 
                 //add to lsitview
@@ -87,26 +87,21 @@ namespace Keymeleon
 
             //get list of all applications
             string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-            using (RegistryKey rk = Registry.LocalMachine.OpenSubKey(uninstallKey))
+            using RegistryKey rk = Registry.LocalMachine.OpenSubKey(uninstallKey);
+            foreach (string skName in rk.GetSubKeyNames())
             {
-                foreach (string skName in rk.GetSubKeyNames())
+                using RegistryKey sk = rk.OpenSubKey(skName);
+                try
                 {
-                    using (RegistryKey sk = rk.OpenSubKey(skName))
-                    {
-                        try
-                        {
-                            var displayName = sk.GetValue("DisplayName");
-                            var size = sk.GetValue("EstimatedSize");
+                    var displayName = sk.GetValue("DisplayName");
+                    var size = sk.GetValue("EstimatedSize");
 
-                            if (displayName != null)
-                            {
-                                allApplications.Add(displayName.ToString());
-                            }
-                        }
-                        catch (Exception ex)
-                        { }
+                    if (displayName != null)
+                    {
+                        allApplications.Add(displayName.ToString());
                     }
                 }
+                catch (Exception) { }
             }
         }
 

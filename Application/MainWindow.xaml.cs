@@ -50,16 +50,15 @@ namespace Keymeleon
 
         System.IntPtr hWinHook;
         private delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
-        HookProc winHookProc;
 
-        private NotifyIcon nIcon = new NotifyIcon();
-        ContextMenuStrip contextMenu;
+        readonly HookProc winHookProc;
 
-        ConfigManager configManager;
+        private readonly NotifyIcon nIcon = new();
+        readonly ContextMenuStrip contextMenu;
+        readonly ConfigManager configManager;
         private string focusedApplication;
         private string cachedApplication;
-
-        Dictionary<string, uint> keycodes = new Dictionary<string, uint>()
+        readonly Dictionary<string, uint> keycodes = new()
         {
             { "LShift", 0xA0 },
             { "RShift", 0xA1 },
@@ -67,7 +66,7 @@ namespace Keymeleon
             { "RCtrl", 0xA3 },
             { "LAlt", 0xA4 }
         };
-        List<int> registeredHotkeys = new List<int>();
+        readonly List<int> registeredHotkeys = new();
         bool hotkeyActive = false;
 
         static class NativeMethods
@@ -102,7 +101,20 @@ namespace Keymeleon
         {
             InitializeComponent();
 
+            int res = NativeMethods.SetActiveProfile(1);
+            if (res < 0)
+            {
+                var dialog = new PopupDialog("Error", "Could not connect to keyboard.\nPlease reconnect the device and try again.");
+                dialog.ShowDialog();
+                Close();
+            }
+
+            //SETUP
             configManager = new ConfigManager();
+            if (!File.Exists("layouts/Default.base"))
+            {
+                configManager.SaveBaseConfig("layouts/Default.base");
+            }
             configManager.LoadBaseConfig("layouts/Default.base");
 
             //remove any temp files
@@ -113,14 +125,17 @@ namespace Keymeleon
                 File.Delete(file.FullName);
             }
 
+            //START
             //minimise to system tray
             Hide();
             nIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath); //TEMP
             nIcon.Text = "Keymeleon";
             nIcon.DoubleClick += new EventHandler(OpenEditor);
 
-            contextMenu = new ContextMenuStrip();
-            contextMenu.AutoClose = true;
+            contextMenu = new ContextMenuStrip
+            {
+                AutoClose = true
+            };
             nIcon.ContextMenuStrip = contextMenu;
 
             ToolStripItem ts = new ToolStripMenuItem("Open Editor");
@@ -143,7 +158,6 @@ namespace Keymeleon
 
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            Debug.WriteLine("Foreground changed");
 
             //get current focused process
             IntPtr pid = System.IntPtr.Zero;
@@ -193,9 +207,9 @@ namespace Keymeleon
                     //set layout to base
                     if (File.Exists("layouts/_1.conf"))
                     {
-                        Debug.WriteLine(NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2));
+                        NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2);
                     }
-                    Debug.WriteLine(NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2));
+                    NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2);
                     cachedApplication = focusedApplication;
 
                     //create temp config to revert to base
@@ -217,7 +231,7 @@ namespace Keymeleon
             NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
             NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
 
-            EditorWindow editor = new EditorWindow();
+            EditorWindow editor = new();
             editor.Show();
         }
 
@@ -225,8 +239,8 @@ namespace Keymeleon
         {
             if (File.Exists("layouts/Default.base"))
             {
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 1));
-                Debug.WriteLine(NativeMethods.SetLayoutBase("layouts/Default.base", 2));
+                NativeMethods.SetLayoutBase("layouts/Default.base", 1);
+                NativeMethods.SetLayoutBase("layouts/Default.base", 2);
             }
 
             //setup method to handle events (change of focus)
@@ -275,7 +289,6 @@ namespace Keymeleon
                             configManager.SaveInverseConfig("layouts/_2.conf", 1, 2);
                             NativeMethods.ApplyLayoutLayer(fileName, 2);
 
-                            //Debug.WriteLine("Down");
                             hotkeyActive = true;
                         }
                         break;
@@ -284,7 +297,6 @@ namespace Keymeleon
                         {
                             NativeMethods.ApplyLayoutLayer("layouts/_2.conf", 2); //TEMP
 
-                            //Debug.WriteLine("Up");
                             hotkeyActive = false;
                         }
                         break;

@@ -51,7 +51,6 @@ namespace Keymeleon
             }
             catch (System.IO.FileNotFoundException)
             {
-                //TODO; add error msg
                 return null;
             }
 
@@ -117,7 +116,6 @@ namespace Keymeleon
             }
             catch (System.IO.FileNotFoundException)
             {
-                //TODO; add error msg
                 return null;
             }
 
@@ -139,7 +137,6 @@ namespace Keymeleon
                 }
                 //read from line
                 string[] data = line.Split('\t');
-                //Debug.Write(data[0]+" "); Debug.WriteLine(data[1]);//DEBUG
 
                 //set value in dictionary
                 int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
@@ -222,7 +219,10 @@ namespace Keymeleon
                 }
             }
 
-
+            if (!Directory.Exists("layouts"))
+            {
+                Directory.CreateDirectory("layouts");
+            }
             File.WriteAllLines(fileName, lines);
         }
 
