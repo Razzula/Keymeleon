@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.Win32;
 using System.Threading;
+using System.Reflection;
 
 namespace Keymeleon
 {
@@ -64,7 +65,7 @@ namespace Keymeleon
             { "RShift", 0xA1 },
             { "LCtrl", 0xA2 },
             { "RCtrl", 0xA3 },
-            { "LAlt", 0xA4 }
+            { "Alt", 0xA4 }
         };
         readonly List<int> registeredHotkeys = new();
         bool hotkeyActive = false;
@@ -99,6 +100,11 @@ namespace Keymeleon
 
         public MainWindow()
         {
+            if (!Environment.CurrentDirectory.Equals(AppDomain.CurrentDomain.BaseDirectory))
+            {
+                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory; //if program started by startup registry, the currentDir will be system32. This ensures the program can access its data.
+            }
+
             InitializeComponent();
 
             int res = NativeMethods.SetActiveProfile(1);
@@ -115,7 +121,6 @@ namespace Keymeleon
             {
                 configManager.SaveBaseConfig("layouts/Default.base");
             }
-            configManager.LoadBaseConfig("layouts/Default.base");
 
             //remove any temp files
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
@@ -128,7 +133,7 @@ namespace Keymeleon
             //START
             //minimise to system tray
             Hide();
-            nIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath); //TEMP
+            nIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
             nIcon.Text = "Keymeleon";
             nIcon.DoubleClick += new EventHandler(OpenEditor);
 
@@ -153,7 +158,22 @@ namespace Keymeleon
             winHookProc = new HookProc(WinHookProc);
 
             //begin
-            StartFocusMonitoring();
+            //if (Debugger.IsAttached) { Properties.Settings.Default.Reset(); } //DEBUG
+            if (Properties.Settings.Default.FirstRun) //first time setup
+            {
+                var editor = new EditorWindow();
+                editor.Show();
+                var settingsMenu = new Settings();
+                settingsMenu.Owner = editor;
+                settingsMenu.ShowDialog();
+
+                Properties.Settings.Default.FirstRun = false;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                StartFocusMonitoring();
+            }
         }
 
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
@@ -237,10 +257,21 @@ namespace Keymeleon
 
         public void StartFocusMonitoring()
         {
-            if (File.Exists("layouts/Default.base"))
+            if (!File.Exists("layouts/Default.base"))
             {
-                NativeMethods.SetLayoutBase("layouts/Default.base", 1);
+                configManager.SaveBaseConfig("layouts/Default.base");
+            }
+            NativeMethods.SetLayoutBase("layouts/Default.base", 1);
+
+            if (File.Exists("layouts/"+Properties.Settings.Default.AltBase+".base"))
+            {
+                NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
+                configManager.LoadBaseConfig("layouts/" + Properties.Settings.Default.AltBase + ".base");
+                cachedApplication = null;
+            } else
+            {
                 NativeMethods.SetLayoutBase("layouts/Default.base", 2);
+                configManager.LoadBaseConfig("layouts/Default.base");
             }
 
             //setup method to handle events (change of focus)

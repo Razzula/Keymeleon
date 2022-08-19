@@ -59,6 +59,9 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
+                    <Button Grid.Row="0" Grid.Column="0" ToolTip="Settings" Click="OpenSettings" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image Source="Resources/Settings_Dark.png"/>
+                    </Button>
                     <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
 
                     <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -71,7 +74,6 @@
                         <System:String>Alt</System:String>
                         <System:String>RCtrl</System:String>
                         <System:String>RShift</System:String>
-                        <System:String>AltGr</System:String>
                     </ComboBox>
 
                     <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
@@ -98,9 +100,9 @@
                     <RowDefinition Height="15*"/>
                 </Grid.RowDefinitions>
                 <Rectangle x:Name="colourDisplay" Height="60" Width="90" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0" Grid.RowSpan="2"/>
-                <TextBox x:Name="rBox" Margin="686,0,70,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
-                <TextBox x:Name="gBox" Margin="716,0,40,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
-                <TextBox x:Name="bBox" Margin="746,0,10,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" TextAlignment="Center" Grid.Row="1" HorizontalAlignment="Right" Width="30"/>
+                <TextBox x:Name="rBox" Margin="0,0,70,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
+                <TextBox x:Name="gBox" Margin="0,0,40,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
+                <TextBox x:Name="bBox" Margin="0,0,10,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" TextAlignment="Center" Grid.Row="1" HorizontalAlignment="Right" Width="30"/>
 
             </Grid>
 

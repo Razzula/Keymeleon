@@ -19,6 +19,10 @@
         <Setter Property="Background" Value="#1e1e1e"/>
     </Style>
 
+    <Style TargetType="Label">
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
     <Style TargetType="Button">
         <Setter Property="Background" Value="{StaticResource Element.Static.Background}"/>
         <Setter Property="Foreground" Value="{StaticResource Element.Glyph}"/>

@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0">
-            <TextBlock x:Name="textBlock" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4,0,0,0"><Run Text="Current Applications"/></TextBlock>
+            <TextBlock x:Name="textBlock" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4,0,0,0"><Run Text="Select an application"/></TextBlock>
             <!--<Button Click="ToggleList" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                 <Image x:Name="expandImg" Source="Resources/Expand_Dark.png"/>
             </Button>-->

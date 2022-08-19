@@ -42,6 +42,7 @@
     <None Remove="Resources\Refresh_Disabled.png" />
     <None Remove="Resources\Save.png" />
     <None Remove="Resources\Save_Disabled.png" />
+    <None Remove="Resources\Settings_Dark.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,6 +69,22 @@
     <Resource Include="Resources\Refresh_Disabled.png" />
     <Resource Include="Resources\Save.png" />
     <Resource Include="Resources\Save_Disabled.png" />
+    <Resource Include="Resources\Settings_Dark.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

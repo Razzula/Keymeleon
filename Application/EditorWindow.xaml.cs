@@ -34,7 +34,6 @@ namespace Keymeleon
             public static extern int SetKeyColour(string keycode, int r, int g, int b, int profile);
         }
 
-
         ConfigManager configManager;
         Button[][] rows;
 
@@ -67,7 +66,11 @@ namespace Keymeleon
                     baseList.Items.Add(fileName);
                 }
             }
-            baseList.SelectedItem = baseList.Items.GetItemAt(0);
+            if (!File.Exists("layouts/Default.base"))
+            {
+                configManager.SaveBaseConfig("layouts/Default.base");
+            }
+            baseList.SelectedItem = "Default";
             //layers
             info = dirInfo.GetFiles("*.conf");
             foreach (var file in info)
@@ -247,25 +250,28 @@ namespace Keymeleon
         }
 
         public void CreateConfig(string fileName, string template=null)
-        {
-            if (template == null)
-            {
-                File.Create("layouts/"+fileName).Close();
-            }
-            else
-            {
-                File.Copy("layouts/"+template, "layouts/" + fileName);
-            }
+        {   
 
             string[] file = fileName.Split(".");
 
-            if (file[1].Equals(".base"))
+            if (file[1].Equals("base"))
             {
+                new ConfigManager().SaveBaseConfig("layouts/" + fileName);
+
                 baseList.Items.Add(file[0]);
                 baseList.SelectedItem = file[0];
             }
             else
             {
+                if (template == null)
+                {
+                    File.Create("layouts/" + fileName).Close();
+                }
+                else
+                {
+                    File.Copy("layouts/" + template, "layouts/" + fileName);
+                }
+
                 layerList.Items.Add(file[0]);
                 layerList.SelectedItem = file[0];
             }
@@ -396,22 +402,25 @@ namespace Keymeleon
                 LoadLayerConfig(sender, e);
                 return;
             }
-            
+
+            string fileExtension;
             if ((bool)layerCheck.IsChecked) //layer
             {
-                fileName = layerList.SelectedItem.ToString() + ".conf";
+                fileName = layerList.SelectedItem.ToString();
+                fileExtension = ".conf";
 
-                layerList.Items.Remove(fileName);
                 layerList.SelectedIndex = 0;
+                layerList.Items.Remove(fileName);
             }
             else //base
             {
                 fileName = baseList.SelectedItem.ToString();
+                fileExtension = ".base";
 
                 baseList.SelectedIndex = 0;
-                baseList.Items.Remove(fileName+".base");
+                baseList.Items.Remove(fileName);
             }
-            File.Delete("layouts/"+fileName);
+            File.Delete("layouts/"+fileName+fileExtension);
 
         }
 
@@ -494,10 +503,20 @@ namespace Keymeleon
             }
             else //base
             {
-                //TODO
-                //CreateConfig();
+                int i = 1;
+                while (baseList.Items.Contains(i.ToString()))
+                {
+                    i++;
+                }
+                CreateConfig(i+".base");
             }
         }
 
+        private void OpenSettings(object sender, RoutedEventArgs e)
+        {
+            var menu = new Settings();
+            menu.Owner = this;
+            menu.ShowDialog();
+        }
     }
 }
