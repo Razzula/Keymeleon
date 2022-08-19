@@ -39,7 +39,7 @@ Offical (dynamic) releases can be found [here](https://github.com/libusb/hidapi/
 
 ### Installing
 
-Both the application and C++ library are projects under a single Visual Studio solution and the easiest method is to build using VS, as it should handle the whole process for you. 
+Both the application and C++ library are projects under a single Visual Studio solution and the easiest method is to build using VS, as it should handle the whole process for you.
 
 If however it fails, or should you wish to build the project independently, the steps to install are:
 
@@ -49,9 +49,11 @@ If however it fails, or should you wish to build the project independently, the 
 
 - Build `Keymeleon.exe` from `\Application`
 
-- Move `kym.dll` into the build location of the application
+- Move `kym.dll` into the build location of the application.
 
-- Move `examples\default.base` into `BUILD_LOCATION\layouts`
+Optional (but advised):
+
+- Move `examples\Default.base` (and any `.conf` files you wish) into `BUILD_LOCATION\layouts`
 
 The application will only work on Windows devices. However, the C++ Library should work on other platforms, provided the correct version of hidapi is present.
 

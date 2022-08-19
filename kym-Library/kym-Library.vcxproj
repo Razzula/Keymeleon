@@ -106,6 +106,13 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Export dll to application</Message>
+      <Outputs>kym.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -127,6 +134,13 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Export dll to application</Message>
+      <Outputs>kym.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -144,6 +158,13 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Export dll to application</Message>
+      <Outputs>kym.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -165,6 +186,13 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Export dll to application</Message>
+      <Outputs>kym.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

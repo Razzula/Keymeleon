@@ -11,17 +11,17 @@
     <StartupObject>Keymeleon.App</StartupObject>
     <ApplicationIcon>Resources\keymeleon.ico</ApplicationIcon>
   </PropertyGroup>
-
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\kym-Library\bin\$(Configuration)\x64\kym.dll&quot; &quot;$(OutDir)&quot;" IgnoreExitCode="true" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\kym-Library\bin\$(Configuration)\x86\kym.dll&quot; &quot;$(OutDir)&quot;" IgnoreExitCode="true" />
+    <Exec Command="xcopy /y /d &quot;$(ProjectDir)Dependencies\kym.dll&quot; &quot;$(OutDir)&quot; /I" />
     
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.conf&quot; &quot;$(OutDir)\layouts\&quot; /I" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.base&quot; &quot;$(OutDir)\layouts\&quot; /I" />
-    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.layer&quot; &quot;$(OutDir)\layouts\&quot; /I" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.conf&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.base&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
+    <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.layer&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
   </Target>
 
   <ItemGroup>
+    <None Remove="Dependencies\kym.dll" />
     <None Remove="New.png" />
     <None Remove="Resources\Add.png" />
     <None Remove="Resources\Collapse.png" />
@@ -42,6 +42,12 @@
     <None Remove="Resources\Refresh_Disabled.png" />
     <None Remove="Resources\Save.png" />
     <None Remove="Resources\Save_Disabled.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Dependencies\kym.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
