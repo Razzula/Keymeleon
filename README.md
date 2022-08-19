@@ -1,5 +1,5 @@
 <p align="center">
-	<img width="256" height="256" src="https://github.com/Razzula/keymeleon/blob/main/Keymeleon.png">
+	<img width="256" height="256" src="https://github.com/Razzula/keymeleon/blob/main/Application/Resources/Keymeleon.svg">
 </p>
 <h1 align="center">Keymeleon</h1>
 
