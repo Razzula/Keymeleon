@@ -1,3 +1,5 @@
+//  Copyright (C) 2022  Jack Gillespie  https://github.com/Razzula/Keymeleon/blob/main/LICENSE.md
+
 // kym.h - Contains declarations of Keymeleon's cpp library functions
 #pragma once
 #include <fstream>

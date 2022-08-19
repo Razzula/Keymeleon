@@ -1,3 +1,5 @@
+//  Copyright (C) 2022  Jack Gillespie  https://github.com/Razzula/Keymeleon/blob/main/LICENSE.md
+
 // This file contains the data values used to control the keyboard.
 
 #include "pch.h"

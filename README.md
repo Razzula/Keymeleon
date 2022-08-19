@@ -61,6 +61,12 @@ Run the executable to start the program. The program will automatically detect t
 
 To create or edit these files, open the editor via the system tray icon (double click or right click), select/create the desired layer, set its layout, and save the file. (The editor will only allow you to select applications which are currently open when selecting 'New').
 
+## License
+### GNU GPLv3
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+See [LICENSE.md](LICENSE.md) for details.
+
 ## Acknowledgments
 
 - [dokutan](https://github.com/dokutan)'s [rgb_keyboard](https://github.com/dokutan/rgb_keyboard) project, making it a lot easier to understand the data signals used to control the device

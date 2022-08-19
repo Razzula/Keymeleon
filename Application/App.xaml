@@ -1,4 +1,6 @@
-﻿<Application x:Class="Keymeleon.App"
+﻿<!-- Copyright (C) 2022  Jack Gillespie  https://github.com/Razzula/Keymeleon/blob/main/LICENSE.md -->
+    
+<Application x:Class="Keymeleon.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Keymeleon"
