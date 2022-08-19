@@ -120,7 +120,7 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource Element.Disabled.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource Element.Border}"/>
+                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource Element.Borderless}"/>
                             <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource Element.Disabled.Glyph}"/>
                             <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource Element.Disabled.Glyph}"/>
                         </Trigger>

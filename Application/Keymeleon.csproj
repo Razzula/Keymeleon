@@ -35,6 +35,7 @@
     <None Remove="Resources\Expand_Dark.png" />
     <None Remove="Resources\keymeleon.png" />
     <None Remove="Resources\New.png" />
+    <None Remove="Resources\New_Disabled.png" />
     <None Remove="Resources\Open.png" />
     <None Remove="Resources\OpenFile.png" />
     <None Remove="Resources\Refresh.png" />
@@ -56,6 +57,7 @@
     <Resource Include="Resources\Expand.png" />
     <Resource Include="Resources\Expand_Dark.png" />
     <Resource Include="Resources\New.png" />
+    <Resource Include="Resources\New_Disabled.png" />
     <Resource Include="Resources\Refresh.png" />
     <Resource Include="Resources\Refresh_Disabled.png" />
     <Resource Include="Resources\Save.png" />

@@ -1,23 +1,20 @@
-﻿<Window x:Class="Keymeleon.EditorWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
         xmlns:local="clr-namespace:Keymeleon"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="Keymeleon.EditorWindow"
         mc:Ignorable="d"
         Title="Keymeleon Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
         Closing="OnExit"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen">
 
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
-    </WindowChrome.WindowChrome>
-
     <Window.Resources>
         <!-- When a button that contains an image is disabled, reflect this through the image's opacity -->
-        <Style TargetType="Image">
+        <Style TargetType="{x:Type Image}">
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.35" />
@@ -25,7 +22,11 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
+    </WindowChrome.WindowChrome>
+
     <DockPanel>
         <!-- Custom Titlebar -->
         <Grid DockPanel.Dock="Top" Height="32" Background="#181818">
@@ -40,7 +41,7 @@
             <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="12" Text="Keymeleon Editor" Foreground="White"/>
             <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/>
         </Grid>
-        
+
         <!-- Controls -->
         <DockPanel DockPanel.Dock="Top">
 
@@ -63,9 +64,19 @@
                     <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
 
+                    <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="2" Grid.Column="0" x:Name="hotkeyCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="hotkeyList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadTopLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False">
+                        <System:String>LCtrl</System:String>
+                        <System:String>LShift</System:String>
+                        <System:String>Alt</System:String>
+                        <System:String>RCtrl</System:String>
+                        <System:String>RShift</System:String>
+                        <System:String>AltGr</System:String>
+                    </ComboBox>
+
                     <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                        <Button ToolTip="New" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
-                            <Image Source="/Resources/New.png"/>
+                        <Button ToolTip="New" x:Name="newBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
+                            <Image x:Name="newIcon" Source="/Resources/New.png"/>
                         </Button>
                         <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                             <Image x:Name="loadIcon" Source="/Resources/Refresh.png"/>
@@ -82,10 +93,14 @@
 
             <!--Colour -->
             <Grid DockPanel.Dock="Right" Height="96">
-                <Rectangle x:Name="colourDisplay" Height="60" Width="90" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
-                <TextBox x:Name="rBox" Margin="510,65,70,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
-                <TextBox x:Name="gBox" Margin="540,65,40,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center"/>
-                <TextBox x:Name="bBox" Margin="570,65,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" HorizontalAlignment="Right" Width="30" TextAlignment="Center"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="17*"/>
+                    <RowDefinition Height="15*"/>
+                </Grid.RowDefinitions>
+                <Rectangle x:Name="colourDisplay" Height="60" Width="90" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0" Grid.RowSpan="2"/>
+                <TextBox x:Name="rBox" Margin="686,0,70,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
+                <TextBox x:Name="gBox" Margin="716,0,40,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
+                <TextBox x:Name="bBox" Margin="746,0,10,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" TextAlignment="Center" Grid.Row="1" HorizontalAlignment="Right" Width="30"/>
 
             </Grid>
 
@@ -96,6 +111,21 @@
 
             <!-- Keyboard -->
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
+
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Margin" Value="2,2,2,2"/>
+                        <Setter Property="Background" Value="#353535"/>
+                        <Setter Property="Foreground" Value="{StaticResource Element.Glyph}"/>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Element.MouseOver.Background}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="0.5*" />
@@ -200,20 +230,6 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-
-                <Grid.Resources>
-                    <Style TargetType="{x:Type Button}">
-                        <Setter Property="Margin" Value="2,2,2,2"/>
-                        <Setter Property="Background" Value="#353535"/>
-                        <Setter Property="Foreground" Value="{StaticResource Element.Glyph}"/>
-                        
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Element.MouseOver.Background}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Resources>
 
                 <Button x:Name="Esc"   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Esc" PreviewMouseDown="ButtonClicked"/>
                 <Button x:Name="F1"    Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="4" Content="F1" PreviewMouseDown="ButtonClicked"/>

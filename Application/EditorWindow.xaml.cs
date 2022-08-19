@@ -71,7 +71,7 @@ namespace Keymeleon
             foreach (var file in info)
             {
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
-                if (fileName[0] != '_')
+                if (!fileName.Contains('_'))
                 {
                     layerList.Items.Add(fileName);
                 }
@@ -112,14 +112,10 @@ namespace Keymeleon
             saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save_Disabled.png"));
         }
 
-        private void LoadLayerConfig(string fileName)
+        private void LoadLayerConfig(string fileName, int layer)
         {
-            var deltaState = configManager.GetStatesDelta(0, 1);
-            var tempState = configManager.LoadLayerConfig(fileName, 1);
-            if (tempState == null)
-            {
-                return;
-            }
+            var deltaState = configManager.GetStatesDelta(layer-1, layer); //TODO maybe can optimise?
+            var tempState = configManager.LoadLayerConfig(fileName, layer);
 
             //undo previous layer
             foreach (var item in deltaState)
@@ -145,6 +141,11 @@ namespace Keymeleon
                         btn.Opacity = 0.3;
                     }
                 }
+            }
+
+            if (tempState == null)
+            {
+                return;
             }
 
             //apply new layer
@@ -183,6 +184,12 @@ namespace Keymeleon
         private void SaveLayerConfig(object sender, RoutedEventArgs e)
         {
             string fileName = layerList.SelectedItem.ToString();
+
+            if ((bool) hotkeyCheck.IsChecked) //layer
+            {
+                fileName += '_' + hotkeyList.SelectedItem.ToString();
+            }
+
             configManager.SaveLayerConfig("layouts/" + fileName + ".conf", 1);
         }
 
@@ -211,13 +218,30 @@ namespace Keymeleon
             }
         }
 
-        private void LoadLayerConfig(object sender, RoutedEventArgs e)
+        private void LoadLayerConfig(object sender, RoutedEventArgs e) //layerList changed
         {
-            if (layerList.SelectedItem != null)
+
+            if (layerList.SelectedItem == null) { return; }
+
+            string fileName = layerList.SelectedItem.ToString();
+            LoadLayerConfig("layouts/" + fileName + ".conf", 1);
+
+            if ((bool) hotkeyCheck.IsChecked)
             {
-                string fileName = layerList.SelectedItem.ToString();
-                LoadLayerConfig("layouts/" + fileName + ".conf");
+                if (hotkeyList.SelectedItem == null) { return; }
+                fileName += '_' + hotkeyList.SelectedItem.ToString();
+                LoadLayerConfig("layouts/" + fileName + ".conf", 2);
             }
+        }
+
+        private void LoadTopLayerConfig(object sender, RoutedEventArgs e) //hotketList changed
+        {
+
+            if (layerList.SelectedItem == null) { return; }
+            if (hotkeyList.SelectedItem == null) { return; }
+
+            string fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString();
+            LoadLayerConfig("layouts/" + fileName + ".conf", 2);
         }
 
         public void CreateConfig(string fileName)
@@ -355,12 +379,20 @@ namespace Keymeleon
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
         {
             string fileName;
+            if ((bool)hotkeyCheck.IsChecked) //top layer
+            {
+                fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString() + ".conf";
+                File.Delete("layouts/" + fileName);
+                LoadLayerConfig(sender, e);
+                return;
+            }
+            
             if ((bool)layerCheck.IsChecked) //layer
             {
-                fileName = layerList.SelectedItem+".conf";
+                fileName = layerList.SelectedItem.ToString() + ".conf";
 
-                layerList.SelectedIndex = 0;
                 layerList.Items.Remove(fileName);
+                layerList.SelectedIndex = 0;
             }
             else //base
             {
@@ -375,20 +407,47 @@ namespace Keymeleon
 
         private void ToggleLayer(object sender, RoutedEventArgs e)
         {
-            if ((bool) layerCheck.IsChecked)
+            if ((bool) hotkeyCheck.IsChecked)
             {
-                layerList.SelectedIndex = 0;
+                if (hotkeyList.SelectedIndex == -1)
+                {
+                    hotkeyList.SelectedIndex = 0;
+                }
+                Controls.SetValue(Grid.RowProperty, 2);
+                delBtn.IsEnabled = true;
+                deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
+                newBtn.IsEnabled = false;
+                newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New_Disabled.png"));
+            }
+            else if ((bool) layerCheck.IsChecked)
+            {
+                if (layerList.SelectedIndex == -1)
+                {
+                    layerList.SelectedIndex = 0;
+                }
+                hotkeyList.SelectedIndex = -1;
                 Controls.SetValue(Grid.RowProperty, 1);
                 delBtn.IsEnabled = true;
                 deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
+                newBtn.IsEnabled = true;
+                newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
+
+                LoadLayerConfig(sender, e);
             }
             else
             {
                 layerList.SelectedIndex = -1;
-                LoadBaseConfig(sender, e);
                 Controls.SetValue(Grid.RowProperty, 0);
+                newBtn.IsEnabled = true;
+                newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
+
+                LoadBaseConfig(sender, e);
             }
             layerList.IsEnabled = (bool) layerCheck.IsChecked;
+            hotkeyList.IsEnabled = (bool) hotkeyCheck.IsChecked;
+
+            layerCheck.IsEnabled = (bool) !hotkeyCheck.IsChecked;
+            hotkeyCheck.IsEnabled = (bool) layerCheck.IsChecked;
         }
 
         private void LoadConfig(object sender, RoutedEventArgs e)
