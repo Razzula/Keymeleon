@@ -35,7 +35,7 @@ _If your device is not listed, but works with the software, please do contact me
 \kym-Library\dependencies\hidapi
 ```
 
-Offical (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
+Official (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
 
 ### Installing
 
@@ -59,9 +59,16 @@ The application will only work on Windows devices. However, the C++ Library shou
 
 ## Usage
 
-Run the executable to start the program. The program will automatically detect the keyboard and begin responding to window changes as described by any `.conf` files in the application's folder.
+Run the executable to start the program. When running for the first time, the editor and settings menu will open, allowing you to enable startup, etc. To use the editor, simply select the layer you wish to edit in the top left (base, application, hotkey), select the colour using the tool in the top right, and click on the key buttons to colour them. (When creating a new layer, the editor will only allow you to select applications which are currently open.)
 
-To create or edit these files, open the editor via the system tray icon (double click or right click), select/create the desired layer, set its layout, and save the file. (The editor will only allow you to select applications which are currently open when selecting 'New').
+Upon closing the editor, or on subsequent launches, the program will automatically detect the keyboard and begin responding to window changes as described by any `.conf` files in the application's folder.
+
+You can reopen the editor via the system tray icon (double or right click).
+
+### Notes
+
+- Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Google Chrome` will just be seen as `chrome`)
+- The same is true if trying to monitor an elevated application without Keymeleon being elevated
 
 ## License
 ### GNU GPLv3
