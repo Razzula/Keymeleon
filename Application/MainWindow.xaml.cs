@@ -272,6 +272,7 @@ namespace Keymeleon
                         //overide LRU entry
                         profile = cachedApplications[leastRecentlyUsedCacheEntry];
                         cachedApplications.Remove(leastRecentlyUsedCacheEntry);
+                        cachedApplications.Add(focusedApplication, profile);
                     }
 
                     //set layout to base
@@ -292,11 +293,11 @@ namespace Keymeleon
                 //track LRU
                 foreach (var application in cachedApplications)
                 {
-                    if (!application.Value.Equals(focusedApplication))
+                    if (!application.Key.Equals(focusedApplication))
                     {
                         leastRecentlyUsedCacheEntry = application.Key;
+                        break;
                     }
-                    break;
                 }
                 if (leastRecentlyUsedCacheEntry == null) //cache only holds one item
                 {
