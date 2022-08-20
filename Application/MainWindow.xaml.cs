@@ -89,6 +89,9 @@ namespace Keymeleon
             [DllImport("user32.dll")]
             public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out IntPtr ProcessId);
 
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+
             [DllImport("kym.dll")]
             public static extern int SetLayoutBase(string configFileName, int profileToModify);
             [DllImport("kym.dll")]
@@ -315,6 +318,10 @@ namespace Keymeleon
             {
                 OnError();
             }
+
+            //get current window
+            var hwnd = NativeMethods.GetForegroundWindow();
+            WinEventProc(IntPtr.Zero, 0, hwnd, 0, 0, 0, 0);
 
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
