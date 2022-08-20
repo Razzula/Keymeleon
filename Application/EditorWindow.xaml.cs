@@ -81,14 +81,6 @@ namespace Keymeleon
                     layerList.Items.Add(fileName);
                 }
             }
-
-            LoadBaseConfig("layouts/Default.base");
-            int res = NativeMethods.SetActiveProfile(1);
-            if (res < 0)
-            {
-                OnError();
-                NativeMethods.SetActiveProfile(1);
-            }
         }
 
         private void LoadBaseConfig(string fileName)
@@ -210,13 +202,15 @@ namespace Keymeleon
         private void SaveLayerConfig(object sender, RoutedEventArgs e)
         {
             string fileName = layerList.SelectedItem.ToString();
+            int layer = 1;
 
             if ((bool) hotkeyCheck.IsChecked) //layer
             {
                 fileName += '_' + hotkeyList.SelectedItem.ToString();
+                layer = 2;
             }
 
-            configManager.SaveLayerConfig("layouts/" + fileName + ".conf", 1);
+            configManager.SaveLayerConfig("layouts/" + fileName + ".conf", layer);
         }
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
@@ -264,7 +258,10 @@ namespace Keymeleon
         {
 
             if (layerList.SelectedItem == null) { return; }
-            if (hotkeyList.SelectedItem == null) { return; }
+            if (hotkeyList.SelectedItem == null) {
+                LoadLayerConfig(sender, e);
+                return;
+            }
 
             string fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString();
             LoadLayerConfig("layouts/" + fileName + ".conf", 2);
@@ -301,6 +298,17 @@ namespace Keymeleon
 
         private void ButtonClicked(object sender, MouseButtonEventArgs e)
         {
+            int layer;
+            if ((bool) hotkeyCheck.IsChecked)
+            {
+                layer = 2;
+            }
+            else
+            {
+                layer = 1;
+            }
+
+
             Button btn = (Button) e.Source;
             string keycode = btn.Name.ToString();
             if (keycode[0].Equals('_'))
@@ -323,12 +331,12 @@ namespace Keymeleon
                 
                 btn.Opacity = 1;
 
-                configManager.UpdateLayer(1, keycode, r, g, b);
+                configManager.UpdateLayer(layer, keycode, r, g, b);
             }
             else if (e.ChangedButton == MouseButton.Right && (bool) layerCheck.IsChecked)
             {
                 //get colour
-                int[] colourValues = configManager.RemoveKey(keycode, 1);
+                int[] colourValues = configManager.RemoveKey(keycode, layer);
 
                 r = colourValues[0];
                 g = colourValues[1];
@@ -477,7 +485,7 @@ namespace Keymeleon
                 newBtn.IsEnabled = true;
                 newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
 
-                LoadLayerConfig(sender, e);
+                //LoadLayerConfig(sender, e);
             }
             else
             {

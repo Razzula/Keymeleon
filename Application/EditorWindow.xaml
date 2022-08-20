@@ -37,7 +37,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image Source="/Resources/keymeleon.ico" Grid.Column="0" Margin="4" />
+            <Image Source="/Resources/keymeleon.ico" Grid.Column="0" Margin="4,4,4,4" Height="20" />
             <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="12" Text="Keymeleon Editor" Foreground="White"/>
             <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/>
         </Grid>

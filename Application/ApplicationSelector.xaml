@@ -41,7 +41,7 @@
                 </Button.Style>
             </Button>
         </DockPanel>
-        <ListView Grid.Row="1" x:Name="applicationList" SelectionChanged="applicationList_SelectionChanged"/>
+        <ListView Grid.Row="1" x:Name="applicationList" SelectionChanged="applicationList_SelectionChanged" BorderBrush="#00ABADB3" Margin="4,0,4,0" VerticalAlignment="Top"/>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

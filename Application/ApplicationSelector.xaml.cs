@@ -20,6 +20,7 @@ using System.ServiceProcess;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using System.Drawing;
 
 namespace Keymeleon
 {
@@ -77,35 +78,39 @@ namespace Keymeleon
                 currentApplications.Add(applicationName);
 
                 //create item
-                ListViewItem item = new();
-                item.Content = applicationName;
+                var item = new ListViewItem();
+
+                Icon icon = System.Drawing.Icon.ExtractAssociatedIcon(p.MainModule.FileName);
+                item.Content = new ApplicationListItem(applicationName, icon);
+                item.Height = 24;
 
                 //add to lsitview
                 applicationList.Items.Add(item);
                 if (existingConfigs.Contains(applicationName))
                 {
                     item.IsEnabled = false;
+                    item.Opacity = 0.3;
                 }
             }
 
             //get list of all applications
-            string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-            using RegistryKey rk = Registry.LocalMachine.OpenSubKey(uninstallKey);
-            foreach (string skName in rk.GetSubKeyNames())
-            {
-                using RegistryKey sk = rk.OpenSubKey(skName);
-                try
-                {
-                    var displayName = sk.GetValue("DisplayName");
-                    var size = sk.GetValue("EstimatedSize");
+            //string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+            //using RegistryKey rk = Registry.LocalMachine.OpenSubKey(uninstallKey);
+            //foreach (string skName in rk.GetSubKeyNames())
+            //{
+            //    using RegistryKey sk = rk.OpenSubKey(skName);
+            //    try
+            //    {
+            //        var displayName = sk.GetValue("DisplayName");
+            //        var size = sk.GetValue("EstimatedSize");
 
-                    if (displayName != null)
-                    {
-                        allApplications.Add(displayName.ToString());
-                    }
-                }
-                catch (Exception) { }
-            }
+            //        if (displayName != null)
+            //        {
+            //            allApplications.Add(displayName.ToString());
+            //        }
+            //    }
+            //    catch (Exception) { }
+            //}
         }
 
         //expand/collapse
@@ -146,19 +151,20 @@ namespace Keymeleon
 
         private void Submit(object sender, RoutedEventArgs e)
         {
-            ListViewItem item = (ListViewItem) applicationList.SelectedItem;
-            string fileName = "layouts/"+item.Content+".conf";
+            var listItem = (ListViewItem) applicationList.SelectedItem;
+            var item = (ApplicationListItem) listItem.Content;
+            string fileName = "layouts/"+item.GetName()+".conf";
             if (fileName.EndsWith(".conf") || fileName.EndsWith(".base"))
             {
                 if (!File.Exists(fileName))
                 {
                     if (templateList.SelectedIndex == 0)
                     {
-                        editor.CreateConfig(item.Content + ".conf");
+                        editor.CreateConfig(item.GetName() + ".conf");
                     }
                     else
                     {
-                        editor.CreateConfig(item.Content + ".conf", templateList.SelectedItem + ".conf");
+                        editor.CreateConfig(item.GetName() + ".conf", templateList.SelectedItem + ".conf");
                     }
                     Close();
                 }

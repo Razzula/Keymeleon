@@ -64,7 +64,10 @@ namespace Keymeleon
             }
             else
             {
-                key.DeleteValue("Keymeleon");
+                if (key.GetValue("Keymeleon") != null)
+                {
+                    key.DeleteValue("Keymeleon");
+                }
             }
 
             Properties.Settings.Default.AltBase = baseList.SelectedItem.ToString();
