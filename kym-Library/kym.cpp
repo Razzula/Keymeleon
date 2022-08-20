@@ -43,7 +43,7 @@ hid_device* openKeyboard() {
 	hid_free_enumeration(devs);
 
 	if (hid_path.empty()) {
-		printf("Could not find device.\n");
+		//printf("Could not find device.\n");
 		return nullptr;
 	}
 
@@ -51,7 +51,7 @@ hid_device* openKeyboard() {
 	hid_device* handle;
 	handle = hid_open_path(hid_path.c_str());
 	if (!handle) {
-		printf("Unable to open device.\n");
+		//printf("Unable to open device.\n");
 		return nullptr;
 	}
 
@@ -62,10 +62,10 @@ int writeToKeyboard(hid_device* handle, uint8_t buf[], int length) {
 
 	//write buf data to device at handle
 	int res = hid_write(handle, buf, length);
-	if (res < 0) {
+	/*if (res < 0) {
 		printf("Unable to write\n");
 		printf("Error: %ls\n", hid_error(handle));
-	}
+	}*/
 
 	hid_read_timeout(handle, buf, 64, 500); // this appears to have solved the errors caused in commit 2421730d3cb37a873360a470f1418cd1e67dcedd (6c332890fac98778751cff7a3ae36b25e47d32a9)
 	return res;
@@ -178,10 +178,15 @@ int ApplyLayoutLayer(char* configFileName, int profileToModify) {
 
 	hid_device* handle = openKeyboard();
 	if (!handle) {
-		return res;
+		return -1;
 	}
 
 	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	if (res < 0) {
+		hid_close(handle);
+		hid_exit();
+		return -1;
+	}
 
 	uint8_t buf[64];
 	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
@@ -212,14 +217,13 @@ int ApplyLayoutLayer(char* configFileName, int profileToModify) {
 		if (tempRes == -1) {
 			hid_close(handle);
 			hid_exit();
-			return res - 1;
+			return -1;
 		}
 		res += tempRes;
 		//std::cout << element.first << " " << unsigned(element.second[0]) << " " << unsigned(element.second[1]) << " " << unsigned(element.second[2]) << std::endl;//DEBUG
 	}
-	////Sleep(250); //slight delay, to ensure data tranmisisons have finished
+
 	res += writeToKeyboard(handle, data_end, 64); //tell device this end of data
-	////Sleep(250);
 
 	hid_close(handle);
 	hid_exit();
@@ -279,6 +283,11 @@ int SetLayoutBase(char* fileName, int profile) {
 	std::istream& configRef = config;
 
 	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	if (res < 0) {
+		hid_close(handle);
+		hid_exit();
+		return -1;
+	}
 
 	// read file
 	if (config.is_open()) { // always check whether the file is open
@@ -333,7 +342,13 @@ int SetLayoutBase(char* fileName, int profile) {
 				buf[8 + i] = colourCodes[i];
 			}
 
-			res += writeToKeyboard(handle, buf, 64);
+			int tempRes = writeToKeyboard(handle, buf, 64);
+			if (tempRes == -1) {
+				hid_close(handle);
+				hid_exit();
+				return -1;
+			}
+			res += tempRes;
 
 			rowHeaderPtr += 1;
 		}

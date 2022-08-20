@@ -6,22 +6,29 @@
     <UseWindowsForms>True</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <StartupObject>Keymeleon.App</StartupObject>
     <ApplicationIcon>Resources\keymeleon.ico</ApplicationIcon>
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y /d &quot;$(ProjectDir)Dependencies\kym.dll&quot; &quot;$(OutDir)&quot; /I" />
+    <!--<Exec Command="xcopy /y /d &quot;$(ProjectDir)Dependencies\kym.dll&quot; &quot;$(OutDir)&quot; /I" />-->
     
     <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.conf&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
     <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.base&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
     <Exec Command="xcopy /y /d &quot;$(SolutionDir)\examples\*.layer&quot; &quot;$(OutDir)\layouts\&quot; /I" IgnoreExitCode="true" />
   </Target>
+  
+  <ItemGroup>
+    <Compile Remove="Dependencies\**" />
+    <EmbeddedResource Remove="Dependencies\**" />
+    <None Remove="Dependencies\**" />
+    <Page Remove="Dependencies\**" />
+  </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Dependencies\kym.dll" />
+    <None Remove="kym.dll" />
     <None Remove="New.png" />
     <None Remove="Resources\Add.png" />
     <None Remove="Resources\Collapse.png" />
@@ -46,8 +53,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Dependencies\kym.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    <Content Include="kym.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

@@ -67,7 +67,7 @@ You can reopen the editor via the system tray icon (double or right click).
 
 ### Notes
 
-- Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Google Chrome` will just be seen as `chrome`)
+- Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Google Chrome` will just be seen as `chrome`, and `Microsoft Visual Studio 2022` will just be `devenv`)
 - The same is true if trying to monitor an elevated application without Keymeleon being elevated
 
 ## License

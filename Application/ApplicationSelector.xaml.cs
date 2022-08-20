@@ -69,7 +69,10 @@ namespace Keymeleon
                     }
                     applicationName = p.MainModule.FileVersionInfo.FileDescription;
                 }
-                catch (System.ComponentModel.Win32Exception) { }
+                catch (System.ComponentModel.Win32Exception)
+                {
+                    applicationName = p.ProcessName;
+                }
 
                 currentApplications.Add(applicationName);
 

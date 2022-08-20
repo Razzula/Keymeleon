@@ -105,17 +105,41 @@ namespace Keymeleon
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory; //if program started by startup registry, the currentDir will be system32. This ensures the program can access its data.
             }
 
-            InitializeComponent();
+            //ensure single-instance
+            string procName = Process.GetCurrentProcess().ProcessName;    
+            Process[] processes = Process.GetProcessesByName(procName);
 
+            if (processes.Length > 1)
+            {
+                var dialog = new PopupDialog("Error", "An instance of Keymeleon is already running.");
+                dialog.ShowDialog();
+                System.Windows.Application.Current.Shutdown();
+                return;
+            }
+
+            //
+            if (Environment.Is64BitOperatingSystem)
+            {
+                if (!Environment.Is64BitProcess)
+                {
+                    var dialog = new PopupDialog("Warning", "32-bit version of Keymeleon running on a 64-bit OS.\nThis may lead to issues. \n\nSee https://github.com/Razzula/Keymeleon/releases");
+                    dialog.ShowDialog();
+                }
+            }
+
+            //test keyboard
             int res = NativeMethods.SetActiveProfile(1);
             if (res < 0)
             {
                 var dialog = new PopupDialog("Error", "Could not connect to keyboard.\nPlease reconnect the device and try again.");
                 dialog.ShowDialog();
-                Close();
+                System.Windows.Application.Current.Shutdown();
+                return;
             }
 
             //SETUP
+            InitializeComponent();
+
             configManager = new ConfigManager();
             if (!File.Exists("layouts/Default.base"))
             {
@@ -190,10 +214,10 @@ namespace Keymeleon
                 focusedApplication = p.MainModule.FileVersionInfo.FileDescription;
             }
             catch (System.ComponentModel.Win32Exception)
-            // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this) //TODO; add check for this
+            // if Keymeleon is x86, this exception will throw when trying to access an x64 program (however, it should only be x86 on 32bit CPUs, so there shouldn't be any x64 programs to trigger this)
             // if Keymeleon is not elevated, this exception will throw when trying to access an elevated program //TODO; request that Keymeleon be elevated
             {
-                focusedApplication = p.MainWindowTitle;
+                focusedApplication = p.ProcessName;
             }
             catch (NullReferenceException)
             {
@@ -204,6 +228,8 @@ namespace Keymeleon
             Debug.WriteLine(focusedApplication);
 
             registeredHotkeys.Clear();
+
+            int res = 0;
 
             if (File.Exists("layouts/"+focusedApplication+".conf")) //is there a layer to apply
             {
@@ -227,9 +253,9 @@ namespace Keymeleon
                     //set layout to base
                     if (File.Exists("layouts/_1.conf"))
                     {
-                        NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2);
+                        res += NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2);
                     }
-                    NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2);
+                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2);
                     cachedApplication = focusedApplication;
 
                     //create temp config to revert to base
@@ -237,11 +263,18 @@ namespace Keymeleon
                     var deltaState = configManager.GetStatesDelta(0, 1);
                     configManager.SaveInverseConfig("layouts/_1.conf", 0, 1);
                 }
-                NativeMethods.SetActiveProfile(2);
+                res += NativeMethods.SetActiveProfile(2);
             }
             else
             {
-                NativeMethods.SetActiveProfile(1); //switch to cached profile1
+                res += NativeMethods.SetActiveProfile(1); //switch to cached profile1
+            }
+
+            //error handling
+            Debug.WriteLine(res);
+            if (res < 0)
+            {
+                OnError();
             }
         }
 
@@ -257,21 +290,30 @@ namespace Keymeleon
 
         public void StartFocusMonitoring()
         {
+            int res = 0;
+
             if (!File.Exists("layouts/Default.base"))
             {
                 configManager.SaveBaseConfig("layouts/Default.base");
             }
-            NativeMethods.SetLayoutBase("layouts/Default.base", 1);
+            res += NativeMethods.SetLayoutBase("layouts/Default.base", 1);
 
             if (File.Exists("layouts/"+Properties.Settings.Default.AltBase+".base"))
             {
-                NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
                 configManager.LoadBaseConfig("layouts/" + Properties.Settings.Default.AltBase + ".base");
                 cachedApplication = null;
             } else
             {
-                NativeMethods.SetLayoutBase("layouts/Default.base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/Default.base", 2);
                 configManager.LoadBaseConfig("layouts/Default.base");
+            }
+
+            //error handling
+            Debug.WriteLine(res);
+            if (res < 0)
+            {
+                OnError();
             }
 
             //setup method to handle events (change of focus)
@@ -314,27 +356,53 @@ namespace Keymeleon
                     case 256:
                         if (!hotkeyActive)
                         {
+                            hotkeyActive = true;
+
                             string key = keycodes.FirstOrDefault(x => x.Value == keycode).Key;
                             string fileName = "layouts/" + cachedApplication + "_" + key + ".conf";
                             configManager.LoadLayerConfig(fileName, 2);
                             configManager.SaveInverseConfig("layouts/_2.conf", 1, 2);
-                            NativeMethods.ApplyLayoutLayer(fileName, 2);
 
-                            hotkeyActive = true;
+                            int res = NativeMethods.ApplyLayoutLayer(fileName, 2);
+                            //error handling
+                            Debug.WriteLine(res);
+                            if (res < 0)
+                            {
+                                OnError();
+                            }
                         }
                         break;
+
                     case 257:
                         if (hotkeyActive)
                         {
-                            NativeMethods.ApplyLayoutLayer("layouts/_2.conf", 2); //TEMP
-
                             hotkeyActive = false;
+
+                            int res = NativeMethods.ApplyLayoutLayer("layouts/_2.conf", 2);
+                            //error handling
+                            Debug.WriteLine(res);
+                            if (res < 0)
+                            {
+                                OnError();
+                            }
                         }
                         break;
                 }
             }
-            //TODO; make above async
+
             return NativeMethods.CallNextHookEx(hWinHook, nCode, wParam, lParam);
+        }
+
+        private void OnError()
+        {
+            nIcon.Visible = false;
+            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
+            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
+
+            var dialog = new PopupDialog("Error", "Could not write to keyboard.\nPlease reconnect the device and restart Keymeleon.");
+            dialog.ShowDialog();
+            System.Windows.Application.Current.Shutdown();
+            Close();
         }
     }
 

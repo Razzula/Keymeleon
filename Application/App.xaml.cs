@@ -6,11 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+using System.Diagnostics;
+
 namespace Keymeleon
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
     }

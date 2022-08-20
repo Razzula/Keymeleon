@@ -107,12 +107,21 @@
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Export dll to application</Message>
-      <Outputs>kym.dll</Outputs>
+      <Message>
+      </Message>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Export dll to application</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,12 +144,21 @@
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Export dll to application</Message>
-      <Outputs>kym.dll</Outputs>
+      <Message>
+      </Message>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Export dll to application</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -159,12 +177,21 @@
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Export dll to application</Message>
-      <Outputs>kym.dll</Outputs>
+      <Message>
+      </Message>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Export dll to application</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -187,12 +214,21 @@
       <AdditionalDependencies>$(ProjectDir)\dependencies\hidapi\$(PlatformShortName)\hidapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application\Dependencies"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Export dll to application</Message>
-      <Outputs>kym.dll</Outputs>
+      <Message>
+      </Message>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(OutDir)kym.dll" "$(SolutionDir)Application"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Export dll to application</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

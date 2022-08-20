@@ -83,7 +83,12 @@ namespace Keymeleon
             }
 
             LoadBaseConfig("layouts/Default.base");
-            NativeMethods.SetActiveProfile(1);
+            int res = NativeMethods.SetActiveProfile(1);
+            if (res < 0)
+            {
+                OnError();
+                NativeMethods.SetActiveProfile(1);
+            }
         }
 
         private void LoadBaseConfig(string fileName)
@@ -109,7 +114,12 @@ namespace Keymeleon
 
             //display config on keyboard
             Debug.WriteLine(fileName);//DEBUG
-            NativeMethods.SetLayoutBase(fileName, 1);
+            int res = NativeMethods.SetLayoutBase(fileName, 1);
+            if (res < 0)
+            {
+                OnError();
+                NativeMethods.SetLayoutBase(fileName, 1);
+            }
 
             readBtn.IsEnabled = false;
             loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh_Disabled.png"));
@@ -121,6 +131,7 @@ namespace Keymeleon
         {
             var deltaState = configManager.GetStatesDelta(layer-1, layer);
             var tempState = configManager.LoadLayerConfig(fileName, layer);
+            int res;
 
             //undo previous layer
             foreach (var item in deltaState)
@@ -134,7 +145,12 @@ namespace Keymeleon
                 Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
                 btn.Foreground = new SolidColorBrush(colour);
                 //show colour on device
-                NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1);
+                res = NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1);
+                if (res < 0)
+                {
+                    OnError();
+                    NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1);
+                }
             }
 
             foreach (var row in rows)
@@ -172,7 +188,12 @@ namespace Keymeleon
             }
             //display config on keyboard
             Debug.WriteLine(fileName);//DEBUG
-            NativeMethods.ApplyLayoutLayer(fileName, 1);
+            res = NativeMethods.ApplyLayoutLayer(fileName, 1);
+            if (res < 0)
+            {
+                OnError();
+                NativeMethods.ApplyLayoutLayer(fileName, 1);
+            }
 
             readBtn.IsEnabled = false;
             loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh_Disabled.png"));
@@ -329,7 +350,12 @@ namespace Keymeleon
             Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
             btn.Foreground = new SolidColorBrush(colour);
             //write to device
-            NativeMethods.SetKeyColour(keycode, r, g, b, 1);
+            int res = NativeMethods.SetKeyColour(keycode, r, g, b, 1);
+            if (res < 0)
+            {
+                OnError();
+                NativeMethods.SetKeyColour(keycode, r, g, b, 1);
+            }
 
         }
 
@@ -517,6 +543,12 @@ namespace Keymeleon
             var menu = new Settings();
             menu.Owner = this;
             menu.ShowDialog();
+        }
+
+        private void OnError()
+        {
+            var dialog = new PopupDialog("Error", "Could not write to keyboard.\nPlease reconnect the device, then continue.");
+            dialog.ShowDialog();
         }
     }
 }
