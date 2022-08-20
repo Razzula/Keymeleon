@@ -8,7 +8,7 @@ Each config file corresponds to an application, and the layer is applied when sa
 
  `Google Chrome_LCtrl.conf` would be used when the Left Control key is pressed with Chrome open.
 
- Files starting with `_`, such as `_1.conf` are temporary files which hold the information required to easily 'remove' the current layer.
+ Files starting with `_`, such as `_1.conf` are temporary files which hold the information required to easily 'remove' the current layer. Temporary files follow the naming pattern of `_<profile><x>.conf` where `x` is `a` if the file is for a hotkey, or otherwise blank.
 
 `Default.base` is special, in that it will be used for any applications that don't have their own configs.
 

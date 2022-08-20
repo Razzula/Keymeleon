@@ -58,7 +58,8 @@ namespace Keymeleon
         readonly ContextMenuStrip contextMenu;
         readonly ConfigManager configManager;
         private string focusedApplication;
-        private string cachedApplication;
+        private Dictionary<string, int> cachedApplications = new();
+        private string leastRecentlyUsedCacheEntry;
         readonly Dictionary<string, uint> keycodes = new()
         {
             { "LShift", 0xA0 },
@@ -69,6 +70,7 @@ namespace Keymeleon
         };
         readonly List<int> registeredHotkeys = new();
         bool hotkeyActive = false;
+        int profile;
 
         static class NativeMethods
         {
@@ -139,6 +141,7 @@ namespace Keymeleon
                 System.Windows.Application.Current.Shutdown();
                 return;
             }
+            profile = 1;
 
             //SETUP
             InitializeComponent();
@@ -234,6 +237,7 @@ namespace Keymeleon
 
             int res = 0;
 
+            int oldProfile = profile;
             if (File.Exists("layouts/"+focusedApplication+".conf")) //is there a layer to apply
             {
                 //register hotkeys
@@ -251,26 +255,67 @@ namespace Keymeleon
                 }
 
                 //apply layer to keyboard
-                if (!focusedApplication.Equals(cachedApplication)) //if config is already cached on profile2, no need to rewrite //TODO; include profile3 for greater cache capacity
+                int profile;
+                if (cachedApplications.ContainsKey(focusedApplication)) //if config is already cached
                 {
-                    //set layout to base
-                    if (File.Exists("layouts/_1.conf"))
+                    profile = cachedApplications[focusedApplication];
+                }
+                else
+                {
+                    if (cachedApplications.Count < 2) //if cache has space
                     {
-                        res += NativeMethods.ApplyLayoutLayer("layouts/_1.conf", 2);
+                        profile = cachedApplications.Count + 2;
+                        cachedApplications.Add(focusedApplication, profile);
                     }
-                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", 2);
-                    cachedApplication = focusedApplication;
+                    else
+                    {
+                        //overide LRU entry
+                        profile = cachedApplications[leastRecentlyUsedCacheEntry];
+                        cachedApplications.Remove(leastRecentlyUsedCacheEntry);
+                    }
+
+                    //set layout to base
+                    if (File.Exists("layouts/_" + profile.ToString() + ".conf"))
+                    {
+                        res += NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + ".conf", profile);
+                    }
+                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", profile);
 
                     //create temp config to revert to base
                     configManager.LoadLayerConfig("layouts/"+focusedApplication+".conf", 1);
                     var deltaState = configManager.GetStatesDelta(0, 1);
-                    configManager.SaveInverseConfig("layouts/_1.conf", 0, 1);
+                    configManager.SaveInverseConfig("layouts/_" + profile.ToString() + ".conf", 0, 1);
                 }
-                res += NativeMethods.SetActiveProfile(2);
+                res += NativeMethods.SetActiveProfile(profile);
+                this.profile = profile;
+
+                //track LRU
+                foreach (var application in cachedApplications)
+                {
+                    if (!application.Value.Equals(focusedApplication))
+                    {
+                        leastRecentlyUsedCacheEntry = application.Key;
+                    }
+                    break;
+                }
+                if (leastRecentlyUsedCacheEntry == null) //cache only holds one item
+                {
+                    leastRecentlyUsedCacheEntry = focusedApplication;
+                }
             }
             else
             {
-                res += NativeMethods.SetActiveProfile(1); //switch to cached profile1
+                res += NativeMethods.SetActiveProfile(1); //switch to default base
+                profile = 1;
+            }
+
+            hotkeyActive = false;
+            //undo any active hotkey effect
+            if (File.Exists("layouts/_" + oldProfile.ToString() + "a.conf"))
+            {
+                string temp = "layouts/_" + oldProfile.ToString() + "a.conf";
+                res += NativeMethods.ApplyLayoutLayer(temp, oldProfile);
+                File.Delete(temp);
             }
 
             //error handling
@@ -295,20 +340,22 @@ namespace Keymeleon
         {
             int res = 0;
 
-            if (!File.Exists("layouts/Default.base"))
+            if (!File.Exists("layouts/Default.base")) //if no default base, create one
             {
                 configManager.SaveBaseConfig("layouts/Default.base");
             }
             res += NativeMethods.SetLayoutBase("layouts/Default.base", 1);
 
-            if (File.Exists("layouts/"+Properties.Settings.Default.AltBase+".base"))
+            if (File.Exists("layouts/"+Properties.Settings.Default.AltBase+".base")) //if custom base exists, use for non-defaults
             {
                 res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 3);
                 configManager.LoadBaseConfig("layouts/" + Properties.Settings.Default.AltBase + ".base");
-                cachedApplication = null;
+                cachedApplications.Clear();
             } else
             {
                 res += NativeMethods.SetLayoutBase("layouts/Default.base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/Default.base", 3);
                 configManager.LoadBaseConfig("layouts/Default.base");
             }
 
@@ -328,6 +375,7 @@ namespace Keymeleon
             hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
 
             //setup method to handle key events
+            hotkeyActive = false;
             var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
             hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
 
@@ -366,11 +414,11 @@ namespace Keymeleon
                             hotkeyActive = true;
 
                             string key = keycodes.FirstOrDefault(x => x.Value == keycode).Key;
-                            string fileName = "layouts/" + cachedApplication + "_" + key + ".conf";
+                            string fileName = "layouts/" + focusedApplication + "_" + key + ".conf";
                             configManager.LoadLayerConfig(fileName, 2);
-                            configManager.SaveInverseConfig("layouts/_2.conf", 1, 2);
+                            configManager.SaveInverseConfig("layouts/_" + profile.ToString() + "a.conf", 1, 2);
 
-                            int res = NativeMethods.ApplyLayoutLayer(fileName, 2);
+                            int res = NativeMethods.ApplyLayoutLayer(fileName, profile);
                             //error handling
                             Debug.WriteLine(res);
                             if (res < 0)
@@ -385,7 +433,7 @@ namespace Keymeleon
                         {
                             hotkeyActive = false;
 
-                            int res = NativeMethods.ApplyLayoutLayer("layouts/_2.conf", 2);
+                            int res = NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + "a.conf", profile);
                             //error handling
                             Debug.WriteLine(res);
                             if (res < 0)

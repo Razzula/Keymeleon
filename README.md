@@ -21,7 +21,7 @@ No irreversible damage has occurred during development or testing, but discretio
 
 - Tecware Phantom RGB ISO 105-key `0x652f`
 
-In theory the software should work with other keyboard with VID `0x0c45`, but has not been tested on any beyond the above list.
+In theory the software should work with other keyboards with VID `0x0c45`, but has not been tested on any beyond the above list.
 
 _If your device is not listed, but works with the software, please do contact me to help expand the list._
 
@@ -67,8 +67,9 @@ You can reopen the editor via the system tray icon (double or right click).
 
 ### Notes
 
-- Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Google Chrome` will just be seen as `chrome`, and `Microsoft Visual Studio 2022` will just be `devenv`)
+- Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Microsoft Visual Studio 2022` will just be seen as `devenv`)
 - The same is true if trying to monitor an elevated application without Keymeleon being elevated
+- As macros are currently unsupported, any existing macros will remain on their current profile. Keymeleon makes use of all 3 of the keyboard's profiles to 'cache' layouts, and minimize writes to the device's flash, making it unclear which profile is currently in use, and therefore which macros are enabled at any given time. Currently, the best solution to this problem is to (using the official software) set all profiles to have identical macro layouts.
 
 ## License
 ### GNU GPLv3
