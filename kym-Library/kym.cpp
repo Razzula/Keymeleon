@@ -350,6 +350,9 @@ int SetLayoutBase(char* fileName, int profile) {
 			}
 			res += tempRes;
 
+			if (rowHeaderPtr == 6) {
+				break;
+			}
 			rowHeaderPtr += 1;
 		}
 	}

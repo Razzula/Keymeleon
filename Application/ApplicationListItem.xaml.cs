@@ -31,6 +31,10 @@ namespace Keymeleon
                 var img = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, new Int32Rect(0, 0, icon.Width, icon.Height), BitmapSizeOptions.FromEmptyOptions());
                 Image.Source = img;
             }
+            else 
+            {
+                Image.Width = 22;
+            }
         }
 
         public string GetName()

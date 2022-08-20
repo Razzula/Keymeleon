@@ -333,6 +333,13 @@ namespace Keymeleon
             NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
             NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
 
+            int res = NativeMethods.SetActiveProfile(1);
+            if (res < 0)
+            {
+                OnError();
+                return;
+            }
+
             EditorWindow editor = new();
             editor.Show();
         }

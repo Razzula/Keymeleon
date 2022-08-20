@@ -98,6 +98,10 @@ namespace Keymeleon
 
                 }
 
+                if (currentRow == 6)
+                {
+                    break;
+                }
                 currentRow += 1;
             }
 

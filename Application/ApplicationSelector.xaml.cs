@@ -80,7 +80,12 @@ namespace Keymeleon
                 //create item
                 var item = new ListViewItem();
 
-                Icon icon = System.Drawing.Icon.ExtractAssociatedIcon(p.MainModule.FileName);
+                Icon? icon = null;
+                try
+                {
+                    icon = System.Drawing.Icon.ExtractAssociatedIcon(p.MainModule.FileName);
+                }
+                catch (System.ComponentModel.Win32Exception) { }
                 item.Content = new ApplicationListItem(applicationName, icon);
                 item.Height = 24;
 

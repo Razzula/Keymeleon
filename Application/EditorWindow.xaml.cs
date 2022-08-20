@@ -55,7 +55,6 @@ namespace Keymeleon
             this.rows = rows;
 
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory+"/layouts");
-
             //base
             FileInfo[] info = dirInfo.GetFiles("*.base");
             foreach (var file in info)
