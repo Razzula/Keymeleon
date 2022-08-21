@@ -25,7 +25,9 @@ In theory the software should work with other keyboards with VID `0x0c45`, but h
 
 _If your device is not listed, but works with the software, please do contact me to help expand the list._
 
-## Installing
+## Installation
+
+Pre-built Windows binaries for both 32 and 64-bit systems are available [here](https://github.com/Razzula/Keymeleon/releases). However, the source code is available to build, as explained below.
 
 ### Prerequisites
 
@@ -37,9 +39,8 @@ _If your device is not listed, but works with the software, please do contact me
 
 Official (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
 
-### Installing
-
-Both the application and C++ library are projects under a single Visual Studio solution and the easiest method is to build using VS, as it should handle the whole process for you.
+### Building
+Both the application and C++ library are projects under a single Visual Studio solution and so can easily be built using VS, as it should handle the whole process for you.
 
 If however it fails, or should you wish to build the project independently, the steps to install are:
 
