@@ -307,7 +307,6 @@ namespace Keymeleon
                 layer = 1;
             }
 
-
             Button btn = (Button) e.Source;
             string keycode = btn.Name.ToString();
             if (keycode[0].Equals('_'))
@@ -315,19 +314,16 @@ namespace Keymeleon
                 keycode = keycode.Substring(1);
             }
 
-            if (rBox.Text.Equals("")) { rBox.Text = "0"; }
-            if (gBox.Text.Equals("")) { gBox.Text = "0"; } //simple validation
-            if (bBox.Text.Equals("")) { bBox.Text = "0"; }
-
             int r; int g; int b;
 
             if (e.ChangedButton == MouseButton.Left)
             {
                 //get colour
-                r = Int32.Parse(rBox.Text);
-                g = Int32.Parse(gBox.Text);
-                b = Int32.Parse(bBox.Text);
-                
+                var selectedColour = colourPicker.SelectedColor;
+                r = selectedColour.R;
+                g = selectedColour.G;
+                b = selectedColour.B;
+
                 btn.Opacity = 1;
 
                 configManager.UpdateLayer(layer, keycode, r, g, b);
@@ -342,6 +338,13 @@ namespace Keymeleon
                 b = colourValues[2];
 
                 btn.Opacity = 0.3;
+            }
+            else if (e.ChangedButton == MouseButton.Middle)
+            {
+                string keyHex = btn.Foreground.ToString();
+                Color keyColour = (Color) ColorConverter.ConvertFromString(keyHex);
+                colourPicker.SelectedColor = keyColour;
+                return;
             }
             else
             {
@@ -364,54 +367,6 @@ namespace Keymeleon
                 NativeMethods.SetKeyColour(keycode, r, g, b, 1);
             }
 
-        }
-
-        private void TextChanged(object sender, RoutedEventArgs e)
-        {
-            string text = (e.Source as TextBox).Text;
-
-            if (text.Equals(""))
-            {
-                (e.Source as TextBox).Text = "0";
-                DisplayColour();
-                return;
-            }
-
-            int temp;
-            try
-            {
-                temp = Int32.Parse(text);
-            }
-            catch (System.FormatException)
-            {
-                (e.Source as TextBox).Text = text.TrimEnd(text[text.Length - 1]);
-                return;
-            }
-
-            if (temp > 255)
-            {
-                (e.Source as TextBox).Text = "255";
-            }
-            else if (temp < 0)
-            {
-                (e.Source as TextBox).Text = "0";
-            }
-            DisplayColour();
-        }
-
-        private void DisplayColour()
-        {
-            //get colour
-            if (rBox == null) { return; }
-            int r = Int32.Parse(rBox.Text);
-            if (bBox == null) { return; }
-            int g = Int32.Parse(gBox.Text);
-            if (bBox == null) { return; }
-            int b = Int32.Parse(bBox.Text);
-
-            if (colourDisplay == null) { return; }
-            Color colour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
-            colourDisplay.Fill = new SolidColorBrush(colour);
         }
 
         private void Exit(object sender, EventArgs e)
@@ -470,6 +425,8 @@ namespace Keymeleon
                 deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
                 newBtn.IsEnabled = false;
                 newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New_Disabled.png"));
+                fillBtn.IsEnabled = false;
+                fillIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Fill_Disabled.png"));
             }
             else if ((bool) layerCheck.IsChecked)
             {
@@ -483,6 +440,8 @@ namespace Keymeleon
                 deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
                 newBtn.IsEnabled = true;
                 newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
+                fillBtn.IsEnabled = false;
+                fillIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Fill_Disabled.png"));
 
                 //LoadLayerConfig(sender, e);
             }
@@ -492,6 +451,9 @@ namespace Keymeleon
                 Controls.SetValue(Grid.RowProperty, 0);
                 newBtn.IsEnabled = true;
                 newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
+
+                fillBtn.IsEnabled = true;
+                fillIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Fill_Dark.png"));
 
                 LoadBaseConfig(sender, e);
             }

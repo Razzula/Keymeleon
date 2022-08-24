@@ -1,9 +1,9 @@
-<p align="center">
-	<img width="256" height="256" src="https://github.com/Razzula/keymeleon/blob/main/Application/Resources/Keymeleon.svg">
+<p  align="center">
+	<img  width="256"  height="256"  src="https://github.com/Razzula/keymeleon/blob/main/Application/Resources/Keymeleon.svg">
 </p>
-<h1 align="center">Keymeleon</h1>
+<h1  align="center">Keymeleon</h1>
 
-An adaptive keyboard RGB controller that changes the keyboard's appearance to display user-defined layouts depending on both which software is in focus and user keypresses. 
+An adaptive keyboard RGB controller that changes the keyboard's appearance to display user-defined layouts depending on both which software is in focus and user keypresses.
 
 **This software is not official software and therefore is not supported by the manufacturer nor the hardware in any way. As the software interacts directly with the hardware using reverse engineered protocols, there is a risk of damage. Though the software has been used and tested, these methods may not have been extensive. No warranty is provided, especially for hardware damages, for using this software**
 
@@ -31,15 +31,17 @@ Pre-built Windows binaries for both 32 and 64-bit systems are available [here](h
 
 ### Prerequisites
 
-[hidapi](https://github.com/libusb/hidapi) is required. Static library builds for both `x86` and `x64` are included and can be found in:
+1. [hidapi](https://github.com/libusb/hidapi) is required.
 
-```
-\kym-Library\dependencies\hidapi
-```
+	Static library builds for both `x86` and `x64` are included and can be found in: `\kym-Library\dependencies\hidapi`
 
-Official (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
+	Official (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
+
+2. [ColorPicker](https://github.com/PixiEditor/ColorPicker)  is required.
+	Is available via a NuGet package.
 
 ### Building
+
 Both the application and C++ library are projects under a single Visual Studio solution and so can easily be built using VS, as it should handle the whole process for you.
 
 If however it fails, or should you wish to build the project independently, the steps to install are:
@@ -69,11 +71,15 @@ You can reopen the editor via the system tray icon (double or right click).
 ### Notes
 
 - Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Microsoft Visual Studio 2022` will just be seen as `devenv`)
+
 - The same is true if trying to monitor an elevated application without Keymeleon being elevated
+
 - As macros are currently unsupported, any existing macros will remain on their current profile. Keymeleon makes use of all 3 of the keyboard's profiles to 'cache' layouts, and minimize writes to the device's flash, making it unclear which profile is currently in use, and therefore which macros are enabled at any given time. Currently, the best solution to this problem is to (using the official software) set all profiles to have identical macro layouts.
 
 ## License
+
 ### GNU GPLv3
+
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 See [LICENSE.md](LICENSE.md) for details.

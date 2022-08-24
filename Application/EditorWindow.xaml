@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
+        xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
         xmlns:local="clr-namespace:Keymeleon"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="Keymeleon.EditorWindow"
         mc:Ignorable="d"
-        Title="Keymeleon Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="562" MaxWidth="1226"
+        Title="Keymeleon Editor" Height="500" Width="980" MinHeight="450" MinWidth="800" MaxHeight="500" MaxWidth="980"
         Closing="OnExit"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen">
@@ -27,9 +27,15 @@
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
     </WindowChrome.WindowChrome>
 
-    <DockPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="96"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <!-- Custom Titlebar -->
-        <Grid DockPanel.Dock="Top" Height="32" Background="#181818">
+        <Grid Grid.Row="0" Height="32" Background="#181818">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -43,73 +49,94 @@
         </Grid>
 
         <!-- Controls -->
-        <DockPanel DockPanel.Dock="Top">
+        <Grid Grid.Row="1"  Height="96" ClipToBounds="false">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.55*"/>
+            </Grid.ColumnDefinitions>
 
             <!-- File -->
-            <StackPanel Orientation="Vertical" DockPanel.Dock="Left">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Row="0" Grid.Column="0" ToolTip="Settings" Click="OpenSettings" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image Source="Resources/Settings_Dark.png"/>
-                    </Button>
-                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
-
-                    <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
-
-                    <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="2" Grid.Column="0" x:Name="hotkeyCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="hotkeyList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadTopLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False">
-                        <System:String>LCtrl</System:String>
-                        <System:String>LShift</System:String>
-                        <System:String>Alt</System:String>
-                        <System:String>RCtrl</System:String>
-                        <System:String>RShift</System:String>
-                    </ComboBox>
-
-                    <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                        <Button ToolTip="New" x:Name="newBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
-                            <Image x:Name="newIcon" Source="/Resources/New.png"/>
-                        </Button>
-                        <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image x:Name="loadIcon" Source="/Resources/Refresh.png"/>
-                        </Button>
-                        <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image x:Name="saveIcon" Source="Resources/Save.png"/>
-                        </Button>
-                        <Button ToolTip="Delete" x:Name="delBtn" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                            <Image x:Name="deleteIcon" Source="Resources/Delete_Dark.png"/>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
-
-            <!--Colour -->
-            <Grid DockPanel.Dock="Right" Height="96">
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,6,0,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="17*"/>
-                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="22"/>
                 </Grid.RowDefinitions>
-                <Rectangle x:Name="colourDisplay" Height="60" Width="90" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0" Grid.RowSpan="2"/>
-                <TextBox x:Name="rBox" Margin="0,0,70,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Red" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
-                <TextBox x:Name="gBox" Margin="0,0,40,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Lime" TextChanged="TextChanged" Text="255" Width="30" Height="18" HorizontalAlignment="Right" TextAlignment="Center" Grid.Row="1"/>
-                <TextBox x:Name="bBox" Margin="0,0,10,0" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="Blue" TextChanged="TextChanged" Text="255" Height="18" TextAlignment="Center" Grid.Row="1" HorizontalAlignment="Right" Width="30"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
 
+                <Button Grid.Row="0" Grid.Column="0" ToolTip="Settings" Click="OpenSettings" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Image Source="Resources/Settings_Dark.png"/>
+                </Button>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
+
+                <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+
+                <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="2" Grid.Column="0" x:Name="hotkeyCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="hotkeyList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadTopLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False">
+                    <System:String>LCtrl</System:String>
+                    <System:String>LShift</System:String>
+                    <System:String>Alt</System:String>
+                    <System:String>RCtrl</System:String>
+                    <System:String>RShift</System:String>
+                </ComboBox>
+
+                <StackPanel x:Name="Controls" Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                    <Button ToolTip="New" x:Name="newBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
+                        <Image x:Name="newIcon" Source="/Resources/New.png"/>
+                    </Button>
+                    <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image x:Name="loadIcon" Source="/Resources/Refresh.png"/>
+                    </Button>
+                    <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image x:Name="saveIcon" Source="Resources/Save.png"/>
+                    </Button>
+                    <Button ToolTip="Delete" x:Name="delBtn" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image x:Name="deleteIcon" Source="Resources/Delete_Dark.png"/>
+                    </Button>
+                </StackPanel>
             </Grid>
 
-        </DockPanel>
+            <!-- COLOUR -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6"/> <!-- buffer -->
+                    <RowDefinition Height="22"/>
+                </Grid.RowDefinitions>
 
-        <!-- Panel -->
-        <Grid Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <!-- Brushes -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                    <Button ToolTip="Set Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image Source="/Resources/Brush_Dark.png"/>
+                    </Button>
+                    <Button ToolTip="Remove Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image Source="/Resources/Eraser_Dark.png"/>
+                    </Button>
+                    <Button ToolTip="Get Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image Source="/Resources/ColorPicker_Dark.png"/>
+                    </Button>
+                    <Button ToolTip="Fill" x:Name="fillBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image x:Name="fillIcon" Source="/Resources/Fill_Dark.png"/>
+                    </Button>
+                </StackPanel>
+
+            </Grid>
+            
+            <!-- Wheel -->
+            <Canvas x:Name="wheelHolder" Grid.Column="2" Margin="28,0,28,0">
+                <colorpicker:ColorDisplay ColorState="{Binding ElementName=colourPicker, Path=ColorState, Mode=TwoWay}" SecondaryColor="Black" HorizontalAlignment="Center" Width="40" Height="40" Canvas.Top="146" VerticalAlignment="Top" Canvas.Left="-10.4"/>
+                <colorpicker:SquarePicker x:Name="colourPicker" SelectedColor="#fffefe" Width="{Binding ActualWidth, ElementName=wheelHolder}" Height="{Binding ActualWidth, ElementName=wheelHolder}" HorizontalAlignment="Stretch" ClipToBounds="false" VerticalAlignment="Stretch" Margin="0,20,0,0"/>
+            </Canvas>
+
+        </Grid>
+
+        <!-- PANEL -->
+        <Grid Grid.Row="2" Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <!-- Keyboard -->
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
@@ -348,6 +375,6 @@
             </Grid>
         </Grid>
 
-    </DockPanel>
+    </Grid>
 
 </Window>
