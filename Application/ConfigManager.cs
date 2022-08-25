@@ -224,7 +224,7 @@ namespace Keymeleon
             }
             foreach (var item in baseState)
             {
-                if (keycodes.Contains(item.Key))
+                if (keycodes.Contains(item.Key) || layerState.ContainsKey(item.Key))
                 {
                     continue;
                 }

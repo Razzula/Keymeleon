@@ -9,7 +9,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <StartupObject>Keymeleon.App</StartupObject>
-    <ApplicationIcon>Resources\keymeleon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\icons\keymeleon.ico</ApplicationIcon>
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -36,6 +36,10 @@
     <None Remove="Resources\CollapseUp.png" />
     <None Remove="Resources\Collapse_Dark.png" />
     <None Remove="Resources\ColorPicker_Dark.png" />
+    <None Remove="Resources\cursors\Brush.cur" />
+    <None Remove="Resources\cursors\ERASER.cur" />
+    <None Remove="Resources\cursors\EYEDROP.cur" />
+    <None Remove="Resources\cursors\FILL.cur" />
     <None Remove="Resources\Delete.png" />
     <None Remove="Resources\Delete_Dark.png" />
     <None Remove="Resources\Delete_Disabled.png" />
@@ -45,6 +49,7 @@
     <None Remove="Resources\Expand_Dark.png" />
     <None Remove="Resources\Fill_Dark.png" />
     <None Remove="Resources\Fill_Disabled.png" />
+    <None Remove="Resources\icons\keymeleon.ico" />
     <None Remove="Resources\keymeleon.png" />
     <None Remove="Resources\Keymeleon.svg" />
     <None Remove="Resources\New.png" />
@@ -62,6 +67,11 @@
     <Content Include="kym.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\cursors\ERASER.cur" />
+    <Resource Include="Resources\cursors\FILL.cur" />
+    <Resource Include="Resources\cursors\EYEDROP.cur" />
+    <Resource Include="Resources\cursors\BRUSH.cur" />
+    <Resource Include="Resources\icons\keymeleon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,7 +84,6 @@
     <Resource Include="Resources\Eraser_Dark.png" />
     <Resource Include="Resources\Fill_Dark.png" />
     <Resource Include="Resources\Fill_Disabled.png" />
-    <Resource Include="Resources\keymeleon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,7 +91,6 @@
     <Resource Include="Resources\Delete_Dark.png" />
     <Resource Include="Resources\Delete_Disabled.png" />
     <Resource Include="Resources\Expand_Dark.png" />
-    <Resource Include="Resources\Keymeleon.svg" />
     <Resource Include="Resources\New.png" />
     <Resource Include="Resources\New_Disabled.png" />
     <Resource Include="Resources\Refresh.png" />

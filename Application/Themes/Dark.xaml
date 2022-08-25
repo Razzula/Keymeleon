@@ -38,6 +38,7 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Element.MouseOver.Background}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource Element.Border}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{StaticResource Element.Disabled.Background}"/>

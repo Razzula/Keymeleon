@@ -1,5 +1,5 @@
 <p  align="center">
-	<img  width="256"  height="256"  src="https://github.com/Razzula/keymeleon/blob/main/Application/Resources/Keymeleon.svg">
+	<img  width="256"  height="256"  src="https://github.com/Razzula/keymeleon/blob/main/Application/Resources/icons/Keymeleon.svg">
 </p>
 <h1  align="center">Keymeleon</h1>
 
@@ -47,6 +47,8 @@ Both the application and C++ library are projects under a single Visual Studio s
 If however it fails, or should you wish to build the project independently, the steps to install are:
 
 - Ensure the prerequisites are met
+
+- Set `Solution Platforms` (Visual Studio taskbar) and `Platform target` (`Keymeleon.csproj`) to either `x64` or `x86`. These **must** match.
 
 - Build `kym.dll` from `\kym-Library`
 

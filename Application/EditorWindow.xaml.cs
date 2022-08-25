@@ -38,6 +38,7 @@ namespace Keymeleon
         Button[][] rows;
 
         string selectedControl = "BRUSH";
+        Cursor activeCursor = new Cursor(Application.GetResourceStream(new Uri("Resources/cursors/BRUSH.cur", UriKind.Relative)).Stream);
 
         public EditorWindow()
         {
@@ -313,7 +314,23 @@ namespace Keymeleon
             fillBtn.BorderBrush = null;
             btn.BorderBrush = new SolidColorBrush((Color) ColorConverter.ConvertFromString("White"));
 
-            //TODO; set cursor to tool icon
+            //set cursor to tool icon
+            activeCursor = new Cursor(
+                Application.GetResourceStream(new Uri("Resources/cursors/"+selectedControl+".cur", UriKind.Relative)).Stream
+            );
+        }
+
+        private void UpdateCursor(object sender, MouseEventArgs e)
+        {
+            if (activeCursor != null)
+            {
+                this.Cursor = activeCursor;
+            }
+        }
+
+        private void ResetCursor(object sender, MouseEventArgs e)
+        {
+            this.Cursor = Cursors.Arrow;
         }
 
         private void ButtonClicked(object sender, MouseButtonEventArgs e)

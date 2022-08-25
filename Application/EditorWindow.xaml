@@ -43,7 +43,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image Source="/Resources/keymeleon.ico" Grid.Column="0" Margin="4,4,4,4" Height="20" />
+            <Image Source="/Resources/icons/keymeleon.ico" Grid.Column="0" Margin="4,4,4,4" Height="20" />
             <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="12" Text="Keymeleon Editor" Foreground="White"/>
             <Button Grid.Column="2" Width="46" Foreground="White" Content="X" Click="Exit" WindowChrome.IsHitTestVisibleInChrome="True"/>
         </Grid>
@@ -125,37 +125,37 @@
                 <colorpicker:ColorDisplay Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" ColorState="{Binding ElementName=colourPicker, Path=ColorState, Mode=TwoWay}" SecondaryColor="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48"/>
 
                 <!-- Brushes -->
-                <Button Tag="BRUSH" Grid.Column="1" ToolTip="Set Colour" x:Name="brushBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="White">
-                    <Image Source="/Resources/Brush_Dark.png"/>
+                <Button Tag="BRUSH" Grid.Column="1" ToolTip="Set Colour" x:Name="brushBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="White" VerticalAlignment="Top">
+                    <Image Source="/Resources/Brush_Dark.png" VerticalAlignment="Top"/>
                 </Button>
-                <Button Tag="ERASER" Grid.Column="2" ToolTip="Remove Colour [Right Click]" x:Name="eraseBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Button Tag="ERASER" Grid.Column="2" ToolTip="Remove Colour [Right Click]" x:Name="eraseBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Top">
                     <Image Source="/Resources/Eraser_Dark.png"/>
                 </Button>
-                <Button Tag="EYEDROP" Grid.Column="3" ToolTip="Get Colour [Middle Click]" x:Name="dropBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Button Tag="EYEDROP" Grid.Column="3" ToolTip="Get Colour [Middle Click]" x:Name="dropBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Top">
                     <Image Source="/Resources/ColorPicker_Dark.png"/>
                 </Button>
-                <Button Tag="FILL" Grid.Column="4" ToolTip="Mass Set Colour" x:Name="fillBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Button Tag="FILL" Grid.Column="4" ToolTip="Mass Set Colour" x:Name="fillBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Top">
                     <Image x:Name="fillIcon" Source="/Resources/Fill_Dark.png"/>
                 </Button>
 
                 <!-- Palette -->
-                <Rectangle Grid.Row="1" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Fill="Red" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Fill="Orange" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Fill="Yellow" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Fill="Green" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Fill="Blue" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Fill="Indigo" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Fill="Violet" Stroke="{DynamicResource Element.Border}"/>
-                <Rectangle Grid.Row="1" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Fill="White" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Fill="Red" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Fill="Orange" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Fill="Yellow" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Fill="Green" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Fill="Blue" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Fill="Indigo" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Fill="Violet" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="1" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Fill="White" Stroke="{DynamicResource Element.Border}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
 
-                <Rectangle Grid.Row="2" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
-                <Rectangle Grid.Row="2" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
+                <Rectangle Grid.Row="2" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}" MouseEnter="UpdateCursor" MouseLeave="ResetCursor"/>
 
             </Grid>
 
@@ -170,10 +170,10 @@
         <Grid Grid.Row="2" Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <!-- Keyboard -->
-            <Grid x:Name="KeyboardArea" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
+            <Grid x:Name="KeyboardArea" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="30,50,30,50" MouseEnter="UpdateCursor" MouseLeave="ResetCursor">
 
                 <Grid.Resources>
-                    <Style TargetType="{x:Type Button}">
+                    <!--<Style TargetType="{x:Type Button}">
                         <Setter Property="Margin" Value="2,2,2,2"/>
                         <Setter Property="Background" Value="#353535"/>
                         <Setter Property="Foreground" Value="{StaticResource Element.Glyph}"/>
@@ -183,7 +183,7 @@
                                 <Setter Property="Background" Value="{StaticResource Element.MouseOver.Background}"/>
                             </Trigger>
                         </Style.Triggers>
-                    </Style>
+                    </Style>-->
                 </Grid.Resources>
 
                 <Grid.RowDefinitions>
