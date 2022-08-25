@@ -103,33 +103,64 @@
             </Grid>
 
             <!-- COLOUR -->
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="1" Margin="0,6,0,0" HorizontalAlignment="Right">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="6"/> <!-- buffer -->
                     <RowDefinition Height="22"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="72"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                    <ColumnDefinition Width="22"/>
+                </Grid.ColumnDefinitions>
+
+                <colorpicker:ColorDisplay Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" ColorState="{Binding ElementName=colourPicker, Path=ColorState, Mode=TwoWay}" SecondaryColor="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48"/>
 
                 <!-- Brushes -->
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                    <Button ToolTip="Set Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image Source="/Resources/Brush_Dark.png"/>
-                    </Button>
-                    <Button ToolTip="Remove Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image Source="/Resources/Eraser_Dark.png"/>
-                    </Button>
-                    <Button ToolTip="Get Colour" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image Source="/Resources/ColorPicker_Dark.png"/>
-                    </Button>
-                    <Button ToolTip="Fill" x:Name="fillBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image x:Name="fillIcon" Source="/Resources/Fill_Dark.png"/>
-                    </Button>
-                </StackPanel>
+                <Button Tag="BRUSH" Grid.Column="1" ToolTip="Set Colour" x:Name="brushBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderBrush="White">
+                    <Image Source="/Resources/Brush_Dark.png"/>
+                </Button>
+                <Button Tag="ERASER" Grid.Column="2" ToolTip="Remove Colour [Right Click]" x:Name="eraseBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Image Source="/Resources/Eraser_Dark.png"/>
+                </Button>
+                <Button Tag="EYEDROP" Grid.Column="3" ToolTip="Get Colour [Middle Click]" x:Name="dropBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Image Source="/Resources/ColorPicker_Dark.png"/>
+                </Button>
+                <Button Tag="FILL" Grid.Column="4" ToolTip="Mass Set Colour" x:Name="fillBtn" Click="SetControl" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Image x:Name="fillIcon" Source="/Resources/Fill_Dark.png"/>
+                </Button>
+
+                <!-- Palette -->
+                <Rectangle Grid.Row="1" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Fill="Red" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Fill="Orange" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Fill="Yellow" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Fill="Green" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Fill="Blue" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Fill="Indigo" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Fill="Violet" Stroke="{DynamicResource Element.Border}"/>
+                <Rectangle Grid.Row="1" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Fill="White" Stroke="{DynamicResource Element.Border}"/>
+
+                <Rectangle Grid.Row="2" Grid.Column="1" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="2" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="3" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="4" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="5" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="6" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="7" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
+                <Rectangle Grid.Row="2" Grid.Column="8" Width="22" PreviewMouseDown="PaletteClicked" Stroke="{DynamicResource Element.Border}" Fill="{DynamicResource Element.Static.Background}"/>
 
             </Grid>
-            
+
             <!-- Wheel -->
             <Canvas x:Name="wheelHolder" Grid.Column="2" Margin="28,0,28,0">
-                <colorpicker:ColorDisplay ColorState="{Binding ElementName=colourPicker, Path=ColorState, Mode=TwoWay}" SecondaryColor="Black" HorizontalAlignment="Center" Width="40" Height="40" Canvas.Top="146" VerticalAlignment="Top" Canvas.Left="-10.4"/>
                 <colorpicker:SquarePicker x:Name="colourPicker" SelectedColor="#fffefe" Width="{Binding ActualWidth, ElementName=wheelHolder}" Height="{Binding ActualWidth, ElementName=wheelHolder}" HorizontalAlignment="Stretch" ClipToBounds="false" VerticalAlignment="Stretch" Margin="0,20,0,0"/>
             </Canvas>
 
@@ -139,7 +170,7 @@
         <Grid Grid.Row="2" Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <!-- Keyboard -->
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
+            <Grid x:Name="KeyboardArea" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Pen" Margin="30,50,30,50">
 
                 <Grid.Resources>
                     <Style TargetType="{x:Type Button}">

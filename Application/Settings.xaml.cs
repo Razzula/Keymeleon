@@ -70,7 +70,10 @@ namespace Keymeleon
                 }
             }
 
-            Properties.Settings.Default.AltBase = baseList.SelectedItem.ToString();
+            if (baseList.SelectedItem != null)
+            {
+                Properties.Settings.Default.AltBase = baseList.SelectedItem.ToString();
+            }
             Properties.Settings.Default.Save();
 
             Close();

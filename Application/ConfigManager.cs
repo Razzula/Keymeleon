@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
+using System.Diagnostics;
 
 namespace Keymeleon
 {
@@ -39,6 +40,31 @@ namespace Keymeleon
                         baseState.Add(keycode, new[] {0, 0, 0});
                     }
                 }
+            }
+        }
+
+        public void SetBaseConfig(Dictionary<string, int[]> newBase)
+        {
+            foreach (var item in newBase)
+            {
+                if (baseState.ContainsKey(item.Key))
+                {
+                    baseState[item.Key] = item.Value;
+                }
+                else
+                {
+                    baseState.Add(item.Key, item.Value);
+                }
+            }
+        }
+
+        public void SetLayerConfig(Dictionary<string, int[]> newLayer)
+        {
+            layerState.Clear();
+
+            foreach (var item in newLayer)
+            {
+                layerState.Add(item.Key, item.Value);
             }
         }
 
@@ -164,6 +190,60 @@ namespace Keymeleon
             {
                 tempState.Add(keycode, new[] { r, g, b });
             }
+        }
+
+        public List<string> UpdateLayerMass(string keycode, int r, int g, int b)
+        {
+            int[] colourToReplace;
+            List<string> keycodes = new();
+
+            // get colour to replace
+            if (layerState.ContainsKey(keycode))
+            {
+                colourToReplace = layerState[keycode];
+            }
+            else
+            {
+                colourToReplace = baseState[keycode];
+            }
+
+            if (colourToReplace == null)
+            {
+                Debug.WriteLine("Error, colourToReplace null");
+                return null;
+            }
+
+            // recolour all keys of old colour
+            foreach (var item in layerState)
+            {
+                if (item.Value.SequenceEqual(colourToReplace))
+                {
+                    layerState[item.Key] = new[] { r, g, b };
+                    keycodes.Add(item.Key);
+                }
+            }
+            foreach (var item in baseState)
+            {
+                if (keycodes.Contains(item.Key))
+                {
+                    continue;
+                }
+
+                if (item.Value.SequenceEqual(colourToReplace))
+                {
+                    layerState.Add(item.Key, new[] { r, g, b });
+                    keycodes.Add(item.Key);
+                }
+            }
+
+            if (keycodes.Count > 7) // save as .base for faster recolour (>7 writes is faster as base)
+            {     ConfigManager tempManager = new ConfigManager();
+                tempManager.SetBaseConfig(baseState);
+                tempManager.SetLayerConfig(layerState);
+                tempManager.SaveBaseConfig("layouts/_temp.base");
+            }
+
+            return keycodes;
         }
 
         public int[] RemoveKey(string keycode, int layer)

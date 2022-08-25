@@ -37,6 +37,8 @@ namespace Keymeleon
         ConfigManager configManager;
         Button[][] rows;
 
+        string selectedControl = "BRUSH";
+
         public EditorWindow()
         {
             InitializeComponent();
@@ -295,6 +297,25 @@ namespace Keymeleon
             
         }
 
+        private void SetControl(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)e.Source;
+
+            if (btn.Tag != null)
+            {
+                selectedControl = btn.Tag.ToString();
+            }
+
+            // reflect in UI
+            brushBtn.BorderBrush = null;
+            eraseBtn.BorderBrush = null;
+            dropBtn.BorderBrush = null;
+            fillBtn.BorderBrush = null;
+            btn.BorderBrush = new SolidColorBrush((Color) ColorConverter.ConvertFromString("White"));
+
+            //TODO; set cursor to tool icon
+        }
+
         private void ButtonClicked(object sender, MouseButtonEventArgs e)
         {
             int layer;
@@ -316,34 +337,112 @@ namespace Keymeleon
 
             int r; int g; int b;
 
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left) // SELECTED CONTROL
             {
-                //get colour
-                var selectedColour = colourPicker.SelectedColor;
-                r = selectedColour.R;
-                g = selectedColour.G;
-                b = selectedColour.B;
+                switch (selectedControl)
+                {
+                    case ("BRUSH"):
+                        //get colour
+                        var selectedColour = colourPicker.SelectedColor;
+                        r = selectedColour.R;
+                        g = selectedColour.G;
+                        b = selectedColour.B;
 
-                btn.Opacity = 1;
+                        btn.Opacity = 1;
 
-                configManager.UpdateLayer(layer, keycode, r, g, b);
+                        configManager.UpdateLayer(layer, keycode, r, g, b);
+                        break;
+
+                    case ("ERASER"):
+                        if ((bool)layerCheck.IsChecked) //layer
+                        {
+                            //get colour
+                            int[] colourValues = configManager.RemoveKey(keycode, layer);
+
+                            r = colourValues[0];
+                            g = colourValues[1];
+                            b = colourValues[2];
+
+                            btn.Opacity = 0.3;
+                        }
+                        else //base
+                        {
+                            r = 0;
+                            g = 0;
+                            b = 0;
+                            configManager.UpdateLayer(layer, keycode, r, g, b);
+                        }
+                        break;
+
+                    case ("EYEDROP"):
+                        GetKeyColour(btn);
+                        return;
+
+                    case ("FILL"): //TODO; tolerance level
+                        selectedColour = colourPicker.SelectedColor;
+                        r = selectedColour.R;
+                        g = selectedColour.G;
+                        b = selectedColour.B;
+
+                        var data = configManager.UpdateLayerMass(keycode, r, g, b);
+                        Color newColour = Color.FromRgb(Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
+
+                        if (data.Count > 7) //use _temp.base
+                        {
+                            NativeMethods.SetLayoutBase("layouts/_temp.base", 1);
+                            File.Delete("layouts/_temp.base");
+                        }
+                        foreach (string key in data)
+                        {
+                            //UI
+                            btn = (Button)FindName(key);
+                            if (btn == null)
+                            {
+                                btn = (Button)FindName("_" + key);
+                            }
+                            btn.Foreground = new SolidColorBrush(newColour);
+                            //keyboard
+                            if (data.Count <= 7)
+                            {
+                                NativeMethods.SetKeyColour(key, r, g, b, 1);
+                            }
+                        }
+
+                        readBtn.IsEnabled = true;
+                        loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh.png"));
+                        saveBtn.IsEnabled = true;
+                        saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save.png"));
+
+                        return;
+
+                    default:
+                        return;
+                }
             }
-            else if (e.ChangedButton == MouseButton.Right && (bool) layerCheck.IsChecked)
+            else if (e.ChangedButton == MouseButton.Right) // ERASER  && (bool) layerCheck.IsChecked
             {
-                //get colour
-                int[] colourValues = configManager.RemoveKey(keycode, layer);
+                if ((bool)layerCheck.IsChecked) //layer
+                {
+                    //get colour
+                    int[] colourValues = configManager.RemoveKey(keycode, layer);
 
-                r = colourValues[0];
-                g = colourValues[1];
-                b = colourValues[2];
+                    r = colourValues[0];
+                    g = colourValues[1];
+                    b = colourValues[2];
 
-                btn.Opacity = 0.3;
+                    btn.Opacity = 0.3;
+                }
+                else //base
+                {
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                    configManager.UpdateLayer(layer, keycode, r, g, b);
+                }
             }
-            else if (e.ChangedButton == MouseButton.Middle)
+            else if (e.ChangedButton == MouseButton.Middle) // EYEDROP
             {
-                string keyHex = btn.Foreground.ToString();
-                Color keyColour = (Color) ColorConverter.ConvertFromString(keyHex);
-                colourPicker.SelectedColor = keyColour;
+                GetKeyColour(btn);
                 return;
             }
             else
@@ -367,6 +466,52 @@ namespace Keymeleon
                 NativeMethods.SetKeyColour(keycode, r, g, b, 1);
             }
 
+        }
+
+        private void PaletteClicked(object sender, MouseButtonEventArgs e)
+        {
+            int r; int g; int b;
+            var control = (Rectangle)e.Source;
+
+            if (e.ChangedButton == MouseButton.Left) // SELECTED CONTROL
+            {
+                switch (selectedControl)
+                {
+                    case ("ERASER"):
+                        control.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#353535"));
+                        break;
+
+                    case ("EYEDROP"):
+                        string keyHex = control.Fill.ToString();
+                        Color colour = (Color)ColorConverter.ConvertFromString(keyHex);
+                        colourPicker.SelectedColor = colour;
+                        break;
+
+                    default: // BRUSH or FILL
+                        var selectedColour = colourPicker.SelectedColor;
+                        control.Fill = new SolidColorBrush(selectedColour);
+
+                        break;
+
+                }
+            }
+            else if (e.ChangedButton == MouseButton.Right) // ERASER
+            {
+                control.Fill = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#353535"));
+            }
+            else if (e.ChangedButton == MouseButton.Middle) // EYEDROP
+            {
+                string keyHex = control.Fill.ToString();
+                Color colour = (Color)ColorConverter.ConvertFromString(keyHex);
+                colourPicker.SelectedColor = colour;
+            }
+        }
+
+        private void GetKeyColour(Button btn)
+        {
+            string keyHex = btn.Foreground.ToString();
+            Color keyColour = (Color)ColorConverter.ConvertFromString(keyHex);
+            colourPicker.SelectedColor = keyColour;
         }
 
         private void Exit(object sender, EventArgs e)
