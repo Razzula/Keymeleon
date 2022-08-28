@@ -1,13 +1,11 @@
 # Keymeleon
 ## Test Branch
-This branch contains a console version of the C++ keyboard control code that compiles as a `.exe` as opposed to the main branch's `.dll`, allowing easier testing of functions.
+This branch contains:
+- `keymeleon-console`: a console version of the C++ keyboard control code that compiles as an `.exe` as opposed to the main branch's `.dll`, allowing easier testing of functions.
+- `chameleon`: a C# WPF application calculates an average colour from image inputs, that does so using various techniques, and displays the outputs together, allowing easier testing and comparison of the methods used.
 
 ### Prerequisites
-[hidapi](https://github.com/libusb/hidapi) is required. Static library builds for both `x86` and `x64` are included and can be found in:
-```
-\keymeleon-console\dependencies\hidapi
-```
-Offical (dynamic) releases can be found [here](https://github.com/libusb/hidapi/releases).
+See each project subfolder's README for their respective prerequisites.
 
 ## Acknowledgments
 
