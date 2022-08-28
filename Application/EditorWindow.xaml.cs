@@ -602,10 +602,15 @@ namespace Keymeleon
                 deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Dark.png"));
                 newBtn.IsEnabled = true;
                 newIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/New.png"));
+
+                // disable fill
                 fillBtn.IsEnabled = false;
                 fillIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Fill_Disabled.png"));
+                fillBtn.BorderBrush = null;
 
-                //LoadLayerConfig(sender, e);
+                selectedControl = "BRUSH";
+                brushBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("White"));
+                activeCursor = new Cursor(Application.GetResourceStream(new Uri("Resources/cursors/BRUSH.cur", UriKind.Relative)).Stream );
             }
             else
             {
