@@ -1,0 +1,72 @@
+﻿<Window x:Class="chameleon.AveragesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:chameleon"
+        mc:Ignorable="d"
+        Title="Different Colour Averages (at native resolution)" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+        </Grid.ColumnDefinitions>
+
+        <ComboBox Grid.Row="0" x:Name="comboBox" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="120" SelectionChanged="LoadImage"/>
+
+        <Label x:Name="data" HorizontalAlignment="Center" Grid.Column="0" VerticalAlignment="Center"/>
+        <Label x:Name="stanTime" HorizontalAlignment="Center" Grid.Column="1"/>
+        <Label x:Name="lleTime" HorizontalAlignment="Center" Grid.Column="2"/>
+        <Label x:Name="ppTime" HorizontalAlignment="Center" Grid.Column="3"/>
+
+        <Image x:Name="displayImage" Grid.Row="1"/>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,64,0,0">
+            <Label Content="Standard" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="modeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="meanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="rmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,64,0,0">
+            <Label Content="Low Level Exclusion" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="lleModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="lleMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="lleRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Image x:Name="ppOutput" Height="64"/>
+            <Label Content="Post-Processed LLE" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="ppModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="ppMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="ppRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,102 @@
+﻿<Window x:Class="chameleon.ResolutionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:chameleon"
+        mc:Ignorable="d"
+        Title="Different Image Resolutions (with Post-Process LLE averages)" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="128"/>
+        </Grid.ColumnDefinitions>
+
+        <ComboBox Grid.Row="0" x:Name="comboBox" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="120" SelectionChanged="LoadImage"/>
+        <Label x:Name="nativeTime" HorizontalAlignment="Center" Grid.Column="1"/>
+        <Label x:Name="FHDtime" HorizontalAlignment="Center" Grid.Column="2"/>
+        <Label x:Name="HDtime" HorizontalAlignment="Center" Grid.Column="3"/>
+        <Label x:Name="SDtime" HorizontalAlignment="Center" Grid.Column="4"/>
+        <Label x:Name="LDtime" HorizontalAlignment="Center" Grid.Column="5"/>
+
+        <Image x:Name="displayImage" Grid.Row="1"/>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label x:Name="data" Content="Native" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="nativeModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="nativeMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="nativeRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="1920 x 1080" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="FHDModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="FHDMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="FHDRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="1280 x 720" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="HDModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="HDMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="HDRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="640 x 480" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="SDModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="SDMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="SDRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="240 x 135" HorizontalAlignment="Center" FontWeight="Bold"/>
+
+            <Rectangle x:Name="LDModeOutput"  Width="64" Height="64"/>
+            <Label Content="Mode" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="LDMeanOutput" Width="64" Height="64"/>
+            <Label Content="Mean" HorizontalAlignment="Center"/>
+
+            <Rectangle x:Name="LDRmsOutput" Width="64" Height="64"/>
+            <Label Content="Root Mean Square" HorizontalAlignment="Center"/>
+
+        </StackPanel>
+    </Grid>
+</Window>
