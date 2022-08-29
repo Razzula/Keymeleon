@@ -10,10 +10,12 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
         <Button Grid.Column="0" Content="Averages" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OpenAverages"/>
-        <Button Grid.Column="1" Content="Resolutions" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OpenResolutions"/>
+        <Button Grid.Column="1" Content="Live" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OpenLive"/>
+        <Button Grid.Column="2" Content="Resolutions" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OpenResolutions"/>
 
     </Grid>
 </Window>

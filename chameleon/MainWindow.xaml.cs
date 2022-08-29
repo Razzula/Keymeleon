@@ -35,5 +35,11 @@ namespace chameleon
             ResolutionsWindow resolutions = new();
             resolutions.Show();
         }
+
+        private void OpenLive(object sender, RoutedEventArgs e)
+        {
+            LiveWindow live = new();
+            live.Show();
+        }
     }
 }

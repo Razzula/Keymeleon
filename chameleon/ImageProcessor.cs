@@ -8,13 +8,15 @@ using System.Drawing;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace chameleon
 {
     internal class ImageProcessor
     {
-        public void AnalyzeImage(Bitmap src, int lowLightCutoff, System.Windows.Shapes.Rectangle modeOut, System.Windows.Shapes.Rectangle meanOut, System.Windows.Shapes.Rectangle rmsOut, Label timerOut, double timerMod = 0)
+        public void AnalyzeImage(Bitmap src, int lowLightCutoff, System.Windows.Shapes.Rectangle modeOut, System.Windows.Shapes.Rectangle meanOut, System.Windows.Shapes.Rectangle rmsOut, Label timerOut=null, double timerMod = 0)
         {
+
             var timer = new System.Diagnostics.Stopwatch();
             timer.Start();
 
@@ -35,6 +37,7 @@ namespace chameleon
 
                     if (pixel.R + pixel.G + pixel.B >= lowLightCutoff)
                     {
+
                         //mean
                         mean[0] += pixel.R;
                         mean[1] += pixel.G;
@@ -60,62 +63,63 @@ namespace chameleon
             }
 
             //process data
-            for (int i = 0; i < 3; i++)
+            var currentMode = new KeyValuePair<System.Drawing.Color, int>(System.Drawing.Color.Black, 0);
+
+            if (count > 0)
             {
-                mean[i] /= count;
-                rms[i] = (int)Math.Sqrt(rms[i] / count);
-            }
-            var currentMode = mode.ElementAt(0);
-            foreach (var item in mode)
-            {
-                if (item.Value > currentMode.Value)
+                //mean
+                for (int i = 0; i < 3; i++)
                 {
-                    currentMode = item;
+                    mean[i] /= count;
+                    rms[i] = (int)Math.Sqrt(rms[i] / count);
                 }
-                else if (item.Value == currentMode.Value)
+                //mode
+                if (mode.Count > 0)
                 {
-                    // get brighter value if mode is joint
-                    if (item.Key.R + item.Key.G + item.Key.B > currentMode.Key.R + currentMode.Key.G + currentMode.Key.B)
+                    foreach (var item in mode)
                     {
-                        currentMode = item;
+                        if (item.Value > currentMode.Value)
+                        {
+                            currentMode = item;
+                        }
+                        else if (item.Value == currentMode.Value)
+                        {
+                            // get brighter value if mode is joint
+                            if (item.Key.R + item.Key.G + item.Key.B > currentMode.Key.R + currentMode.Key.G + currentMode.Key.B)
+                            {
+                                currentMode = item;
+                            }
+                        }
                     }
                 }
             }
 
             //output data
-            modeOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(currentMode.Key.R, currentMode.Key.G, currentMode.Key.B));
-            meanOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Convert.ToByte(mean[0]), Convert.ToByte(mean[1]), Convert.ToByte(mean[2])));
-            rmsOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Convert.ToByte(rms[0]), Convert.ToByte(rms[1]), Convert.ToByte(rms[2])));
+            modeOut.Dispatcher.Invoke(new Action(() => { modeOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(currentMode.Key.R, currentMode.Key.G, currentMode.Key.B)); }));
+            meanOut.Dispatcher.Invoke(new Action(() => { meanOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Convert.ToByte(mean[0]), Convert.ToByte(mean[1]), Convert.ToByte(mean[2]))); }));
+            rmsOut.Dispatcher.Invoke(new Action(() => { rmsOut.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Convert.ToByte(rms[0]), Convert.ToByte(rms[1]), Convert.ToByte(rms[2]))); }));
 
             timer.Stop();
-            timerOut.Content = (timer.Elapsed.TotalSeconds + timerMod) + "s";
+            if (timerOut != null)
+            {
+                timerOut.Content = (timer.Elapsed.TotalSeconds + timerMod) + "s";
+            }
         }
 
-        public void SaturateImage(Bitmap src, float saturation)
+        public void ProcessImage(Bitmap src, float saturation)
         {
             Graphics gr = Graphics.FromImage(src);
 
-            float rWeight = 0.3333f;
-            float gWeight = 0.3333f;
-            float bWeight = 0.3333f;
+            float c = 3f;
+            float t = (1.0f - c) / 2.0f;
 
-            float a = (1.0f - saturation) * rWeight + saturation;
-            float b = (1.0f - saturation) * rWeight;
-            float c = (1.0f - saturation) * rWeight;
-            float d = (1.0f - saturation) * gWeight;
-            float e = (1.0f - saturation) * gWeight + saturation;
-            float f = (1.0f - saturation) * gWeight;
-            float g = (1.0f - saturation) * bWeight;
-            float h = (1.0f - saturation) * bWeight;
-            float i = (1.0f - saturation) * bWeight + saturation;
-
-            float[][] ptsArray = {
-                new float[] {a,  b,  c,  0, 0},
-                new float[] {d,  e,  f,  0, 0},
-                new float[] {g,  h,  i,  0, 0},
-                new float[] {0,  0,  0,  1, 0},
-                new float[] {0, 0, 0, 0, 1}
-            };
+            float[][] ptsArray  = new float[][] {
+            new float[] {c,0,0,0,0},
+            new float[] {0,c,0,0,0},
+            new float[] {0,0,c,0,0},
+            new float[] {0,0,0,1,0},
+            new float[] {t,t,t,0,1}
+        };
 
             ColorMatrix clrMatrix = new ColorMatrix(ptsArray);
             ImageAttributes imgAttribs = new ImageAttributes();
@@ -124,7 +128,7 @@ namespace chameleon
             imgAttribs.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Default);
 
             gr.DrawImage(src, new System.Drawing.Rectangle(0, 0, src.Width, src.Height),
-                         0, 0, src.Width, src.Height, System.Drawing.GraphicsUnit.Pixel, imgAttribs);
+                0, 0, src.Width, src.Height, System.Drawing.GraphicsUnit.Pixel, imgAttribs);
         }
     }
 }

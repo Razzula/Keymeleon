@@ -57,7 +57,7 @@ namespace chameleon
             Bitmap src = new(file);
 
             timer.Start();
-            processor.SaturateImage(src, 2f);
+            processor.ProcessImage(src, 2f);
             timer.Stop();
             double timeToProcess = timer.Elapsed.TotalSeconds;
 

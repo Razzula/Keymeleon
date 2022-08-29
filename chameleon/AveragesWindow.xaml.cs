@@ -60,7 +60,7 @@ namespace chameleon
             processor.AnalyzeImage(src, 200, lleModeOutput, lleMeanOutput, lleRmsOutput, lleTime);
 
             timer.Start();
-            processor.SaturateImage(src, 2f);
+            processor.ProcessImage(src, 2f);
             timer.Stop();
             double timeToProcess = timer.Elapsed.TotalSeconds;
             ppOutput.Source = ToBitmapImage(src);
