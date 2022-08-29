@@ -27,9 +27,16 @@ int main()
 	//}
 
 	//test
-	setActiveProfile(1);
-	setLayoutBase((char*)"null.base", 1); //turn off all LEDs
-	setLayoutBase((char*)"test.base", 1);
+	//setActiveProfile(1);
+	//setLayoutBase((char*)"null.base", 1); //turn off all LEDs
+	//setLayoutBase((char*)"test.base", 1);
+
+	//CHANGE MODE
+	setMode(0);
+	setPrimaryColour(255, 0, 0);
+	setPrimaryColour(0, 255, 0);
+	setPrimaryColour(0, 0, 255);
+	setMode(1);
 
 	// Finalize the hidapi library
 	hid_exit();
@@ -161,7 +168,7 @@ int setKeyColour(char* keycode, int r, int g, int b, int profile) { //TODO; refa
 	}
 
 	uint8_t buf[64];
-	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
+	std::copy(std::begin(data_key), std::end(data_key), std::begin(buf));
 	// set keycode values
 	buf[1] = keyID[0] + 2 * profile;
 	buf[5] = keyID[1];
@@ -198,7 +205,7 @@ int applyLayoutLayer(char* configFileName, int profileToModify) {
 	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
 
 	uint8_t buf[64];
-	std::copy(std::begin(data_settings), std::end(data_settings), std::begin(buf));
+	std::copy(std::begin(data_key), std::end(data_key), std::begin(buf));
 
 	for (auto element : layout) { //for every key config in layout
 		// search keycode map for key identifier
@@ -356,6 +363,72 @@ int setLayoutBase(char* fileName, int profile) {
 	config.close();
 
 	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
+
+	return res;
+}
+
+int setMode(int mode) {
+
+	int res = 0;
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return -1;
+	}
+
+	uint8_t buf[64];
+	std::copy(std::begin(data_mode), std::end(data_mode), std::begin(buf));
+
+	switch (mode) {
+	case 0: //FIXED
+		buf[1] = 0x0d;
+		buf[8] = 0x06;
+		break;
+	case 1: //CUSTOM
+		buf[1] = 0x1b;
+		buf[8] = 0x14;
+		break;
+	default:
+		return -1;
+	}
+
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	res += writeToKeyboard(handle, buf, 64); //data
+	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
+
+	hid_close(handle);
+
+	return res;
+}
+
+int setPrimaryColour(int r, int g, int b) {
+
+	int res = 0;
+	hid_device* handle = openKeyboard();
+	if (!handle) {
+		return -1;
+	}
+
+	uint8_t buf[64];
+	uint8_t buff[64];
+	std::copy(std::begin(data_mode), std::end(data_mode), std::begin(buf));
+	std::copy(std::begin(data_mode), std::end(data_mode), std::begin(buff));
+
+	buf[1] = 0x0b;
+	buf[5] = 0x04;
+
+	buff[2] = 0x02;
+	buff[4] = 0x03;
+	buff[5] = 0x05;
+	buff[8] = r;
+	buff[9] = g;
+	buff[10] = b;
+
+	res += writeToKeyboard(handle, data_start, 64); //tell device this is start of data
+	res += writeToKeyboard(handle, buf, 64); //data
+	res += writeToKeyboard(handle, buff, 64); //data
+	res += writeToKeyboard(handle, data_end, 64); //tell device this is end of data
+
+	hid_close(handle);
 
 	return res;
 }
