@@ -39,11 +39,13 @@ using System.Drawing;
 using Microsoft.Win32;
 using System.Threading;
 using System.Reflection;
+using System.Drawing.Imaging;
 
 namespace Keymeleon
 {
     public partial class MainWindow : Window
     {
+        // GLOBAL VARIABLES ---
         System.IntPtr hWinEvent;
         NativeMethods.WinEventDelegate winEventProcDelegate;
         private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
@@ -72,6 +74,10 @@ namespace Keymeleon
         bool hotkeyActive = false;
         int profile;
 
+        int mode = 1;
+        CancellationTokenSource mimicScreenSource;
+
+        // P/INVOKE METHODS ---
         static class NativeMethods
         {
 
@@ -100,9 +106,14 @@ namespace Keymeleon
             public static extern int ApplyLayoutLayer(string configFileName, int profileToModify);
             [DllImport("kym.dll")]
             public static extern int SetActiveProfile(int profile);
+            [DllImport("kym.dll")]
+            public static extern int SetMode(int mode); //1: CUSTOM, 2: FIXED
+            [DllImport("kym.dll")]
+            public static extern int SetPrimaryColour(int r, int g, int b);
 
         }
 
+        // INITIALISATION ---
         public MainWindow()
         {
             if (!Environment.CurrentDirectory.Equals(AppDomain.CurrentDomain.BaseDirectory))
@@ -178,6 +189,19 @@ namespace Keymeleon
             ts.BackColor = ColorTranslator.FromHtml("#292929");
             contextMenu.Items.Add(ts);
 
+            ts = new ToolStripMenuItem("Mode 1");
+            ts.Click += new EventHandler(SetMode_1);
+            ts.BackColor = ColorTranslator.FromHtml("#292929");
+            ts.ToolTipText = "Display user-defined layouts depedning on the focused application and keypresses (default mode)";
+            //ts.ForeColor = System.Drawing.Color.Green;
+            contextMenu.Items.Add(ts);
+
+            ts = new ToolStripMenuItem("Mode 2");
+            ts.Click += new EventHandler(SetMode_2);
+            ts.BackColor = ColorTranslator.FromHtml("#292929");
+            ts.ToolTipText = "Mimic the screen's average colour (designed for films/games)";
+            contextMenu.Items.Add(ts);
+
             ts = new ToolStripMenuItem("Exit");
             ts.Click += new EventHandler(Exit);
             ts.BackColor = ColorTranslator.FromHtml("#292929");
@@ -202,10 +226,87 @@ namespace Keymeleon
             }
             else
             {
-                StartFocusMonitoring();
+                StartController();
             }
         }
 
+        public void StartController()
+        {
+            if (mode == 1) //ADAPT TO FOREGROUND
+            {
+                StartFocusMonitoring();
+            }
+            else if ( mode == 2) //MIMIC SCREEN
+            {
+                StartScreenMonitoring();
+            }
+        }
+
+        public void StopController()
+        {
+            if (mode == 1) //ADAPT TO FOREGROUND
+            {
+                NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
+                NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
+            }
+            else if (mode == 2) //MIMIC SCREEN
+            {
+                mimicScreenSource.Cancel();
+            }
+        }
+
+        // MODE 1: ADAPT TO FOREGROUND SOFTWARE ---
+        // setup monitoring
+        private void StartFocusMonitoring()
+        {
+            int res = 0;
+
+            res += NativeMethods.SetMode(1);
+
+            if (!File.Exists("layouts/Default.base")) //if no default base, create one
+            {
+                configManager.SaveBaseConfig("layouts/Default.base");
+            }
+            res += NativeMethods.SetLayoutBase("layouts/Default.base", 1);
+
+            if (File.Exists("layouts/" + Properties.Settings.Default.AltBase + ".base")) //if custom base exists, use for non-defaults
+            {
+                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 3);
+                configManager.LoadBaseConfig("layouts/" + Properties.Settings.Default.AltBase + ".base");
+                cachedApplications.Clear();
+            }
+            else
+            {
+                res += NativeMethods.SetLayoutBase("layouts/Default.base", 2);
+                res += NativeMethods.SetLayoutBase("layouts/Default.base", 3);
+                configManager.LoadBaseConfig("layouts/Default.base");
+            }
+
+            //error handling
+            Debug.WriteLine(res);
+            if (res < 0)
+            {
+                OnError();
+            }
+
+            //get current window
+            var hwnd = NativeMethods.GetForegroundWindow();
+            WinEventProc(IntPtr.Zero, 0, hwnd, 0, 0, 0, 0);
+
+            //setup method to handle events (change of focus)
+            winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
+            hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
+
+            //setup method to handle key events
+            hotkeyActive = false;
+            var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
+            hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
+
+            nIcon.Visible = true;
+        }
+
+        // respond to foreground changes
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
 
@@ -327,86 +428,7 @@ namespace Keymeleon
             }
         }
 
-        private void OpenEditor(object sender, EventArgs e)
-        {
-            nIcon.Visible = false;
-            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
-            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
-
-            int res = NativeMethods.SetActiveProfile(1);
-            if (res < 0)
-            {
-                OnError();
-                return;
-            }
-
-            EditorWindow editor = new();
-            editor.Show();
-        }
-
-        public void StartFocusMonitoring()
-        {
-            int res = 0;
-
-            if (!File.Exists("layouts/Default.base")) //if no default base, create one
-            {
-                configManager.SaveBaseConfig("layouts/Default.base");
-            }
-            res += NativeMethods.SetLayoutBase("layouts/Default.base", 1);
-
-            if (File.Exists("layouts/"+Properties.Settings.Default.AltBase+".base")) //if custom base exists, use for non-defaults
-            {
-                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 2);
-                res += NativeMethods.SetLayoutBase("layouts/" + Properties.Settings.Default.AltBase + ".base", 3);
-                configManager.LoadBaseConfig("layouts/" + Properties.Settings.Default.AltBase + ".base");
-                cachedApplications.Clear();
-            } else
-            {
-                res += NativeMethods.SetLayoutBase("layouts/Default.base", 2);
-                res += NativeMethods.SetLayoutBase("layouts/Default.base", 3);
-                configManager.LoadBaseConfig("layouts/Default.base");
-            }
-
-            //error handling
-            Debug.WriteLine(res);
-            if (res < 0)
-            {
-                OnError();
-            }
-
-            //get current window
-            var hwnd = NativeMethods.GetForegroundWindow();
-            WinEventProc(IntPtr.Zero, 0, hwnd, 0, 0, 0, 0);
-
-            //setup method to handle events (change of focus)
-            winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
-            hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
-
-            //setup method to handle key events
-            hotkeyActive = false;
-            var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
-            hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
-
-            nIcon.Visible = true;
-        }
-
-        public void Exit(object sender, EventArgs e)
-        {
-            nIcon.Visible = false;
-            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
-            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
-
-            //remove any temp files
-            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-            var info = dirInfo.GetFiles("_*.conf");
-            foreach (var file in info)
-            {
-                File.Delete(file.FullName);
-            }
-
-            Close();
-        }
-
+        // respond to keypresses
         int WinHookProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
             int keycode = Marshal.ReadInt32(lParam);
@@ -456,17 +478,177 @@ namespace Keymeleon
             return NativeMethods.CallNextHookEx(hWinHook, nCode, wParam, lParam);
         }
 
+        // MODE 2: MIMIC SCREEN COLOURS ---
+        private void StartScreenMonitoring()
+        {
+            int res = 0;
+
+            res += NativeMethods.SetActiveProfile(1);
+            res += NativeMethods.SetMode(2);
+
+            mimicScreenSource = new CancellationTokenSource();
+            new Task(() => MimicScreen(), mimicScreenSource.Token, TaskCreationOptions.LongRunning).Start();
+        }
+
+        private void MimicScreen()
+        {
+            int res;
+            while (true)
+            {
+                //get screen image
+                System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
+                Bitmap capture = new Bitmap(bounds.Width, bounds.Height);
+
+                using (Graphics g = Graphics.FromImage(capture))
+                {
+                    g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
+                }
+
+                //resolution
+                //capture = new Bitmap(capture, 240, 135); //too fast
+
+                var averageColour = GetAverageColourOf(capture, 200);
+                res = NativeMethods.SetPrimaryColour(averageColour.R, averageColour.G, averageColour.B); //TODO; only write is colour is different
+                if (res < 0)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        OnError();
+                    });
+                    break;
+                }
+                
+            }
+        }
+
+        private System.Drawing.Color GetAverageColourOf(Bitmap src, int lowLightExclusion=0)
+        {
+            //PROCESS IMAGE
+            using (Graphics g = Graphics.FromImage(src))
+            {
+                float c = 3f;
+                float t = (1.0f - c) / 2.0f;
+
+                ColorMatrix clrMatrix = new ColorMatrix(new float[][] {
+                        new float[] {c,0,0,0,0},
+                        new float[] {0,c,0,0,0},
+                        new float[] {0,0,c,0,0},
+                        new float[] {0,0,0,1,0},
+                        new float[] {t,t,t,0,1}
+                    });
+                ImageAttributes imgAttribs = new ImageAttributes();
+                imgAttribs.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Default);
+
+                g.DrawImage(src, new System.Drawing.Rectangle(0, 0, src.Width, src.Height),
+                    0, 0, src.Width, src.Height, System.Drawing.GraphicsUnit.Pixel, imgAttribs);
+            }
+
+            //ANALYSE IMAGE
+            int width = src.Width;
+            int height = src.Height;
+
+            double[] mean = new double[] { 0, 0, 0 };
+            int count = 0;
+
+            //get data
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    System.Drawing.Color pixel = src.GetPixel(x, y);
+
+                    if (pixel.R + pixel.G + pixel.B >= lowLightExclusion)
+                    {
+                        //mean
+                        mean[0] += pixel.R;
+                        mean[1] += pixel.G;
+                        mean[2] += pixel.B;
+
+                        count += 1;
+                    }
+                }
+            }
+
+            //process data
+            if (count > 0)
+            {
+                //mean
+                for (int i = 0; i < 3; i++)
+                {
+                    mean[i] /= count;
+                }
+            }
+
+            return System.Drawing.Color.FromArgb(255, (int)mean[0], (int)mean[1], (int)mean[2]);
+        }
+
+        // UI INTERFACE ---
+        private void OpenEditor(object sender, EventArgs e)
+        {
+            nIcon.Visible = false;
+            StopController();
+
+            int res = NativeMethods.SetActiveProfile(1);
+            int res2 = NativeMethods.SetMode(1); //custom layout
+            if (res < 0 || res2 <0)
+            {
+                OnError();
+                return;
+            }
+
+            EditorWindow editor = new();
+            editor.Show();
+        }
+
         private void OnError()
         {
             nIcon.Visible = false;
-            NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
-            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
+            StopController();
 
             var dialog = new PopupDialog("Error", "Could not write to keyboard.\nPlease reconnect the device and restart Keymeleon.");
             dialog.ShowDialog();
             System.Windows.Application.Current.Shutdown();
             Close();
         }
+
+        public void Exit(object sender, EventArgs e)
+        {
+            nIcon.Visible = false;
+            StopController();
+
+            //remove any temp files
+            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
+            var info = dirInfo.GetFiles("_*.conf");
+            foreach (var file in info)
+            {
+                File.Delete(file.FullName);
+            }
+
+            Close();
+        }
+
+        private void SetMode_1(object sender, EventArgs e)
+        {
+            if (mode == 1)
+            {
+                return;
+            }
+            StopController();
+            mode = 1;
+            StartController();
+        }
+
+        private void SetMode_2(object sender, EventArgs e)
+        {
+            if (mode == 2)
+            {
+                return;
+            }
+            StopController();
+            mode = 2;
+            StartController();
+        }
+
     }
 
     //TODO; if screen goes on standby, set keyboard to black

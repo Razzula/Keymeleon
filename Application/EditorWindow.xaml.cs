@@ -539,7 +539,7 @@ namespace Keymeleon
         private void OnExit(object sender, EventArgs e)
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.StartFocusMonitoring();
+            mainWindow.StartController();
         }
 
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
