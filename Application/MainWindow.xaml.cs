@@ -490,6 +490,8 @@ namespace Keymeleon
             new Task(() => MimicScreen(), mimicScreenSource.Token, TaskCreationOptions.LongRunning).Start();
         }
 
+        System.Drawing.Color currentPrimaryColour;
+
         private void MimicScreen()
         {
             int res;
@@ -505,18 +507,27 @@ namespace Keymeleon
                 }
 
                 //resolution
-                //capture = new Bitmap(capture, 240, 135); //too fast
+                capture = new Bitmap(capture, 240, 135);
 
                 var averageColour = GetAverageColourOf(capture, 200);
-                res = NativeMethods.SetPrimaryColour(averageColour.R, averageColour.G, averageColour.B); //TODO; only write is colour is different
-                if (res < 0)
+                if (Math.Abs(currentPrimaryColour.R - averageColour.R) + //only write is colour is different
+                    Math.Abs(currentPrimaryColour.G - averageColour.G) +
+                    Math.Abs(currentPrimaryColour.B - averageColour.B) > 125)
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    res = NativeMethods.SetPrimaryColour(averageColour.R, averageColour.G, averageColour.B);
+
+                    if (res < 0)
                     {
-                        OnError();
-                    });
-                    break;
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            OnError();
+                        });
+                        break;
+                    }
+
+                    currentPrimaryColour = averageColour;
                 }
+
                 
             }
         }
