@@ -32,6 +32,8 @@
     <None Remove="New.png" />
     <None Remove="Resources\Add.png" />
     <None Remove="Resources\Brush_Dark.png" />
+    <None Remove="Resources\CheckBoxChecked_Dark.png" />
+    <None Remove="Resources\CheckBoxUnchecked_Dark.png" />
     <None Remove="Resources\Collapse.png" />
     <None Remove="Resources\CollapseUp.png" />
     <None Remove="Resources\Collapse_Dark.png" />
@@ -67,6 +69,8 @@
     <Content Include="kym.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\CheckBoxChecked_Dark.png" />
+    <Resource Include="Resources\CheckBoxUnchecked_Dark.png" />
     <Resource Include="Resources\cursors\ERASER.cur" />
     <Resource Include="Resources\cursors\FILL.cur" />
     <Resource Include="Resources\cursors\EYEDROP.cur" />

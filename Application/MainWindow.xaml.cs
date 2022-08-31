@@ -40,6 +40,7 @@ using Microsoft.Win32;
 using System.Threading;
 using System.Reflection;
 using System.Drawing.Imaging;
+using System.Windows.Resources;
 
 namespace Keymeleon
 {
@@ -75,7 +76,9 @@ namespace Keymeleon
         int profile;
 
         int mode = 1;
-        CancellationTokenSource mimicScreenSource;
+        bool mimicScreenActive = false;
+
+        ToolStripItem tsOld;
 
         // P/INVOKE METHODS ---
         static class NativeMethods
@@ -182,6 +185,7 @@ namespace Keymeleon
             {
                 AutoClose = true
             };
+            contextMenu.ForeColor = System.Drawing.Color.Yellow;
             nIcon.ContextMenuStrip = contextMenu;
 
             ToolStripItem ts = new ToolStripMenuItem("Open Editor");
@@ -189,14 +193,20 @@ namespace Keymeleon
             ts.BackColor = ColorTranslator.FromHtml("#292929");
             contextMenu.Items.Add(ts);
 
-            ts = new ToolStripMenuItem("Mode 1");
+            StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/CheckBoxChecked_Dark.png"));
+            var checkboxImg = System.Drawing.Image.FromStream(sri.Stream);
+
+            ts = new ToolStripMenuItem("Mode 1", checkboxImg);
             ts.Click += new EventHandler(SetMode_1);
             ts.BackColor = ColorTranslator.FromHtml("#292929");
             ts.ToolTipText = "Display user-defined layouts depedning on the focused application and keypresses (default mode)";
-            //ts.ForeColor = System.Drawing.Color.Green;
             contextMenu.Items.Add(ts);
+            tsOld = ts;
 
-            ts = new ToolStripMenuItem("Mode 2");
+            sri = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/CheckBoxUnchecked_Dark.png"));
+            checkboxImg = System.Drawing.Image.FromStream(sri.Stream);
+
+            ts = new ToolStripMenuItem("Mode 2", checkboxImg);
             ts.Click += new EventHandler(SetMode_2);
             ts.BackColor = ColorTranslator.FromHtml("#292929");
             ts.ToolTipText = "Mimic the screen's average colour (designed for films/games)";
@@ -251,7 +261,7 @@ namespace Keymeleon
             }
             else if (mode == 2) //MIMIC SCREEN
             {
-                mimicScreenSource.Cancel();
+                mimicScreenActive = false;
             }
         }
 
@@ -486,7 +496,8 @@ namespace Keymeleon
             res += NativeMethods.SetActiveProfile(1);
             res += NativeMethods.SetMode(2);
 
-            mimicScreenSource = new CancellationTokenSource();
+            mimicScreenActive = true;
+            var mimicScreenSource = new CancellationTokenSource();
             new Task(() => MimicScreen(), mimicScreenSource.Token, TaskCreationOptions.LongRunning).Start();
         }
 
@@ -495,7 +506,7 @@ namespace Keymeleon
         private void MimicScreen()
         {
             int res;
-            while (true)
+            while (mimicScreenActive)
             {
                 //get screen image
                 System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
@@ -647,6 +658,15 @@ namespace Keymeleon
             StopController();
             mode = 1;
             StartController();
+
+            //ui
+            var activeItem = (ToolStripItem)sender;
+            var checkImg = tsOld.Image;
+
+            tsOld.Image = activeItem.Image;
+            activeItem.Image = checkImg;
+
+            tsOld = activeItem;
         }
 
         private void SetMode_2(object sender, EventArgs e)
@@ -655,9 +675,19 @@ namespace Keymeleon
             {
                 return;
             }
+
             StopController();
             mode = 2;
             StartController();
+
+            //ui
+            var activeItem = (ToolStripItem)sender;
+            var checkImg = tsOld.Image;
+
+            tsOld.Image = activeItem.Image;
+            activeItem.Image = checkImg;
+
+            tsOld = activeItem;
         }
 
     }
