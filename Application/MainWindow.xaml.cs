@@ -506,21 +506,24 @@ namespace Keymeleon
         private void MimicScreen()
         {
             int res;
+            System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
+
             while (mimicScreenActive)
             {
                 //get screen image
-                System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
-                Bitmap capture = new Bitmap(bounds.Width, bounds.Height);
-
-                using (Graphics g = Graphics.FromImage(capture))
+                Bitmap src = new Bitmap(bounds.Width, bounds.Height);
+                using (Graphics g = Graphics.FromImage(src))
                 {
                     g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
-                }
+                } //g.Dispose()
 
                 //resolution
-                capture = new Bitmap(capture, 240, 135);
+                var capture = new Bitmap(src, 240, 135);
+                src.Dispose(); //remove full-sized image from memory
 
                 var averageColour = GetAverageColourOf(capture, 200);
+                capture.Dispose(); //remove image from memory
+
                 if (Math.Abs(currentPrimaryColour.R - averageColour.R) + //only write is colour is different
                     Math.Abs(currentPrimaryColour.G - averageColour.G) +
                     Math.Abs(currentPrimaryColour.B - averageColour.B) > 125)
@@ -539,7 +542,6 @@ namespace Keymeleon
                     currentPrimaryColour = averageColour;
                 }
 
-                
             }
         }
 
@@ -563,7 +565,9 @@ namespace Keymeleon
 
                 g.DrawImage(src, new System.Drawing.Rectangle(0, 0, src.Width, src.Height),
                     0, 0, src.Width, src.Height, System.Drawing.GraphicsUnit.Pixel, imgAttribs);
-            }
+
+                imgAttribs.Dispose();
+            } //g.Dispose()
 
             //ANALYSE IMAGE
             int width = src.Width;

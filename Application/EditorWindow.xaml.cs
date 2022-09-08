@@ -78,7 +78,7 @@ namespace Keymeleon
             foreach (var file in info)
             {
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
-                if (!fileName.Contains('_'))
+                if (!fileName.StartsWith('_')) //TODO; somehow distinguish between temp/hotkey files and genuine (e.g. streaming_client.exe)
                 {
                     layerList.Items.Add(fileName);
                 }
