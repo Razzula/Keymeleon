@@ -75,6 +75,8 @@ namespace Keymeleon
         bool hotkeyActive = false;
         int profile;
 
+        HwndSource hwndSource;
+
         int mode = 1;
         bool mimicScreenActive = false;
 
@@ -83,13 +85,14 @@ namespace Keymeleon
         // P/INVOKE METHODS ---
         static class NativeMethods
         {
-
+            //foreground detection
             [DllImport("user32.dll")]
             public static extern System.IntPtr SetWinEventHook(uint eventMin, uint eventMax, System.IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
             public delegate void WinEventDelegate(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
             [DllImport("user32.dll")]
             public static extern bool UnhookWinEvent(System.IntPtr hWinEventHook);
 
+            //keypress detection
             [DllImport("user32.dll")]
             public static extern IntPtr SetWindowsHookExA(int idHook, HookProc lpfn, IntPtr hmod, uint dwThreadId);
             [DllImport("user32.dll")]
@@ -103,6 +106,13 @@ namespace Keymeleon
             [DllImport("user32.dll")]
             public static extern IntPtr GetForegroundWindow();
 
+            //global hotkeys
+            [DllImport("user32.dll")]
+            public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+            [DllImport("user32.dll")]
+            public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+            //keyboard controls
             [DllImport("kym.dll")]
             public static extern int SetLayoutBase(string configFileName, int profileToModify);
             [DllImport("kym.dll")]
@@ -176,7 +186,6 @@ namespace Keymeleon
 
             //START
             //minimise to system tray
-            Hide();
             nIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
             nIcon.Text = "Keymeleon";
             nIcon.DoubleClick += new EventHandler(OpenEditor);
@@ -240,6 +249,19 @@ namespace Keymeleon
             }
         }
 
+        private void OnStart(object sender, RoutedEventArgs e)
+        {
+            //create globalhotkey
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            hwndSource = HwndSource.FromHwnd(handle);
+            hwndSource.AddHook(HwndHook);
+
+            NativeMethods.RegisterHotKey(handle, 117, 0x01, 0x4B); //ALT + K
+
+            //minimise to system tray
+            Hide();
+        }
+
         public void StartController()
         {
             if (mode == 1) //ADAPT TO FOREGROUND
@@ -263,6 +285,26 @@ namespace Keymeleon
             {
                 mimicScreenActive = false;
             }
+        }
+
+        //global hotkey to open editor
+        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_HOTKEY = 0x0312;
+            switch (msg)
+            {
+                case WM_HOTKEY:
+                    switch (wParam.ToInt32())
+                    {
+                        case 117: //ALT + K //open editor
+
+                            OpenEditor(focusedApplication);
+                            handled = true;
+                            break;
+                    }
+                    break;
+            }
+            return IntPtr.Zero;
         }
 
         // MODE 1: ADAPT TO FOREGROUND SOFTWARE ---
@@ -609,14 +651,19 @@ namespace Keymeleon
         }
 
         // UI INTERFACE ---
-        private void OpenEditor(object sender, EventArgs e)
+        private void OpenEditor(object sender, EventArgs e) //wrapper
+        {
+            OpenEditor(null);
+        }
+
+        private void OpenEditor(string? currentApplication)
         {
             nIcon.Visible = false;
             StopController();
 
             int res = NativeMethods.SetActiveProfile(1);
             int res2 = NativeMethods.SetMode(1); //custom layout
-            if (res < 0 || res2 <0)
+            if (res < 0 || res2 < 0)
             {
                 OnError();
                 return;
@@ -624,6 +671,11 @@ namespace Keymeleon
 
             EditorWindow editor = new();
             editor.Show();
+
+            if (currentApplication != null)
+            {
+                editor.SetApplication(currentApplication);
+            }
         }
 
         private void OnError()

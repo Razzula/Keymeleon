@@ -78,7 +78,7 @@ namespace Keymeleon
             foreach (var file in info)
             {
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
-                if (!fileName.StartsWith('_')) //TODO; somehow distinguish between temp/hotkey files and genuine (e.g. streaming_client.exe)
+                if (!fileName.Contains('_')) //TODO; somehow distinguish between temp/hotkey files and genuine (e.g. streaming_client.exe)
                 {
                     layerList.Items.Add(fileName);
                 }
@@ -685,6 +685,14 @@ namespace Keymeleon
         {
             var dialog = new PopupDialog("Error", "Could not write to keyboard.\nPlease reconnect the device, then continue.");
             dialog.ShowDialog();
+        }
+
+        public void SetApplication(string currentApplication)
+        {
+            if (layerList.Items.Contains(currentApplication))
+            {
+                layerList.SelectedItem = currentApplication;
+            }
         }
     }
 }
