@@ -74,7 +74,7 @@ namespace Keymeleon
             }
             baseList.SelectedItem = "Default";
             //layers
-            info = dirInfo.GetFiles("*.conf");
+            info = dirInfo.GetFiles("*.layer");
             foreach (var file in info)
             {
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -212,7 +212,7 @@ namespace Keymeleon
                 layer = 2;
             }
 
-            configManager.SaveLayerConfig("layouts/" + fileName + ".conf", layer);
+            configManager.SaveLayerConfig("layouts/" + fileName + ".layer", layer);
         }
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
@@ -246,13 +246,13 @@ namespace Keymeleon
             if (layerList.SelectedItem == null) { return; }
 
             string fileName = layerList.SelectedItem.ToString();
-            LoadLayerConfig("layouts/" + fileName + ".conf", 1);
+            LoadLayerConfig("layouts/" + fileName + ".layer", 1);
 
             if ((bool) hotkeyCheck.IsChecked)
             {
                 if (hotkeyList.SelectedItem == null) { return; }
                 fileName += '_' + hotkeyList.SelectedItem.ToString();
-                LoadLayerConfig("layouts/" + fileName + ".conf", 2);
+                LoadLayerConfig("layouts/" + fileName + ".layer", 2);
             }
         }
 
@@ -266,7 +266,7 @@ namespace Keymeleon
             }
 
             string fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString();
-            LoadLayerConfig("layouts/" + fileName + ".conf", 2);
+            LoadLayerConfig("layouts/" + fileName + ".layer", 2);
         }
 
         public void CreateConfig(string fileName, string template=null)
@@ -280,20 +280,6 @@ namespace Keymeleon
 
                 baseList.Items.Add(file[0]);
                 baseList.SelectedItem = file[0];
-            }
-            else
-            {
-                if (template == null)
-                {
-                    File.Create("layouts/" + fileName).Close();
-                }
-                else
-                {
-                    File.Copy("layouts/" + template, "layouts/" + fileName);
-                }
-
-                layerList.Items.Add(file[0]);
-                layerList.SelectedItem = file[0];
             }
             
         }
@@ -547,7 +533,7 @@ namespace Keymeleon
             string fileName;
             if ((bool)hotkeyCheck.IsChecked) //top layer
             {
-                fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString() + ".conf";
+                fileName = layerList.SelectedItem.ToString() + '_' + hotkeyList.SelectedItem.ToString() + ".layer";
                 File.Delete("layouts/" + fileName);
                 LoadLayerConfig(sender, e);
                 return;
@@ -557,7 +543,7 @@ namespace Keymeleon
             if ((bool)layerCheck.IsChecked) //layer
             {
                 fileName = layerList.SelectedItem.ToString();
-                fileExtension = ".conf";
+                fileExtension = ".layer";
 
                 layerList.SelectedIndex = 0;
                 layerList.Items.Remove(fileName);
@@ -659,7 +645,7 @@ namespace Keymeleon
         {
             if ((bool)layerCheck.IsChecked) //layer
             {
-                ApplicationSelector applicationSelector = new ApplicationSelector(this);
+                ApplicationSelector applicationSelector = new ApplicationSelector(".layer", SelectApplication);
                 applicationSelector.Owner = this;
                 applicationSelector.ShowDialog(); //showDialog to prevent anything from happening until selector is closed
             }
@@ -672,6 +658,12 @@ namespace Keymeleon
                 }
                 CreateConfig(i+".base");
             }
+        }
+
+        public void SelectApplication(string application)
+        {
+            layerList.Items.Add(application);
+            layerList.SelectedItem = application;
         }
 
         private void OpenSettings(object sender, RoutedEventArgs e)
@@ -687,12 +679,17 @@ namespace Keymeleon
             dialog.ShowDialog();
         }
 
-        public void SetApplication(string currentApplication)
+        private void OpenZoneMarker(object sender, RoutedEventArgs e)
         {
-            if (layerList.Items.Contains(currentApplication))
-            {
-                layerList.SelectedItem = currentApplication;
-            }
+            OpenZoneMarker(null);
+        }
+
+        public void OpenZoneMarker(string? currentApplication, System.Drawing.Bitmap? snapshot=null)
+        {
+            ZoneMarker zoneMarker = new ZoneMarker(this, currentApplication, snapshot);
+
+            zoneMarker.Owner = this;
+            zoneMarker.ShowDialog();
         }
     }
 }

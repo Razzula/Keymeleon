@@ -26,7 +26,9 @@ namespace Keymeleon
 {
     public partial class ApplicationSelector : Window
     {
-        EditorWindow editor;
+        //EditorWindow editor;
+        Action<string> submitFunction;
+        string fileExtension;
 
         List<string> existingConfigs = new();
         List<string> currentApplications = new();
@@ -34,14 +36,15 @@ namespace Keymeleon
 
         //bool isExpanded = false;
 
-        public ApplicationSelector(EditorWindow owner)
+        public ApplicationSelector(string fileExtension, Action<string> submitFunction)
         {
             InitializeComponent();
-            editor = owner;
+            this.submitFunction = submitFunction;
+            this.fileExtension = fileExtension;
 
             //get all exist configs
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-            FileInfo[] info = dirInfo.GetFiles("*.conf");
+            FileInfo[] info = dirInfo.GetFiles("*"+fileExtension);
             foreach (FileInfo file in info)
             {
                 var config = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -158,29 +161,26 @@ namespace Keymeleon
         {
             var listItem = (ListViewItem) applicationList.SelectedItem;
             var item = (ApplicationListItem) listItem.Content;
-            string fileName = "layouts/"+item.GetName()+".conf";
-            if (fileName.EndsWith(".conf") || fileName.EndsWith(".base"))
+            string fileName = "layouts/"+item.GetName()+fileExtension;
+
+            if (!File.Exists(fileName))
             {
-                if (!File.Exists(fileName))
+                if (templateList.SelectedIndex == 0)
                 {
-                    if (templateList.SelectedIndex == 0)
-                    {
-                        editor.CreateConfig(item.GetName() + ".conf");
-                    }
-                    else
-                    {
-                        editor.CreateConfig(item.GetName() + ".conf", templateList.SelectedItem + ".conf");
-                    }
-                    Close();
+                    //create new file
+                    File.Create(fileName).Close();
                 }
                 else
                 {
-                    //file already exists
+                    //copy file
+                    File.Copy("layouts/" + templateList.SelectedItem + fileExtension, fileName);
                 }
+                submitFunction.Invoke(item.GetName());
+                Close();
             }
             else
             {
-                //invalid name
+                //file already exists
             }
         }
 

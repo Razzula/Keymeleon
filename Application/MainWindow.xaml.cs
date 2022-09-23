@@ -178,7 +178,7 @@ namespace Keymeleon
 
             //remove any temp files
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-            var info = dirInfo.GetFiles("_*.conf");
+            var info = dirInfo.GetFiles("_*.layer");
             foreach (var file in info)
             {
                 File.Delete(file.FullName);
@@ -257,6 +257,7 @@ namespace Keymeleon
             hwndSource.AddHook(HwndHook);
 
             NativeMethods.RegisterHotKey(handle, 117, 0x01, 0x4B); //ALT + K
+            NativeMethods.RegisterHotKey(handle, 171, 0x03, 0x4B); //CTRL + ALT + K
 
             //minimise to system tray
             Hide();
@@ -298,7 +299,21 @@ namespace Keymeleon
                     {
                         case 117: //ALT + K //open editor
 
-                            OpenEditor(focusedApplication);
+                            OpenEditor(null);
+                            handled = true;
+                            break;
+
+                        case 171: //CTRL + ALT + K //open autokey editor
+
+                            //get screen image
+                            System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
+                            Bitmap src = new Bitmap(bounds.Width, bounds.Height);
+                            using (Graphics g = Graphics.FromImage(src))
+                            {
+                                g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
+                            }
+
+                            OpenEditor(focusedApplication, src);
                             handled = true;
                             break;
                     }
@@ -391,11 +406,11 @@ namespace Keymeleon
             int res = 0;
 
             int oldProfile = profile;
-            if (File.Exists("layouts/"+focusedApplication+".conf")) //is there a layer to apply
+            if (File.Exists("layouts/"+focusedApplication+".layer")) //is there a layer to apply
             {
                 //register hotkeys
                 var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-                var info = dirInfo.GetFiles(focusedApplication+"_*.conf");
+                var info = dirInfo.GetFiles(focusedApplication+"_*.layer");
                 foreach (var file in info)
                 {
                     string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -429,16 +444,16 @@ namespace Keymeleon
                     }
 
                     //set layout to base
-                    if (File.Exists("layouts/_" + profile.ToString() + ".conf"))
+                    if (File.Exists("layouts/_" + profile.ToString() + ".layer"))
                     {
-                        res += NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + ".conf", profile);
+                        res += NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + ".layer", profile);
                     }
-                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".conf", profile);
+                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".layer", profile);
 
                     //create temp config to revert to base
-                    configManager.LoadLayerConfig("layouts/"+focusedApplication+".conf", 1);
+                    configManager.LoadLayerConfig("layouts/"+focusedApplication+".layer", 1);
                     var deltaState = configManager.GetStatesDelta(0, 1);
-                    configManager.SaveInverseConfig("layouts/_" + profile.ToString() + ".conf", 0, 1);
+                    configManager.SaveInverseConfig("layouts/_" + profile.ToString() + ".layer", 0, 1);
                 }
                 res += NativeMethods.SetActiveProfile(profile);
                 this.profile = profile;
@@ -465,9 +480,9 @@ namespace Keymeleon
 
             hotkeyActive = false;
             //undo any active hotkey effect
-            if (File.Exists("layouts/_" + oldProfile.ToString() + "a.conf"))
+            if (File.Exists("layouts/_" + oldProfile.ToString() + "a.layer"))
             {
-                string temp = "layouts/_" + oldProfile.ToString() + "a.conf";
+                string temp = "layouts/_" + oldProfile.ToString() + "a.layer";
                 res += NativeMethods.ApplyLayoutLayer(temp, oldProfile);
                 File.Delete(temp);
             }
@@ -496,9 +511,9 @@ namespace Keymeleon
                             hotkeyActive = true;
 
                             string key = keycodes.FirstOrDefault(x => x.Value == keycode).Key;
-                            string fileName = "layouts/" + focusedApplication + "_" + key + ".conf";
+                            string fileName = "layouts/" + focusedApplication + "_" + key + ".layer";
                             configManager.LoadLayerConfig(fileName, 2);
-                            configManager.SaveInverseConfig("layouts/_" + profile.ToString() + "a.conf", 1, 2);
+                            configManager.SaveInverseConfig("layouts/_" + profile.ToString() + "a.layer", 1, 2);
 
                             int res = NativeMethods.ApplyLayoutLayer(fileName, profile);
                             //error handling
@@ -515,7 +530,7 @@ namespace Keymeleon
                         {
                             hotkeyActive = false;
 
-                            int res = NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + "a.conf", profile);
+                            int res = NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + "a.layer", profile);
                             //error handling
                             Debug.WriteLine(res);
                             if (res < 0)
@@ -656,7 +671,7 @@ namespace Keymeleon
             OpenEditor(null);
         }
 
-        private void OpenEditor(string? currentApplication)
+        private void OpenEditor(string? currentApplication, Bitmap? src=null)
         {
             nIcon.Visible = false;
             StopController();
@@ -674,7 +689,7 @@ namespace Keymeleon
 
             if (currentApplication != null)
             {
-                editor.SetApplication(currentApplication);
+                editor.OpenZoneMarker(currentApplication, src);
             }
         }
 
@@ -696,7 +711,7 @@ namespace Keymeleon
 
             //remove any temp files
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-            var info = dirInfo.GetFiles("_*.conf");
+            var info = dirInfo.GetFiles("_*.layer");
             foreach (var file in info)
             {
                 File.Delete(file.FullName);

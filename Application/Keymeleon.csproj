@@ -119,4 +119,13 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="PopupConfirmation.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="ZoneMarker.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
 </Project>
