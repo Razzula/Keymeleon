@@ -102,8 +102,8 @@
                     </Button>
                 </StackPanel>
 
-                <Button Grid.Row="0" Grid.Column="3" ToolTip="Settings" Click="OpenZoneMarker" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                    <Image Source="Resources/Settings_Dark.png"/>
+                <Button Grid.Row="0" Grid.Column="3" ToolTip="Configure autokeys" Click="OpenZoneMarker" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Image Source="/Resources/AddEvent.png"/>
                 </Button>
             </Grid>
 

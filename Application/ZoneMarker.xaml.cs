@@ -28,6 +28,8 @@ namespace Keymeleon
     {
         EditorWindow editor;
 
+        TextBox currentField;
+
         public ZoneMarker(EditorWindow owner, string? application=null, Bitmap? snapshot=null)
         {
             InitializeComponent();
@@ -107,9 +109,18 @@ namespace Keymeleon
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
         {
             var currentItem = configList.SelectedItem;
+            if (configList.SelectedIndex == 0)
+            {
+                configList.SelectedIndex = 1;
+            }
+            else
+            {
+                configList.SelectedIndex = 0;
+            }
+            snapshotDisplay.Source = null;
+
             File.Delete(Environment.CurrentDirectory + "/layouts/" + currentItem + ".conf");
-            File.Delete(Environment.CurrentDirectory + "/snapshots/" + currentItem + ".png");
-            configList.SelectedIndex = 0;
+            //File.Delete(Environment.CurrentDirectory + "/snapshots/" + currentItem + ".png"); //TODO; fix
             configList.Items.Remove(currentItem);
         }
 
@@ -130,10 +141,71 @@ namespace Keymeleon
 
         }
 
-        public void SelectApplication(string application)
+        private void SelectApplication(string application)
         {
             configList.Items.Add(application);
             configList.SelectedItem = application;
+        }
+
+        private void AddZoneListItem(object sender, RoutedEventArgs e)
+        {
+            var listItem = new ZoneListItem(RemoveZoneListItem);
+            zoneList.Items.Add(listItem);
+        }
+
+        public void RemoveZoneListItem(ZoneListItem listItem)
+        {
+            snapshotCanvas.Children.Remove(listItem.GetRectangle());
+            zoneList.Items.Remove(listItem);
+        }
+
+        System.Windows.Shapes.Rectangle currentRectangle;
+
+        private void OnMouseDown(object sender, MouseEventArgs e)
+        {
+            System.Windows.Point p = Mouse.GetPosition(snapshotCanvas);
+
+            // screen co-ords
+            int x = (int)((p.X / snapshotCanvas.ActualWidth) * 1920f);
+            int y = (int)((p.Y / snapshotCanvas.ActualHeight) * 1080f);
+
+            if (currentField != null)
+            {
+                currentField.Text = x + "," + y;
+            }
+            Debug.WriteLine(x + "," + y);
+
+            //UI
+            if (currentRectangle == null)
+            { //create rectangle
+                System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle();
+                Canvas.SetLeft(rectangle, p.X);
+                Canvas.SetTop(rectangle, p.Y);
+                rectangle.Width = 5;
+                rectangle.Height = 5;
+                rectangle.Fill = new SolidColorBrush() { Color = Colors.Yellow, Opacity = 0.35f };
+
+                snapshotCanvas.Children.Add(rectangle);
+                currentRectangle = rectangle;
+            }
+            else
+            { //alter rectangle
+                var tempX = (int)p.X - Canvas.GetLeft(currentRectangle);
+                if (tempX < 0) //left of original point
+                {
+                    Canvas.SetLeft(currentRectangle, p.X);
+                }
+                currentRectangle.Width = Math.Abs(tempX); //resize
+
+                var tempY = (int) p.Y - Canvas.GetTop(currentRectangle);
+                if (tempY < 0) //above original point
+                {
+                    Canvas.SetTop(currentRectangle, p.Y);
+                }
+                currentRectangle.Height = Math.Abs(tempY); //resize
+
+                currentRectangle = null;
+            }
         }
     }
 }

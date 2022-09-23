@@ -31,6 +31,7 @@
     <None Remove="kym.dll" />
     <None Remove="New.png" />
     <None Remove="Resources\Add.png" />
+    <None Remove="Resources\AddEvent.png" />
     <None Remove="Resources\Brush_Dark.png" />
     <None Remove="Resources\CheckBoxChecked_Dark.png" />
     <None Remove="Resources\CheckBoxUnchecked_Dark.png" />
@@ -60,6 +61,7 @@
     <None Remove="Resources\OpenFile.png" />
     <None Remove="Resources\Refresh.png" />
     <None Remove="Resources\Refresh_Disabled.png" />
+    <None Remove="Resources\Remove.png" />
     <None Remove="Resources\Save.png" />
     <None Remove="Resources\Save_Disabled.png" />
     <None Remove="Resources\Settings_Dark.png" />
@@ -69,6 +71,8 @@
     <Content Include="kym.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Add.png" />
+    <Resource Include="Resources\AddEvent.png" />
     <Resource Include="Resources\CheckBoxChecked_Dark.png" />
     <Resource Include="Resources\CheckBoxUnchecked_Dark.png" />
     <Resource Include="Resources\cursors\ERASER.cur" />
@@ -99,6 +103,7 @@
     <Resource Include="Resources\New_Disabled.png" />
     <Resource Include="Resources\Refresh.png" />
     <Resource Include="Resources\Refresh_Disabled.png" />
+    <Resource Include="Resources\Remove.png" />
     <Resource Include="Resources\Save.png" />
     <Resource Include="Resources\Save_Disabled.png" />
     <Resource Include="Resources\Settings_Dark.png" />

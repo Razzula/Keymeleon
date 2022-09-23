@@ -48,11 +48,12 @@
 
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="32"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel x:Name="Controls" Grid.Row="0" Orientation="Horizontal">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Height="22">
                     <ComboBox x:Name="configList" Width="90" SelectionChanged="ConfigSelected" Style="{DynamicResource ComboBoxStyle_Dark}"/>
                     <Button ToolTip="New" x:Name="newBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
                         <Image x:Name="newIcon" Source="/Resources/New.png"/>
@@ -67,11 +68,21 @@
                         <Image x:Name="deleteIcon" Source="Resources/Delete_Dark.png"/>
                     </Button>
                 </StackPanel>
-                <ListView Grid.Row="1" />
+                
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Height="22">
+                    <Button ToolTip="Add" x:Name="addZone" Click="AddZoneListItem" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Image x:Name="addZoneIcon" Source="Resources/Add.png"/>
+                    </Button>
+                </StackPanel>
+                
+                <ListView x:Name="zoneList" Grid.Row="2">
+                </ListView>
             </Grid>
             
             <Image Grid.Column="1" x:Name="snapshotDisplay"/>
             <TextBlock Grid.Column="1" Text="No Snapshot (Ctrl + Alt + K)" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Panel.ZIndex="-1"/>
+
+            <Canvas Grid.Column="1" x:Name="snapshotCanvas" MouseDown="OnMouseDown" Panel.ZIndex="1" Cursor="Pen" Background="#00000000"/>
 
         </Grid>
     </DockPanel>
