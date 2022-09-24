@@ -79,6 +79,7 @@ namespace Keymeleon
 
         int mode = 1;
         bool mimicScreenActive = false;
+        bool autocolourActive = false;
 
         ToolStripItem tsOld;
 
@@ -123,6 +124,8 @@ namespace Keymeleon
             public static extern int SetMode(int mode); //1: CUSTOM, 2: FIXED
             [DllImport("kym.dll")]
             public static extern int SetPrimaryColour(int r, int g, int b);
+            [DllImport("kym.dll")]
+            public static extern int SetKeyColour(string keycode, int r, int g, int b, int profile);
 
         }
 
@@ -281,6 +284,7 @@ namespace Keymeleon
             {
                 NativeMethods.UnhookWinEvent(hWinEvent); //stop responding to window changes
                 NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
+                autocolourActive = false;
             }
             else if (mode == 2) //MIMIC SCREEN
             {
@@ -361,10 +365,12 @@ namespace Keymeleon
             var hwnd = NativeMethods.GetForegroundWindow();
             WinEventProc(IntPtr.Zero, 0, hwnd, 0, 0, 0, 0);
 
+            //FOCUS
             //setup method to handle events (change of focus)
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
             hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
 
+            //HOTKEYS
             //setup method to handle key events
             hotkeyActive = false;
             var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
@@ -376,7 +382,6 @@ namespace Keymeleon
         // respond to foreground changes
         private void WinEventProc(System.IntPtr hWinEventHook, uint eventType, System.IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-
             //get current focused process
             IntPtr pid = System.IntPtr.Zero;
             NativeMethods.GetWindowThreadProcessId(hwnd, out pid);
@@ -402,6 +407,7 @@ namespace Keymeleon
             Debug.WriteLine(focusedApplication);
 
             registeredHotkeys.Clear();
+            autocolourActive = false;
 
             int res = 0;
 
@@ -471,6 +477,7 @@ namespace Keymeleon
                 {
                     leastRecentlyUsedCacheEntry = focusedApplication;
                 }
+
             }
             else
             {
@@ -478,6 +485,15 @@ namespace Keymeleon
                 profile = 1;
             }
 
+            //AUTOKEYS
+            if (File.Exists("layouts/" + focusedApplication + ".conf")) //if there is an autokey config
+            {
+                autocolourActive = true;
+                var autoColourKeysSource = new CancellationTokenSource();
+                new Task(() => AutoColourKeys(), autoColourKeysSource.Token, TaskCreationOptions.LongRunning).Start();
+            }
+
+            //HOTKEY
             hotkeyActive = false;
             //undo any active hotkey effect
             if (File.Exists("layouts/_" + oldProfile.ToString() + "a.layer"))
@@ -545,6 +561,89 @@ namespace Keymeleon
             return NativeMethods.CallNextHookEx(hWinHook, nCode, wParam, lParam);
         }
 
+        //autocolour keys
+        private class AutoColourConfig
+        {
+            public string keyID = "";
+            public Double originX;
+            public Double originY;
+            public Double targetX;
+            public Double targetY;
+            public System.Drawing.Color currentColour = new();
+        }
+        private void AutoColourKeys()
+        {
+            List<AutoColourConfig> autoKeys = new();
+
+            //read file
+            string fileName = "layouts/" + focusedApplication + ".conf";
+
+            StreamReader streamReader;
+            try
+            {
+                streamReader = File.OpenText(fileName);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return;
+            }
+
+            string text = streamReader.ReadToEnd();
+            streamReader.Close();
+            //split into lines
+            string[] lines = text.Split(Environment.NewLine);
+
+            foreach (string line in lines)
+            {
+                //fill dictionary
+                string[] lineData = line.Split(" ");
+                if (lineData.Length >= 5)
+                {
+                    var keyConfig = new AutoColourConfig();
+                    keyConfig.keyID = lineData[0];
+                    keyConfig.originX = Convert.ToDouble(lineData[1]);
+                    keyConfig.originY = Convert.ToDouble(lineData[2]);
+                    keyConfig.targetX = Convert.ToDouble(lineData[3]);
+                    keyConfig.targetY = Convert.ToDouble(lineData[4]);
+                    autoKeys.Add(keyConfig);
+                }
+            }
+
+            //logic
+            int res;
+            ScreenColourCalculator screenColourCalculator = new();
+
+            while (autocolourActive)
+            {
+                Bitmap src = screenColourCalculator.GetScreenImage();
+
+                foreach (var autoKey in autoKeys)
+                {
+                    var averageColour = screenColourCalculator.GetAverageColourOf(src, autoKey.originX, autoKey.originY, autoKey.targetX, autoKey.targetY, 200);
+
+                    if (Math.Abs(autoKey.currentColour.R - averageColour.R) + //only write is colour is different
+                        Math.Abs(autoKey.currentColour.G - averageColour.G) +
+                        Math.Abs(autoKey.currentColour.B - averageColour.B) > 125)
+                    {
+                        res = NativeMethods.SetKeyColour(autoKey.keyID, averageColour.R, averageColour.G, averageColour.B, profile);
+
+                        if (res < 0)
+                        {
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                OnError();
+                            });
+                            break;
+                        }
+
+                        autoKey.currentColour = averageColour;
+                    }
+                }
+
+                src.Dispose(); //remove image from memory
+            }
+        }
+
         // MODE 2: MIMIC SCREEN COLOURS ---
         private void StartScreenMonitoring()
         {
@@ -558,28 +657,18 @@ namespace Keymeleon
             new Task(() => MimicScreen(), mimicScreenSource.Token, TaskCreationOptions.LongRunning).Start();
         }
 
-        System.Drawing.Color currentPrimaryColour;
 
         private void MimicScreen()
         {
             int res;
-            System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
+            System.Drawing.Color currentPrimaryColour = new();
+            ScreenColourCalculator screenColourCalculator = new();
 
             while (mimicScreenActive)
             {
-                //get screen image
-                Bitmap src = new Bitmap(bounds.Width, bounds.Height);
-                using (Graphics g = Graphics.FromImage(src))
-                {
-                    g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
-                } //g.Dispose()
-
-                //resolution
-                var capture = new Bitmap(src, 240, 135);
-                src.Dispose(); //remove full-sized image from memory
-
-                var averageColour = GetAverageColourOf(capture, 200);
-                capture.Dispose(); //remove image from memory
+                Bitmap src = screenColourCalculator.GetScreenImage(240, 135);
+                var averageColour = screenColourCalculator.GetAverageColourOf(src, 0, 0, 1, 1, 200);
+                src.Dispose(); //remove image from memory
 
                 if (Math.Abs(currentPrimaryColour.R - averageColour.R) + //only write is colour is different
                     Math.Abs(currentPrimaryColour.G - averageColour.G) +
@@ -600,69 +689,6 @@ namespace Keymeleon
                 }
 
             }
-        }
-
-        private System.Drawing.Color GetAverageColourOf(Bitmap src, int lowLightExclusion=0)
-        {
-            //PROCESS IMAGE
-            using (Graphics g = Graphics.FromImage(src))
-            {
-                float c = 3f;
-                float t = (1.0f - c) / 2.0f;
-
-                ColorMatrix clrMatrix = new ColorMatrix(new float[][] {
-                        new float[] {c,0,0,0,0},
-                        new float[] {0,c,0,0,0},
-                        new float[] {0,0,c,0,0},
-                        new float[] {0,0,0,1,0},
-                        new float[] {t,t,t,0,1}
-                    });
-                ImageAttributes imgAttribs = new ImageAttributes();
-                imgAttribs.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Default);
-
-                g.DrawImage(src, new System.Drawing.Rectangle(0, 0, src.Width, src.Height),
-                    0, 0, src.Width, src.Height, System.Drawing.GraphicsUnit.Pixel, imgAttribs);
-
-                imgAttribs.Dispose();
-            } //g.Dispose()
-
-            //ANALYSE IMAGE
-            int width = src.Width;
-            int height = src.Height;
-
-            double[] mean = new double[] { 0, 0, 0 };
-            int count = 0;
-
-            //get data
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    System.Drawing.Color pixel = src.GetPixel(x, y);
-
-                    if (pixel.R + pixel.G + pixel.B >= lowLightExclusion)
-                    {
-                        //mean
-                        mean[0] += pixel.R;
-                        mean[1] += pixel.G;
-                        mean[2] += pixel.B;
-
-                        count += 1;
-                    }
-                }
-            }
-
-            //process data
-            if (count > 0)
-            {
-                //mean
-                for (int i = 0; i < 3; i++)
-                {
-                    mean[i] /= count;
-                }
-            }
-
-            return System.Drawing.Color.FromArgb(255, (int)mean[0], (int)mean[1], (int)mean[2]);
         }
 
         // UI INTERFACE ---

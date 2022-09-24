@@ -63,7 +63,8 @@ From the tray icon's right-click context menu you can switch between Mode 1 (use
 ### Notes
 - Running an `x86` build on a `x64` machine can lead to unusual application names (i.e. `Microsoft Visual Studio 2022` will just be seen as `devenv`).
 - The same is true if trying to monitor an elevated application without Keymeleon being elevated.
-- Mode 2 will not function for applications that use DRM capture-prevention (such as Netflix).
+- Mode 2 / AutoColour keys will only for the primary screen (no support for additional monitors).
+- Mode 2 / AutoColour keys will not function for applications that use DRM capture-prevention (such as Netflix).
 - As macros are currently unsupported, any existing macros will remain on their current profile. Keymeleon makes use of all 3 of the keyboard's profiles to 'cache' layouts, and minimize writes to the device's flash, making it unclear which profile is currently in use, and therefore which macros are enabled at any given time. Currently, the best solution to this problem is to (using the official software) set all profiles to have identical macro layouts.
 
 ## License
