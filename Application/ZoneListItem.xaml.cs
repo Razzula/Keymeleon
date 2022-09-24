@@ -20,11 +20,17 @@ namespace Keymeleon
     {
         Rectangle rectangleUI;
         Action<ZoneListItem> removalAction;
+        Action<ZoneListItem, bool> setFieldAction;
 
-        public ZoneListItem(Action<ZoneListItem> removalAction)
+        Double[] originCoords = new Double[2];
+        Double[] targetCoords = new Double[2];
+
+        public ZoneListItem(Action<ZoneListItem, bool> setFieldAction, Action<ZoneListItem> removalAction)
         {
             InitializeComponent();
             this.removalAction = removalAction;
+            this.setFieldAction = setFieldAction;
+            
         }
 
         public void SetRectangle(Rectangle rect)
@@ -37,19 +43,73 @@ namespace Keymeleon
             return rectangleUI;
         }
 
-        public int[] GetOrigin()
+        public void SetOrigin(Double x, Double y)
         {
-            return new int[2] { Int32.Parse(originX.Text), Int32.Parse(originY.Text) };
+            originCoords[0] = x;
+            originCoords[1] = y;
+
+            originX.Text = ((int)(x * 1920f)).ToString();
+            originY.Text = ((int)(y * 1080f)).ToString();
         }
 
-        public int[] GetTarget()
+        public void SetTarget(Double x, Double y)
         {
-            return new int[2] { Int32.Parse(targetX.Text), Int32.Parse(targetY.Text) };
+            targetCoords[0] = x;
+            targetCoords[1] = y;
+
+            targetX.Text = ((int)(x * 1920f)).ToString();
+            targetY.Text = ((int)(y * 1080f)).ToString();
+        }
+
+        public Double[] GetOrigin()
+        {
+            return originCoords;
+        }
+
+        public Double[] GetTarget()
+        {
+            return targetCoords;
         }
 
         private void RemoveZone(object sender, RoutedEventArgs e)
         {
             removalAction.Invoke(this);
+        }
+
+        private void TextBoxSelected(object sender, EventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                setFieldAction.Invoke(this, textBox.Name.Contains("origin"));
+            }
+        }
+
+        public string? GetKey()
+        {
+            if (keyList.SelectedItem != null)
+            {
+                return keyList.SelectedItem.ToString();
+            }
+            return null;
+        }
+
+        public void SetKeyList(string[] list)
+        {
+            keyList.ItemsSource = list;
+        }
+
+        public void SetKey(string key)
+        {
+            keyList.SelectedItem = key;
+        }
+
+        private void ChangeColour(object sender, MouseEventArgs e)
+        {
+            Random rng = new();
+            var zoneColour = new SolidColorBrush(Color.FromArgb((byte)rng.Next(0, 255), (byte)rng.Next(0, 255), (byte)rng.Next(0, 255), 0));
+            colourRect.Fill = zoneColour;
+            rectangleUI.Fill = zoneColour;
         }
 
     }

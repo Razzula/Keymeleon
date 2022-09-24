@@ -20,15 +20,15 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle x:Name="colourRect" Grid.Row="0" Grid.Column="0" Width="16" Height="16" Fill="Red" Stroke="{DynamicResource Element.Border}"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" Width="90" Height="22" Grid.ColumnSpan="2" Style="{DynamicResource ComboBoxStyle_Dark}"/>
+        <Rectangle x:Name="colourRect" Grid.Row="0" Grid.Column="0" Width="16" Height="16" Fill="Yellow" MouseDown="ChangeColour" Stroke="{DynamicResource Element.Border}"/>
+        <ComboBox x:Name="keyList" Grid.Row="0" Grid.Column="1" Width="90" Height="22" Grid.ColumnSpan="2" Style="{DynamicResource ComboBoxStyle_Dark}"/>
 
-        <TextBox x:Name="originX" Grid.Row="1" Grid.Column="1" Width="45" Height="22" Foreground="White"/>
-        <TextBox x:Name="originY" Grid.Row="1" Grid.Column="2" Width="45" Height="22" Foreground="White"/>
+        <TextBox x:Name="originX" Grid.Row="1" Grid.Column="1" Width="45" Height="22" IsReadOnly="True" Foreground="White" GotFocus="TextBoxSelected" Text="0"/>
+        <TextBox x:Name="originY" Grid.Row="1" Grid.Column="2" Width="45" Height="22" IsReadOnly="True" Foreground="White" GotFocus="TextBoxSelected" Text="0"/>
 
         <Label Grid.Row="2" Grid.Column="0" Content="to" HorizontalAlignment="Right"/>
-        <TextBox x:Name="targetX" Grid.Row="2" Grid.Column="1" Width="45" Height="22" Foreground="White"/>
-        <TextBox x:Name="targetY" Grid.Row="2" Grid.Column="2" Width="45" Height="22" Foreground="White"/>
+        <TextBox x:Name="targetX" Grid.Row="2" Grid.Column="1" Width="45" Height="22" IsReadOnly="True" Foreground="White" GotFocus="TextBoxSelected" Text="0"/>
+        <TextBox x:Name="targetY" Grid.Row="2" Grid.Column="2" Width="45" Height="22" IsReadOnly="True" Foreground="White" GotFocus="TextBoxSelected" Text="0"/>
 
         <Button Grid.Column="3" ToolTip="Remove" x:Name="removeZone" Click="RemoveZone" HorizontalAlignment="Right" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
             <Image Source="Resources/Remove.png" Height="16" Width="16" />

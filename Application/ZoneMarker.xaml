@@ -10,7 +10,8 @@
         SizeToContent="Width"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"
-        Background="#181818">
+        Background="#181818"
+        SizeChanged="RedrawZones">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
@@ -74,15 +75,15 @@
                         <Image x:Name="addZoneIcon" Source="Resources/Add.png"/>
                     </Button>
                 </StackPanel>
-                
-                <ListView x:Name="zoneList" Grid.Row="2">
-                </ListView>
+
+                <ListView x:Name="zoneList" Grid.Row="2" SelectionChanged="ListItemSelected"/>
+
             </Grid>
             
             <Image Grid.Column="1" x:Name="snapshotDisplay"/>
             <TextBlock Grid.Column="1" Text="No Snapshot (Ctrl + Alt + K)" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Panel.ZIndex="-1"/>
 
-            <Canvas Grid.Column="1" x:Name="snapshotCanvas" MouseDown="OnMouseDown" Panel.ZIndex="1" Cursor="Pen" Background="#00000000"/>
+            <Canvas Grid.Column="1" x:Name="snapshotCanvas" MouseDown="OnMouseDown" Panel.ZIndex="1" Cursor="Pen" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding ActualWidth, ElementName=snapshotDisplay, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=snapshotDisplay, Mode=OneWay}"/>
 
         </Grid>
     </DockPanel>

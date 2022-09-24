@@ -48,15 +48,15 @@ If however it fails, or should you wish to build the project independently, the 
 - Move `kym.dll` into the build location of the application.
 
 Optional (but advised):
-- Move `examples\Default.base` (and any `.conf` files you wish) into `BUILD_LOCATION\layouts`
+- Move `examples\Default.base` (and any `.layer` files you wish) into `BUILD_LOCATION\layouts`
 
 The application will only work on Windows devices. However, the C++ Library should work on other platforms, provided the correct version of hidapi is present.
 
 ## Usage
-Run the executable to start the program. When running for the first time, the editor and settings menu will open, allowing you to enable startup, etc. To use the editor, simply select the layer you wish to edit in the top left (base, application, hotkey), select the colour using the tool in the top right, and click on the key buttons to colour them. (When creating a new layer, the editor will only allow you to select applications which are currently open.)
+Run the executable to start the program. When running for the first time, the editor and settings menu will open, allowing you to enable startup, etc. To use the editor, simply select the layer you wish to edit in the top left (base, application, hotkey), select the colour using the tool in the top right, and click on the key buttons to colour them. (When creating a new layer, the editor will only allow you to select applications which are currently open.). Keys can be set to automatically chose their colour based off of the colour of an area of the screen. These can be set and altered from the autokey editor menu, which is accessible from the primary interface (or `Ctrl + Alt + K` when Keymeleon is closed).
 
-Upon closing the editor, or on subsequent launches, the program will automatically detect the keyboard and begin responding to window changes as described by any `.conf` files in the application's folder.
-You can reopen the editor via the system tray icon (double or right click).
+Upon closing the editor, or on subsequent launches, the program will automatically detect the keyboard and begin responding to window changes as described by any `.layer` and `.conf` files in the application's `layouts/` folder.
+You can reopen the editor via the shortcut `Alt + K`, or via the system tray icon (double or right click).
 
 From the tray icon's right-click context menu you can switch between Mode 1 (user-defined layouts) and Mode 2 (average screen colour).
 

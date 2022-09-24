@@ -1,14 +1,14 @@
 ## Config Files
 
-This folder contains examples of `.base` and `.conf` files, which the application uses to set custom keyboard layouts.
+This folder contains examples of `.base` and `.layer` files, which the application uses to set custom keyboard layouts.
 Each base file contains a full keyboard layout to be used as a background, whereas the config files contain a layer to overule the base. The config files do not have to reference every key, and so will only overide the specified keys, leaving the base's layout visible for said keys.
 Each config file corresponds to an application, and the layer is applied when said application is in focus.
 ### Naming
- The name of the config determines which window it will be used for. For example, `Google Chrome.conf` will be used when (you guessed it) Google Chrome is focused.
+ The name of the config determines which window it will be used for. For example, `Google Chrome.layer` will be used when (you guessed it) Google Chrome is focused.
 
- `Google Chrome_LCtrl.conf` would be used when the Left Control key is pressed with Chrome open.
+ `Google Chrome_LCtrl.layer` would be used when the Left Control key is pressed with Chrome open.
 
- Files starting with `_`, such as `_1.conf` are temporary files which hold the information required to easily 'remove' the current layer. Temporary files follow the naming pattern of `_<profile><x>.conf` where `x` is `a` if the file is for a hotkey, or otherwise blank.
+ Files starting with `_`, such as `_1.layer` are temporary files which hold the information required to easily 'remove' the current layer. Temporary files follow the naming pattern of `_<profile><x>.layer` where `x` is `a` if the file is for a hotkey, or otherwise blank.
 
 `Default.base` is special, in that it will be used for any applications that don't have their own configs.
 
