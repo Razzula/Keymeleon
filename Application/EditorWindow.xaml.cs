@@ -40,6 +40,8 @@ namespace Keymeleon
         string selectedControl = "BRUSH";
         Cursor activeCursor = new Cursor(Application.GetResourceStream(new Uri("Resources/cursors/BRUSH.cur", UriKind.Relative)).Stream);
 
+        string lastSelected;
+
         public EditorWindow()
         {
             InitializeComponent();
@@ -217,6 +219,15 @@ namespace Keymeleon
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
         {
+            if (baseList.SelectedIndex == -1) { return; }
+            if (baseList.SelectedItem.Equals(lastSelected)) { return; }
+            if (!ConfirmChanges())
+            {
+                baseList.SelectedItem = lastSelected;
+                lastSelected = null;
+                return;
+            }
+
             if (baseList.SelectedItem != null)
             {
                 string fileName = baseList.SelectedItem.ToString();
@@ -242,6 +253,14 @@ namespace Keymeleon
 
         private void LoadLayerConfig(object sender, RoutedEventArgs e) //layerList changed
         {
+            if (layerList.SelectedIndex == -1) { return; }
+            if (layerList.SelectedItem.Equals(lastSelected)) { return; }
+            if (!ConfirmChanges())
+            {
+                layerList.SelectedItem = lastSelected;
+                lastSelected = null;
+                return;
+            }
 
             if (layerList.SelectedItem == null) { return; }
 
@@ -258,6 +277,14 @@ namespace Keymeleon
 
         private void LoadTopLayerConfig(object sender, RoutedEventArgs e) //hotketList changed
         {
+            if (hotkeyList.SelectedIndex == -1) { return; }
+            if (hotkeyList.SelectedItem.Equals(lastSelected)) { return; }
+            if (!ConfirmChanges())
+            {
+                hotkeyList.SelectedItem = lastSelected;
+                lastSelected = null;
+                return;
+            }
 
             if (layerList.SelectedItem == null) { return; }
             if (hotkeyList.SelectedItem == null) {
@@ -530,6 +557,12 @@ namespace Keymeleon
 
         private void DeleteCurrentConfig(object sender, RoutedEventArgs e)
         {
+            if (!ConfirmChanges())
+            {
+                return;
+            }
+            saveBtn.IsEnabled = false;
+
             string fileName;
             if ((bool)hotkeyCheck.IsChecked) //top layer
             {
@@ -562,6 +595,15 @@ namespace Keymeleon
 
         private void ToggleLayer(object sender, RoutedEventArgs e)
         {
+
+            if (!ConfirmChanges())
+            {
+                var checkBox = sender as CheckBox;
+                checkBox.IsChecked = !checkBox.IsChecked;
+                return;
+            }
+            saveBtn.IsEnabled = false;
+
             if ((bool) hotkeyCheck.IsChecked)
             {
                 if (hotkeyList.SelectedIndex == -1)
@@ -617,8 +659,28 @@ namespace Keymeleon
             hotkeyCheck.IsEnabled = (bool) layerCheck.IsChecked;
         }
 
+        private bool ConfirmChanges()
+        {
+            if (!saveBtn.IsEnabled)
+            {
+                return true;
+            }
+            PopupConfirmation popupConfirmation = new("Unsaved changes", "Unsaved changes will be lost. Are you sure you wish to proceed?");
+            popupConfirmation.Owner = this;
+            popupConfirmation.ShowDialog();
+
+            return popupConfirmation.result;
+        }
+
         private void LoadConfig(object sender, RoutedEventArgs e)
         {
+
+            if(!ConfirmChanges())
+            {
+                return;
+            }
+            saveBtn.IsEnabled = false;
+
             if ((bool) layerCheck.IsChecked) //layer
             {
                 LoadLayerConfig(sender, e);
@@ -639,10 +701,21 @@ namespace Keymeleon
             {
                 SaveBaseConfig(sender, e);
             }
+
+            readBtn.IsEnabled = false;
+            loadIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Refresh_Disabled.png"));
+            saveBtn.IsEnabled = false;
+            saveIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Save_Disabled.png"));
         }
 
         private void NewConfig(object sender, RoutedEventArgs e)
         {
+            if (!ConfirmChanges())
+            {
+                return;
+            }
+            saveBtn.IsEnabled = false;
+
             if ((bool)layerCheck.IsChecked) //layer
             {
                 ApplicationSelector applicationSelector = new ApplicationSelector(".layer", SelectApplication);
@@ -690,6 +763,11 @@ namespace Keymeleon
 
             zoneMarker.Owner = this;
             zoneMarker.ShowDialog();
+        }
+
+        private void StoreCurrentSelection(object sender, MouseEventArgs e)
+        {
+            lastSelected = (sender as ComboBox).SelectedItem.ToString();
         }
     }
 }

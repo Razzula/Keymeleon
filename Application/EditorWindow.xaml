@@ -73,13 +73,13 @@
                 <Button Grid.Row="0" Grid.Column="0" ToolTip="Settings" Click="OpenSettings" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                     <Image Source="Resources/Settings_Dark.png"/>
                 </Button>
-                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="baseList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadBaseConfig" PreviewMouseDown="StoreCurrentSelection" RenderTransformOrigin="0.5,0.5" Background="#FF222222"/>
 
                 <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="1" Grid.Column="0" x:Name="layerCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="layerList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadLayerConfig" PreviewMouseDown="StoreCurrentSelection" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
 
                 <CheckBox Style="{DynamicResource CheckBoxStyle_Dark}" Grid.Row="2" Grid.Column="0" x:Name="hotkeyCheck" Click="ToggleLayer" IsChecked="False" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="hotkeyList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadTopLayerConfig" RenderTransformOrigin="0.5,0.5" IsEnabled="False">
+                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="hotkeyList" Style="{DynamicResource ComboBoxStyle_Dark}" Width="auto" MinWidth="90" Focusable="False" IsReadOnly="True" SelectionChanged="LoadTopLayerConfig" PreviewMouseDown="StoreCurrentSelection" RenderTransformOrigin="0.5,0.5" IsEnabled="False">
                     <System:String>LCtrl</System:String>
                     <System:String>LShift</System:String>
                     <System:String>Alt</System:String>
@@ -91,11 +91,11 @@
                     <Button ToolTip="New" x:Name="newBtn" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="NewConfig">
                         <Image x:Name="newIcon" Source="/Resources/New.png"/>
                     </Button>
-                    <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image x:Name="loadIcon" Source="/Resources/Refresh.png"/>
+                    <Button ToolTip="Reload" x:Name="readBtn" Click="LoadConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" IsEnabled="False">
+                        <Image x:Name="loadIcon" Source="/Resources/Refresh_Disabled.png"/>
                     </Button>
-                    <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                        <Image x:Name="saveIcon" Source="Resources/Save.png"/>
+                    <Button ToolTip="Save" x:Name="saveBtn" Click="SaveConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" IsEnabled="False">
+                        <Image x:Name="saveIcon" Source="/Resources/Save_Disabled.png"/>
                     </Button>
                     <Button ToolTip="Delete" x:Name="delBtn" Click="DeleteCurrentConfig" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                         <Image x:Name="deleteIcon" Source="Resources/Delete_Dark.png"/>
