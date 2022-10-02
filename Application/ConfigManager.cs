@@ -3,15 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using System.IO;
 using System.Diagnostics;
 
 namespace Keymeleon
 {
-    internal class ConfigManager
+    public class ConfigManager
     {
         Dictionary<string, int[]> baseState = new Dictionary<string, int[]>();
         Dictionary<string, int[]> layerState = new Dictionary<string, int[]>();
@@ -37,7 +35,7 @@ namespace Keymeleon
                 {
                     if (keycode != null)
                     {
-                        baseState.Add(keycode, new[] {0, 0, 0});
+                        baseState.Add(keycode, new[] { 0, 0, 0 });
                     }
                 }
             }
@@ -58,7 +56,7 @@ namespace Keymeleon
             }
         }
 
-        public void SetLayerConfig(Dictionary<string, int[]> newLayer)
+        private void SetLayerConfig(Dictionary<string, int[]> newLayer)
         {
             layerState.Clear();
 
@@ -167,6 +165,10 @@ namespace Keymeleon
                 }
                 //read from line
                 string[] data = line.Split('\t');
+                if (data.Length < 2)
+                {
+                    continue;
+                }
 
                 //set value in dictionary
                 int r = Convert.ToInt32(data[1].Substring(0, 2), 16);
@@ -237,7 +239,8 @@ namespace Keymeleon
             }
 
             if (keycodes.Count > 7) // save as .base for faster recolour (>7 writes is faster as base)
-            {     ConfigManager tempManager = new ConfigManager();
+            {
+                ConfigManager tempManager = new ConfigManager();
                 tempManager.SetBaseConfig(baseState);
                 tempManager.SetLayerConfig(layerState);
                 tempManager.SaveBaseConfig("layouts/_temp.base");
@@ -380,7 +383,7 @@ namespace Keymeleon
             return statesDelta;
         }
 
-        private Dictionary<string, int[]> GetLayer(int layer)
+        public Dictionary<string, int[]> GetLayer(int layer)
         {
             switch (layer)
             {

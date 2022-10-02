@@ -1,14 +1,8 @@
 ﻿//  Copyright (C) 2022  Jack Gillespie  https://github.com/Razzula/Keymeleon/blob/main/LICENSE.md
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -59,7 +53,7 @@ namespace Keymeleon
             };
             this.rows = rows;
 
-            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory+"/layouts");
+            var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
             //base
             FileInfo[] info = dirInfo.GetFiles("*.base");
             foreach (var file in info)
@@ -99,7 +93,7 @@ namespace Keymeleon
             {
                 //show colour in UI
                 Color colour = Color.FromRgb(Convert.ToByte(item.Value[0]), Convert.ToByte(item.Value[1]), Convert.ToByte(item.Value[2]));
-                Button btn = (Button) this.FindName(item.Key);
+                Button btn = (Button)this.FindName(item.Key);
                 if (btn == null)
                 {
                     btn = (Button)this.FindName("_" + item.Key);
@@ -125,7 +119,7 @@ namespace Keymeleon
 
         private void LoadLayerConfig(string fileName, int layer)
         {
-            var deltaState = configManager.GetStatesDelta(layer-1, layer);
+            var deltaState = configManager.GetStatesDelta(layer - 1, layer);
             var tempState = configManager.LoadLayerConfig(fileName, layer);
             int res;
 
@@ -168,10 +162,10 @@ namespace Keymeleon
             //apply new layer
             foreach (var item in tempState)
             {
-                var btn = (Button) this.FindName(item.Key);
+                var btn = (Button)this.FindName(item.Key);
                 if (btn == null)
                 {
-                    btn = (Button)this.FindName("_"+ item.Key);
+                    btn = (Button)this.FindName("_" + item.Key);
                 }
 
                 if (btn != null)
@@ -208,7 +202,7 @@ namespace Keymeleon
             string fileName = layerList.SelectedItem.ToString();
             int layer = 1;
 
-            if ((bool) hotkeyCheck.IsChecked) //layer
+            if ((bool)hotkeyCheck.IsChecked) //layer
             {
                 fileName += '_' + hotkeyList.SelectedItem.ToString();
                 layer = 2;
@@ -244,7 +238,7 @@ namespace Keymeleon
                     deleteIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Delete_Disabled.png"));
                 }
 
-                if ((bool) layerCheck.IsChecked)
+                if ((bool)layerCheck.IsChecked)
                 {
                     LoadLayerConfig(sender, e);
                 }
@@ -267,7 +261,7 @@ namespace Keymeleon
             string fileName = layerList.SelectedItem.ToString();
             LoadLayerConfig("layouts/" + fileName + ".layer", 1);
 
-            if ((bool) hotkeyCheck.IsChecked)
+            if ((bool)hotkeyCheck.IsChecked)
             {
                 if (hotkeyList.SelectedItem == null) { return; }
                 fileName += '_' + hotkeyList.SelectedItem.ToString();
@@ -287,7 +281,8 @@ namespace Keymeleon
             }
 
             if (layerList.SelectedItem == null) { return; }
-            if (hotkeyList.SelectedItem == null) {
+            if (hotkeyList.SelectedItem == null)
+            {
                 LoadLayerConfig(sender, e);
                 return;
             }
@@ -296,8 +291,8 @@ namespace Keymeleon
             LoadLayerConfig("layouts/" + fileName + ".layer", 2);
         }
 
-        public void CreateConfig(string fileName, string template=null)
-        {   
+        public void CreateConfig(string fileName, string template = null)
+        {
 
             string[] file = fileName.Split(".");
 
@@ -308,7 +303,7 @@ namespace Keymeleon
                 baseList.Items.Add(file[0]);
                 baseList.SelectedItem = file[0];
             }
-            
+
         }
 
         private void SetControl(object sender, RoutedEventArgs e)
@@ -325,11 +320,11 @@ namespace Keymeleon
             eraseBtn.BorderBrush = null;
             dropBtn.BorderBrush = null;
             fillBtn.BorderBrush = null;
-            btn.BorderBrush = new SolidColorBrush((Color) ColorConverter.ConvertFromString("White"));
+            btn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("White"));
 
             //set cursor to tool icon
             activeCursor = new Cursor(
-                Application.GetResourceStream(new Uri("Resources/cursors/"+selectedControl+".cur", UriKind.Relative)).Stream
+                Application.GetResourceStream(new Uri("Resources/cursors/" + selectedControl + ".cur", UriKind.Relative)).Stream
             );
         }
 
@@ -349,7 +344,7 @@ namespace Keymeleon
         private void ButtonClicked(object sender, MouseButtonEventArgs e)
         {
             int layer;
-            if ((bool) hotkeyCheck.IsChecked)
+            if ((bool)hotkeyCheck.IsChecked)
             {
                 layer = 2;
             }
@@ -358,7 +353,7 @@ namespace Keymeleon
                 layer = 1;
             }
 
-            Button btn = (Button) e.Source;
+            Button btn = (Button)e.Source;
             string keycode = btn.Name.ToString();
             if (keycode[0].Equals('_'))
             {
@@ -527,7 +522,7 @@ namespace Keymeleon
             }
             else if (e.ChangedButton == MouseButton.Right) // ERASER
             {
-                control.Fill = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#353535"));
+                control.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#353535"));
             }
             else if (e.ChangedButton == MouseButton.Middle) // EYEDROP
             {
@@ -589,7 +584,7 @@ namespace Keymeleon
                 baseList.SelectedIndex = 0;
                 baseList.Items.Remove(fileName);
             }
-            File.Delete("layouts/"+fileName+fileExtension);
+            File.Delete("layouts/" + fileName + fileExtension);
 
         }
 
@@ -604,7 +599,7 @@ namespace Keymeleon
             }
             saveBtn.IsEnabled = false;
 
-            if ((bool) hotkeyCheck.IsChecked)
+            if ((bool)hotkeyCheck.IsChecked)
             {
                 if (hotkeyList.SelectedIndex == -1)
                 {
@@ -618,7 +613,7 @@ namespace Keymeleon
                 fillBtn.IsEnabled = false;
                 fillIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/Fill_Disabled.png"));
             }
-            else if ((bool) layerCheck.IsChecked)
+            else if ((bool)layerCheck.IsChecked)
             {
                 if (layerList.SelectedIndex == -1)
                 {
@@ -638,7 +633,7 @@ namespace Keymeleon
 
                 selectedControl = "BRUSH";
                 brushBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("White"));
-                activeCursor = new Cursor(Application.GetResourceStream(new Uri("Resources/cursors/BRUSH.cur", UriKind.Relative)).Stream );
+                activeCursor = new Cursor(Application.GetResourceStream(new Uri("Resources/cursors/BRUSH.cur", UriKind.Relative)).Stream);
             }
             else
             {
@@ -652,11 +647,11 @@ namespace Keymeleon
 
                 LoadBaseConfig(sender, e);
             }
-            layerList.IsEnabled = (bool) layerCheck.IsChecked;
-            hotkeyList.IsEnabled = (bool) hotkeyCheck.IsChecked;
+            layerList.IsEnabled = (bool)layerCheck.IsChecked;
+            hotkeyList.IsEnabled = (bool)hotkeyCheck.IsChecked;
 
-            layerCheck.IsEnabled = (bool) !hotkeyCheck.IsChecked;
-            hotkeyCheck.IsEnabled = (bool) layerCheck.IsChecked;
+            layerCheck.IsEnabled = (bool)!hotkeyCheck.IsChecked;
+            hotkeyCheck.IsEnabled = (bool)layerCheck.IsChecked;
         }
 
         private bool ConfirmChanges()
@@ -675,13 +670,13 @@ namespace Keymeleon
         private void LoadConfig(object sender, RoutedEventArgs e)
         {
 
-            if(!ConfirmChanges())
+            if (!ConfirmChanges())
             {
                 return;
             }
             saveBtn.IsEnabled = false;
 
-            if ((bool) layerCheck.IsChecked) //layer
+            if ((bool)layerCheck.IsChecked) //layer
             {
                 LoadLayerConfig(sender, e);
             }
@@ -729,7 +724,7 @@ namespace Keymeleon
                 {
                     i++;
                 }
-                CreateConfig(i+".base");
+                CreateConfig(i + ".base");
             }
         }
 
@@ -757,7 +752,7 @@ namespace Keymeleon
             OpenZoneMarker(null);
         }
 
-        public void OpenZoneMarker(string? currentApplication, System.Drawing.Bitmap? snapshot=null)
+        public void OpenZoneMarker(string? currentApplication, System.Drawing.Bitmap? snapshot = null)
         {
             ZoneMarker zoneMarker = new ZoneMarker(this, currentApplication, snapshot);
 

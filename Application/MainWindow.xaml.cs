@@ -18,17 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -36,10 +27,7 @@ using System.IO;
 using System.Windows.Interop;
 using System.Windows.Forms;
 using System.Drawing;
-using Microsoft.Win32;
 using System.Threading;
-using System.Reflection;
-using System.Drawing.Imaging;
 using System.Windows.Resources;
 
 namespace Keymeleon
@@ -138,7 +126,7 @@ namespace Keymeleon
             }
 
             //ensure single-instance
-            string procName = Process.GetCurrentProcess().ProcessName;    
+            string procName = Process.GetCurrentProcess().ProcessName;
             Process[] processes = Process.GetProcessesByName(procName);
 
             if (processes.Length > 1)
@@ -272,7 +260,7 @@ namespace Keymeleon
             {
                 StartFocusMonitoring();
             }
-            else if ( mode == 2) //MIMIC SCREEN
+            else if (mode == 2) //MIMIC SCREEN
             {
                 StartScreenMonitoring();
             }
@@ -412,11 +400,11 @@ namespace Keymeleon
             int res = 0;
 
             int oldProfile = profile;
-            if (File.Exists("layouts/"+focusedApplication+".layer")) //is there a layer to apply
+            if (File.Exists("layouts/" + focusedApplication + ".layer")) //is there a layer to apply
             {
                 //register hotkeys
                 var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-                var info = dirInfo.GetFiles(focusedApplication+"_*.layer");
+                var info = dirInfo.GetFiles(focusedApplication + "_*.layer");
                 foreach (var file in info)
                 {
                     string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -454,10 +442,10 @@ namespace Keymeleon
                     {
                         res += NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + ".layer", profile);
                     }
-                    res += NativeMethods.ApplyLayoutLayer("layouts/"+focusedApplication+".layer", profile);
+                    res += NativeMethods.ApplyLayoutLayer("layouts/" + focusedApplication + ".layer", profile);
 
                     //create temp config to revert to base
-                    configManager.LoadLayerConfig("layouts/"+focusedApplication+".layer", 1);
+                    configManager.LoadLayerConfig("layouts/" + focusedApplication + ".layer", 1);
                     var deltaState = configManager.GetStatesDelta(0, 1);
                     configManager.SaveInverseConfig("layouts/_" + profile.ToString() + ".layer", 0, 1);
                 }
@@ -697,7 +685,7 @@ namespace Keymeleon
             OpenEditor(null);
         }
 
-        private void OpenEditor(string? currentApplication, Bitmap? src=null)
+        private void OpenEditor(string? currentApplication, Bitmap? src = null)
         {
             nIcon.Visible = false;
             StopController();

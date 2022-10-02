@@ -2,24 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 using System.IO;
 using System.Diagnostics;
-using System.ServiceProcess;
-using System.Windows.Interop;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
 using System.Drawing;
 
 namespace Keymeleon
@@ -39,7 +29,7 @@ namespace Keymeleon
             "LCtrl", "Super", "LAlt", "Space", "RAlt", "Fn", "Menu", "RCtrl", "Left", "Down", "Up", "Right", "Num_0", "Num_Period", "Num_Enter"
         };
 
-        public ZoneMarker(EditorWindow owner, string? application=null, Bitmap? snapshot=null)
+        public ZoneMarker(EditorWindow owner, string? application = null, Bitmap? snapshot = null)
         {
             InitializeComponent();
             editor = owner;
@@ -302,7 +292,7 @@ namespace Keymeleon
 
         private void SelectZoneItem(object sender, RoutedEventArgs e)
         {
-            var listItem = (ZoneListItem) zoneList.SelectedItem;
+            var listItem = (ZoneListItem)zoneList.SelectedItem;
             currentRectangle = listItem.GetRectangle();
         }
 

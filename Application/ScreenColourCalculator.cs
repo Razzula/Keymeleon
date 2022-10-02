@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,9 +6,9 @@ using System.Windows.Forms;
 
 namespace Keymeleon
 {
-    internal class ScreenColourCalculator
+    public class ScreenColourCalculator
     {
-        public Bitmap GetScreenImage(int width=-1, int height=-1)
+        public Bitmap GetScreenImage(int width = -1, int height = -1)
         {
             Rectangle bounds = Screen.GetBounds(Point.Empty);
 
@@ -64,10 +60,10 @@ namespace Keymeleon
             } //g.Dispose()
 
             //ANALYSE IMAGE
-            int originX = (int) (x1 * src.Width);
-            int originY = (int) (y1 * src.Height);
-            int targetX = (int) (x2 * src.Width);
-            int targetY = (int) (y2 * src.Height);
+            int originX = (int)(x1 * src.Width);
+            int originY = (int)(y1 * src.Height);
+            int targetX = (int)(x2 * src.Width);
+            int targetY = (int)(y2 * src.Height);
 
             double[] mean = new double[] { 0, 0, 0 };
             int count = 0;

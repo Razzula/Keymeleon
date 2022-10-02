@@ -12,6 +12,7 @@ No irreversible damage has occurred during development or testing, but discretio
 ## Overview
 -  `Application\` contains the C# WPF Application Project. This is the main project.
 -  `kym-Library\` contains a C++ Dynamic-link Library Project which is used by the main application. **The application will not function without this**.
+-  `Tests\` contains an NUnit Tests project for automated testing of some of the application's functions
 -  `examples\` contains some example layout files.
 
 ### Supported Keyboards

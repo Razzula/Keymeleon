@@ -2,24 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 using System.IO;
 using System.Diagnostics;
-using System.ServiceProcess;
-using System.Windows.Interop;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
 using System.Drawing;
 
 namespace Keymeleon
@@ -44,7 +31,7 @@ namespace Keymeleon
 
             //get all exist configs
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
-            FileInfo[] info = dirInfo.GetFiles("*"+fileExtension);
+            FileInfo[] info = dirInfo.GetFiles("*" + fileExtension);
             foreach (FileInfo file in info)
             {
                 var config = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -159,9 +146,9 @@ namespace Keymeleon
 
         private void Submit(object sender, RoutedEventArgs e)
         {
-            var listItem = (ListViewItem) applicationList.SelectedItem;
-            var item = (ApplicationListItem) listItem.Content;
-            string fileName = "layouts/"+item.GetName()+fileExtension;
+            var listItem = (ListViewItem)applicationList.SelectedItem;
+            var item = (ApplicationListItem)listItem.Content;
+            string fileName = "layouts/" + item.GetName() + fileExtension;
 
             if (!File.Exists(fileName))
             {

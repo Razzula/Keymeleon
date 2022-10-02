@@ -1,0 +1,1 @@
+**Notice** the files in `data/` are required in the output folder for some of the file-oriented tests to function. VS should do this automatically via PostBuild xcopy commands.
