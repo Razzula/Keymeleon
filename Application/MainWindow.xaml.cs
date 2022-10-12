@@ -358,12 +358,6 @@ namespace Keymeleon
             winEventProcDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
             hWinEvent = NativeMethods.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, System.IntPtr.Zero, winEventProcDelegate, (uint)0, (uint)0, WINEVENT_OUTOFCONTEXT); //begin listening to change of window focus
 
-            //HOTKEYS
-            //setup method to handle key events
-            hotkeyActive = false;
-            var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
-            hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
-
             nIcon.Visible = true;
         }
 
@@ -394,8 +388,12 @@ namespace Keymeleon
 
             Debug.WriteLine(focusedApplication);
 
-            registeredHotkeys.Clear();
             autocolourActive = false;
+
+            //deregister hotkeys
+            registeredHotkeys.Clear();
+            NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
+
 
             int res = 0;
 
@@ -405,6 +403,14 @@ namespace Keymeleon
                 //register hotkeys
                 var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
                 var info = dirInfo.GetFiles(focusedApplication + "_*.layer");
+
+                if (info.Length > 0)
+                {
+                    //setup method to handle key events
+                    hotkeyActive = false;
+                    var hmod = Marshal.GetHINSTANCE(typeof(Window).Module);
+                    hWinHook = NativeMethods.SetWindowsHookExA(13, winHookProc, hmod, 0);
+                }
                 foreach (var file in info)
                 {
                     string fileName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
@@ -723,6 +729,11 @@ namespace Keymeleon
             nIcon.Visible = false;
             StopController();
 
+            //deregister hotkeys
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            NativeMethods.UnregisterHotKey(handle, 117); //ALT + K
+            NativeMethods.UnregisterHotKey(handle, 171); //CTRL + ALT + K
+
             //remove any temp files
             var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
             var info = dirInfo.GetFiles("_*.layer");
@@ -730,6 +741,8 @@ namespace Keymeleon
             {
                 File.Delete(file.FullName);
             }
+
+            NativeMethods.SetActiveProfile(1);
 
             Close();
         }
