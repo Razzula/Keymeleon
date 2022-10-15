@@ -11,6 +11,8 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Keymeleon
 {
@@ -102,6 +104,8 @@ namespace Keymeleon
                 if (imageName.Equals(configList.SelectedItem))
                 {
                     snapshotDisplay.Source = new BitmapImage(new Uri(file.FullName));
+
+                    new Task(() => { Thread.Sleep(100); RedrawZones(sender, e); }, new CancellationTokenSource().Token, TaskCreationOptions.LongRunning).Start();
                     return;
                 }
             }
@@ -167,7 +171,6 @@ namespace Keymeleon
                     listItem.SetTarget(Convert.ToDouble(lineData[3]), Convert.ToDouble(lineData[4]));
                 }
             }
-            RedrawZones(sender, e);
 
             snapshotCanvas.Cursor = Cursors.No;
         }
@@ -306,7 +309,7 @@ namespace Keymeleon
         {
             foreach (ZoneListItem item in zoneList.Items)
             {
-                DrawRectangle(item);
+                Application.Current.Dispatcher.Invoke(new Action(() => { DrawRectangle(item); }));
             }
         }
     }

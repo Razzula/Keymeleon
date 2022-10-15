@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Keymeleon"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="Keymeleon.ZoneMarker"
         mc:Ignorable="d"
-        Title="ApplicationSelector" Height="720" Width="1280" MinHeight="450" MinWidth="800"
+        Title="Autokey Configuration" Height="720" Width="1402" MinHeight="450" MinWidth="920"
         SizeToContent="Width"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"

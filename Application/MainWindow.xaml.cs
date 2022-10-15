@@ -291,21 +291,27 @@ namespace Keymeleon
                     {
                         case 117: //ALT + K //open editor
 
-                            OpenEditor(null);
+                            if (nIcon.Visible)
+                            {
+                                OpenEditor(null);
+                            }
                             handled = true;
                             break;
 
                         case 171: //CTRL + ALT + K //open autokey editor
 
-                            //get screen image
-                            System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
-                            Bitmap src = new Bitmap(bounds.Width, bounds.Height);
-                            using (Graphics g = Graphics.FromImage(src))
+                            if (nIcon.Visible)
                             {
-                                g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
-                            }
+                                //get screen image
+                                System.Drawing.Rectangle bounds = Screen.GetBounds(System.Drawing.Point.Empty);
+                                Bitmap src = new Bitmap(bounds.Width, bounds.Height);
+                                using (Graphics g = Graphics.FromImage(src))
+                                {
+                                    g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
+                                }
 
-                            OpenEditor(focusedApplication, src);
+                                OpenEditor(focusedApplication, src);
+                            }
                             handled = true;
                             break;
                     }
