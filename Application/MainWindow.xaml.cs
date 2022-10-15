@@ -50,6 +50,7 @@ namespace Keymeleon
         readonly ConfigManager configManager;
         private string focusedApplication;
         private Dictionary<string, int> cachedApplications = new();
+        private string[] cachedBases = { "", "" };
         private string leastRecentlyUsedCacheEntry;
         readonly Dictionary<string, uint> keycodes = new()
         {
@@ -400,12 +401,12 @@ namespace Keymeleon
             registeredHotkeys.Clear();
             NativeMethods.UnhookWindowsHookEx(hWinHook); //stop responding to keypresses
 
-
             int res = 0;
 
             int oldProfile = profile;
             if (File.Exists("layouts/" + focusedApplication + ".layer")) //is there a layer to apply
             {
+                
                 //register hotkeys
                 var dirInfo = new DirectoryInfo(Environment.CurrentDirectory + "/layouts");
                 var info = dirInfo.GetFiles(focusedApplication + "_*.layer");
@@ -433,6 +434,7 @@ namespace Keymeleon
                 if (cachedApplications.ContainsKey(focusedApplication)) //if config is already cached
                 {
                     profile = cachedApplications[focusedApplication];
+                    configManager.LoadLayerConfig("layouts/" + focusedApplication + ".layer", 1);
                 }
                 else
                 {
@@ -449,11 +451,47 @@ namespace Keymeleon
                         cachedApplications.Add(focusedApplication, profile);
                     }
 
-                    //set layout to base
-                    if (File.Exists("layouts/_" + profile.ToString() + ".layer"))
+                    //get base layer
+                    string newBase;
+                    string header;
+                    try
+                    {
+                        header = File.ReadAllLines("layouts/" + focusedApplication + ".layer")[0];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        header = "!";
+                    }
+
+                    if (header[0] == '#' && File.Exists("layouts/" + header.Substring(1) + ".base")) //genuine header, genuine base layer
+                    {
+                        newBase = header.Substring(1);
+                    }
+                    else
+                    {
+                        if (File.Exists("layouts/" + Properties.Settings.Default.AltBase + ".base")) //if custom base exists, use for non-defaults
+                        {
+                            newBase = Properties.Settings.Default.AltBase;
+                        }
+                        else
+                        {
+                            newBase = "Default";
+                        }
+                    }
+
+                    //apply base layer
+                    if (cachedBases[profile - 2].Equals(newBase) && File.Exists("layouts/_" + profile.ToString() + ".layer"))
                     {
                         res += NativeMethods.ApplyLayoutLayer("layouts/_" + profile.ToString() + ".layer", profile);
                     }
+                    else
+                    {
+                        res += NativeMethods.SetLayoutBase("layouts/" + newBase + ".base", profile);
+                        configManager.LoadBaseConfig("layouts/" + newBase + ".base");
+                        cachedBases[profile - 2] = newBase;
+                    }
+
+                    //apply layout layer
                     res += NativeMethods.ApplyLayoutLayer("layouts/" + focusedApplication + ".layer", profile);
 
                     //create temp config to revert to base

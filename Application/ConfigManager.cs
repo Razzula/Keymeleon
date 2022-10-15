@@ -313,11 +313,15 @@ namespace Keymeleon
             File.WriteAllLines(fileName, lines);
         }
 
-        public void SaveLayerConfig(string fileName, int layer)
+        public void SaveLayerConfig(string fileName, int layer, string? header=null)
         {
             Dictionary<string, int[]> tempState = GetLayer(layer);
 
             List<string> lines = new List<string>();
+            if (header != null)
+            {
+                lines.Add(header);
+            }
             foreach (var item in tempState)
             {
                 if (item.Value[0] == -1 || item.Value[1] == -1 || item.Value[2] == -1) //transparent

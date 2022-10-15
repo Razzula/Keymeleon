@@ -36,6 +36,8 @@ namespace Keymeleon
 
         string lastSelected;
 
+        string? header;
+
         public EditorWindow()
         {
             InitializeComponent();
@@ -142,6 +144,7 @@ namespace Keymeleon
                     NativeMethods.SetKeyColour(item.Key, item.Value[0], item.Value[1], item.Value[2], 1);
                 }
             }
+            this.header = null;
 
             foreach (var row in rows)
             {
@@ -176,6 +179,18 @@ namespace Keymeleon
                     btn.Opacity = 1;
                 }
             }
+
+            //preserve header
+            try
+            {
+                string header = File.ReadAllLines(fileName)[0];
+                if (header[0] == '#') //genuine header
+                {
+                    this.header = header;
+                }
+            }
+            catch (IndexOutOfRangeException) { }
+
             //display config on keyboard
             Debug.WriteLine(fileName);//DEBUG
             res = NativeMethods.ApplyLayoutLayer(fileName, 1);
@@ -208,7 +223,7 @@ namespace Keymeleon
                 layer = 2;
             }
 
-            configManager.SaveLayerConfig("layouts/" + fileName + ".layer", layer);
+            configManager.SaveLayerConfig("layouts/" + fileName + ".layer", layer, header);
         }
 
         private void LoadBaseConfig(object sender, RoutedEventArgs e)
